@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"pace/pace/pkg/cmd"
 	"pace/pace/pkg/common"
+	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/processingplatform"
 	"strings"
 )
@@ -35,6 +36,7 @@ func SetupServiceClients(accessToken *string) {
 	clientConnection, ctx := SetupGrpc(common.ApiHost)
 
 	processingplatform.SetupClient(clientConnection, ctx)
+	catalog.SetupClient(clientConnection, ctx)
 }
 
 func InitializeConfig(cmd *cobra.Command) error {

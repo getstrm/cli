@@ -1,4 +1,4 @@
-package processingplatform
+package catalog
 
 import (
 	data_policiesv1alpha "buf.build/gen/go/getstrm/daps/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
@@ -38,22 +38,22 @@ type listTablePrinter struct{}
 type listPlainPrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListProcessingPlatformsResponse)
-	printTable(listResponse.ProcessingPlatforms)
+	listResponse, _ := (data).(*data_policiesv1alpha.ListCatalogsResponse)
+	printTable(listResponse.Catalogs)
 }
 
 func (p listPlainPrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListProcessingPlatformsResponse)
-	printPlain(listResponse.ProcessingPlatforms)
+	listResponse, _ := (data).(*data_policiesv1alpha.ListCatalogsResponse)
+	printPlain(listResponse.Catalogs)
 }
 
-func printTable(platforms []*data_policiesv1alpha.DataPolicy_ProcessingPlatform) {
-	rows := make([]table.Row, 0, len(platforms))
-	for _, platform := range platforms {
+func printTable(catalogs []*data_policiesv1alpha.DataCatalog) {
+	rows := make([]table.Row, 0, len(catalogs))
+	for _, catalog := range catalogs {
 
 		row := table.Row{
-			platform.Id,
-			platform.PlatformType,
+			catalog.Id,
+			catalog.Type,
 		}
 		rows = append(rows, row)
 	}
@@ -64,9 +64,8 @@ func printTable(platforms []*data_policiesv1alpha.DataPolicy_ProcessingPlatform)
 	}
 	util.RenderTable(headers, rows)
 }
-func printPlain(platforms []*data_policiesv1alpha.DataPolicy_ProcessingPlatform) {
-	for _, platform := range platforms {
-
-		fmt.Println(platform.Id, platform.PlatformType)
+func printPlain(catalogs []*data_policiesv1alpha.DataCatalog) {
+	for _, catalog := range catalogs {
+		fmt.Println(catalog.Id, catalog.Type)
 	}
 }
