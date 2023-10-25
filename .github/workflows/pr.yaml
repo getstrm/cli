@@ -1,0 +1,49 @@
+name: Pull Request Build
+
+on:
+  push:
+    branches-ignore:
+      - "master"
+
+permissions:
+  contents: write
+
+jobs:
+  pr-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19
+      - name: Build CLI
+        run: |
+          make
+      - name: Run CLI tests
+        env:
+          STRM_TEST_USER_EMAIL: ${{ secrets.STRM_TEST_USER_EMAIL }}
+          STRM_TEST_USER_PASSWORD: ${{ secrets.STRM_TEST_USER_PASSWORD }}
+          STRM_TEST_S3_USER_NAME: ${{ secrets.STRM_TEST_S3_USER_NAME }}
+          STRM_TEST_S3_ACCESS_KEY_ID: ${{ secrets.STRM_TEST_S3_ACCESS_KEY_ID }}
+          STRM_TEST_S3_SECRET_ACCESS_KEY: ${{ secrets.STRM_TEST_S3_SECRET_ACCESS_KEY }}
+          STRM_TEST_PROJECT_ID: ${{ secrets.STRM_TEST_PROJECT_ID }}
+        run: |
+          go test ./test -v
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+            distribution: goreleaser
+            version: latest
+            args: --snapshot --skip-publish --clean
+      - name: Verify Docs
+        env:
+            GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+            APIS_USERNAME: ${{secrets.APIS_USERNAME}}
+            APIS_EMAIL: ${{secrets.APIS_EMAIL}}
+        run: |
+            ./scripts/verify_docs.sh
+

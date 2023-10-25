@@ -1,0 +1,17 @@
+.idea
+node_modules
+protos
+.env
+test/.env
+.env-dev
+.env-prod
+.default-login-token.json
+dist
+dpace
+*.log
+*.json
+*.tar.gz
+s3.json
+/*.yaml
+generated_docs
+docs

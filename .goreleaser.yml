@@ -1,0 +1,59 @@
+project_name: pace
+
+before:
+  hooks:
+    - go mod download
+    - go generate ./...
+
+builds:
+  - id: pace
+    binary: pace
+    main: ./cmd/pace
+    ldflags:
+      - -s -w -X pace/pace/pkg/common.Version={{.Version}} -X pace/pace/pkg/common.GitSha={{.Commit}} -X pace/pace/pkg/common.BuiltOn={{.Date}}
+    goos:
+      - linux
+      - windows
+      - darwin
+
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      # Only include the binary to ensure auto update works correctly
+      - none*
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-dev"
+
+brews:
+  - tap:
+      owner: pace
+      name: homebrew-cli
+    url_template: "https://github.com/pace/cli/releases/download/{{ .Tag }}/{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}.tar.gz"
+    homepage: "https://pace.io"
+    description: "Command Line Interface for https://pace.io"
+    install: |
+      bin.install "pace"
+    folder: Formula
+    test: |
+      system "#{bin}/{{ .ProjectName }} --version"
+    caveats: |
+      In order to set up auto completion, please follow the instructions below. When you've set up auto completion in the past, you can skip these instructions.
+
+       for bash users
+         add the following line to your .bash_profile or .bashrc:
+           source <({{ .ProjectName }} completion bash)
+
+         to load completions for each session, execute once:
+           - Linux users: {{ .ProjectName }} completion bash > /etc/bash_completion.d/{{ .ProjectName }}
+           - macOS users: {{ .ProjectName }} completion bash > /usr/local/etc/bash_completion.d/{{ .ProjectName }}
+
+       for zsh users
+         ensure that shell completion is enabled, then run (only needs to be done once):
+           {{ .ProjectName }} completion zsh > "${fpath[1]}/_{{ .ProjectName }}"
+
+       for fish users
+         {{ .ProjectName }} completion fish > ~/.config/fish/completions/{{ .ProjectName }}.fish # or $XDG_CONFIG_HOME instead of ~/.config
