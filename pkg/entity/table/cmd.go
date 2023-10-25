@@ -1,0 +1,25 @@
+package table
+
+import (
+	"github.com/spf13/cobra"
+	"pace/pace/pkg/common"
+)
+
+func ListCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "tables",
+		Short:             "List Tables",
+		Example:           listExample,
+		DisableAutoGenTag: true,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			printer = configurePrinter(cmd)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			list(cmd)
+		},
+		ValidArgsFunction: common.NoFilesEmptyCompletion,
+	}
+	flags := cmd.Flags()
+	flags.String("processing-platform", "p", "snowflake-demo")
+	return cmd
+}

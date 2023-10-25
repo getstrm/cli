@@ -5,6 +5,7 @@ import (
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/processingplatform"
+	"pace/pace/pkg/entity/table"
 )
 
 var ListCmd = &cobra.Command{
@@ -16,6 +17,7 @@ var ListCmd = &cobra.Command{
 func init() {
 	ListCmd.AddCommand(processingplatform.ListCmd())
 	ListCmd.AddCommand(catalog.ListCmd())
+	ListCmd.AddCommand(table.ListCmd())
 
 	ListCmd.PersistentFlags().BoolP(common.RecursiveFlagName, common.RecursiveFlagShorthand, false, common.RecursiveFlagUsage)
 }
