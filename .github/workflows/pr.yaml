@@ -3,7 +3,7 @@ name: Pull Request Build
 on:
   push:
     branches-ignore:
-      - "master"
+      - "main"
 
 permissions:
   contents: write
