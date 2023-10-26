@@ -13,6 +13,7 @@ import (
 	"pace/pace/pkg/cmd"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
+	"pace/pace/pkg/entity/database"
 	"pace/pace/pkg/entity/group"
 	"pace/pace/pkg/entity/processingplatform"
 	"pace/pace/pkg/entity/table"
@@ -41,6 +42,7 @@ func SetupServiceClients(accessToken *string) {
 	catalog.SetupClient(clientConnection, ctx)
 	table.SetupClient(clientConnection, ctx)
 	group.SetupClient(clientConnection, ctx)
+	database.SetupClient(clientConnection, ctx)
 }
 
 func InitializeConfig(cmd *cobra.Command) error {
