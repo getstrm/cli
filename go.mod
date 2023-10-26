@@ -3,22 +3,22 @@ module pace/pace
 go 1.20
 
 require (
-	buf.build/gen/go/getstrm/daps/grpc/go v1.3.0-20231024094422-609525407a2f.2
-	buf.build/gen/go/getstrm/daps/protocolbuffers/go v1.28.1-20231024094422-609525407a2f.4
+	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231026111541-4f2899b25279.2
+	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231026111541-4f2899b25279.4
 	github.com/bykof/gostradamus v1.0.4
 	github.com/jedib0t/go-pretty/v6 v6.4.0
 	github.com/lithammer/dedent v1.1.0
-	github.com/samber/lo v1.33.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.13.0
 	google.golang.org/grpc v1.53.0
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.31.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
 
 require (
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.28.1-20231017183020-0de7443d03cf.4 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -35,7 +35,6 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
-	golang.org/x/exp v0.0.0-20221026153819-32f3d567a233 // indirect
 	golang.org/x/net v0.11.0 // indirect
 	golang.org/x/sys v0.9.0 // indirect
 	golang.org/x/text v0.10.0 // indirect

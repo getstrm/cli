@@ -18,6 +18,4 @@ func init() {
 	ListCmd.AddCommand(processingplatform.ListCmd())
 	ListCmd.AddCommand(catalog.ListCmd())
 	ListCmd.AddCommand(table.ListCmd())
-
-	ListCmd.PersistentFlags().BoolP(common.RecursiveFlagName, common.RecursiveFlagShorthand, false, common.RecursiveFlagUsage)
 }

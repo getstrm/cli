@@ -1,7 +1,7 @@
 package processingplatform
 
 import (
-	data_policiesv1alpha "buf.build/gen/go/getstrm/daps/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
+	data_policiesv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
 	"errors"
 	"fmt"
 	"github.com/jedib0t/go-pretty/v6/table"

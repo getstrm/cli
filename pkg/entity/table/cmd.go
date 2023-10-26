@@ -20,6 +20,6 @@ func ListCmd() *cobra.Command {
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	flags.String("processing-platform", "p", "snowflake-demo")
+	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", "snowflake-demo")
 	return cmd
 }
