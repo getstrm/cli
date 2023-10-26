@@ -5,6 +5,7 @@ import (
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/database"
+	"pace/pace/pkg/entity/datapolicy"
 	"pace/pace/pkg/entity/group"
 	"pace/pace/pkg/entity/processingplatform"
 	"pace/pace/pkg/entity/schema"
@@ -17,6 +18,12 @@ var ListCmd = &cobra.Command{
 	Short:             "List entities",
 }
 
+var GetCmd = &cobra.Command{
+	Use:               common.GetCommandName,
+	DisableAutoGenTag: true,
+	Short:             "Get entities",
+}
+
 func init() {
 	ListCmd.AddCommand(processingplatform.ListCmd())
 	ListCmd.AddCommand(catalog.ListCmd())
@@ -24,4 +31,5 @@ func init() {
 	ListCmd.AddCommand(group.ListCmd())
 	ListCmd.AddCommand(schema.ListCmd())
 	ListCmd.AddCommand(database.ListCmd())
+	GetCmd.AddCommand(datapolicy.GetBarePolicy())
 }
