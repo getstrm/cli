@@ -50,5 +50,7 @@ func ListCmd() *cobra.Command {
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
+	flags := cmd.Flags()
+	common.SetOutputFormats(flags, common.OutputFormatJson, common.OutputFormatJsonRaw)
 	return cmd
 }
