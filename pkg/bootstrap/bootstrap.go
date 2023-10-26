@@ -16,6 +16,7 @@ import (
 	"pace/pace/pkg/entity/database"
 	"pace/pace/pkg/entity/group"
 	"pace/pace/pkg/entity/processingplatform"
+	"pace/pace/pkg/entity/schema"
 	"pace/pace/pkg/entity/table"
 	"strings"
 )
@@ -42,6 +43,7 @@ func SetupServiceClients(accessToken *string) {
 	catalog.SetupClient(clientConnection, ctx)
 	table.SetupClient(clientConnection, ctx)
 	group.SetupClient(clientConnection, ctx)
+	schema.SetupClient(clientConnection, ctx)
 	database.SetupClient(clientConnection, ctx)
 }
 

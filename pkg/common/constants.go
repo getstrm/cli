@@ -39,5 +39,8 @@ const ProcessingPlatformFlagShort = "p"
 const CatalogFlag = "catalog"
 const CatalogFlagShort = "c"
 
+const DatabaseFlag = "database"
+const DatabaseFlagShort = "d"
+
 var OutputFormatFlagAllowedValues = []string{OutputFormatJson, OutputFormatJsonRaw, OutputFormatTable, OutputFormatPlain}
 var OutputFormatFlagAllowedValuesText = strings.Join(OutputFormatFlagAllowedValues, ", ")
