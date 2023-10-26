@@ -5,6 +5,7 @@ import (
 	data_policiesv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
 	"context"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"google.golang.org/grpc"
 	"pace/pace/pkg/common"
 )
@@ -26,7 +27,7 @@ func list(cmd *cobra.Command) {
 	common.CliExit(err)
 	printer.Print(response)
 }
-func PlatformIdsCompletion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+func IdsCompletion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
 	if len(args) != 0 {
 		// this one means you don't get multiple completion suggestions for one stream
 		return nil, cobra.ShellCompDirectiveNoFileComp
@@ -44,4 +45,10 @@ func PlatformIdsCompletion(cmd *cobra.Command, args []string, complete string) (
 	}
 
 	return names, cobra.ShellCompDirectiveNoFileComp
+}
+
+func AddProcessingPlatformFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
+	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", common.ProcessingPlatformFlagUsage)
+	err := cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, IdsCompletion)
+	common.CliExit(err)
 }

@@ -5,6 +5,7 @@ import (
 	data_policiesv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
 	"context"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"google.golang.org/grpc"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/util"
@@ -23,8 +24,7 @@ func SetupClient(clientConnection *grpc.ClientConn, ctx context.Context) {
 
 func get(cmd *cobra.Command, tableId *string) {
 	flags := cmd.Flags()
-	bare := util.GetBoolAndErr(flags, "bare")
-	if bare {
+	if util.GetBoolAndErr(flags, bareFlag) {
 		getBare(cmd, tableId)
 	} else {
 		req := &data_policiesv1alpha.GetDataPolicyRequest{
@@ -40,29 +40,33 @@ func getBare(cmd *cobra.Command, tableId *string) {
 	flags := cmd.Flags()
 	platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
 	if platformId != "" {
-		// ask a processing platform
-		req := &data_policiesv1alpha.GetProcessingPlatformBarePolicyRequest{
-			PlatformId: platformId,
-			Table:      *tableId,
-		}
-		response, err := client.GetProcessingPlatformBarePolicy(apiContext, req)
-		common.CliExit(err)
-		printer.Print(response)
+		getBarePolicyFromProcessingPlatform(platformId, tableId)
 	} else {
-		catalogId := util.GetStringAndErr(flags, common.CatalogFlag)
-		databaseId := util.GetStringAndErr(flags, common.DatabaseFlag)
-		schemaId := util.GetStringAndErr(flags, common.SchemaFlag)
-		// ask a catalog
-		req := &data_policiesv1alpha.GetCatalogBarePolicyRequest{
-			CatalogId:  catalogId,
-			DatabaseId: databaseId,
-			SchemaId:   schemaId,
-			TableId:    *tableId,
-		}
-		response, err := client.GetCatalogBarePolicy(apiContext, req)
-		common.CliExit(err)
-		printer.Print(response)
+		getBarePolicyFromCatalog(flags, tableId)
 	}
+}
+
+func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
+	catalogId, databaseId, schemaId := common.CheckCatalogCoords(flags)
+	req := &data_policiesv1alpha.GetCatalogBarePolicyRequest{
+		CatalogId:  catalogId,
+		DatabaseId: databaseId,
+		SchemaId:   schemaId,
+		TableId:    *tableId,
+	}
+	response, err := client.GetCatalogBarePolicy(apiContext, req)
+	common.CliExit(err)
+	printer.Print(response)
+}
+
+func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
+	req := &data_policiesv1alpha.GetProcessingPlatformBarePolicyRequest{
+		PlatformId: platformId,
+		Table:      *tableId,
+	}
+	response, err := client.GetProcessingPlatformBarePolicy(apiContext, req)
+	common.CliExit(err)
+	printer.Print(response)
 }
 func list(cmd *cobra.Command) {
 	req := &data_policiesv1alpha.ListDataPoliciesRequest{}

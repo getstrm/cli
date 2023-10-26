@@ -35,15 +35,19 @@ const OutputFormatFlagShort = "o"
 
 const ProcessingPlatformFlag = "processing-platform"
 const ProcessingPlatformFlagShort = "p"
+const ProcessingPlatformFlagUsage = `id of processing platform`
 
 const CatalogFlag = "catalog"
 const CatalogFlagShort = "c"
+const CatalogFlagUsage = `id of catalog`
 
 const DatabaseFlag = "database"
 const DatabaseFlagShort = "d"
+const DatabaseFlagUsage = "database in the catalog"
 
 const SchemaFlag = "schema"
 const SchemaFlagShort = "s"
+const SchemaFlagUsage = "schema in database on catalog"
 
 var OutputFormatFlagAllowedValues = []string{OutputFormatJson, OutputFormatJsonRaw, OutputFormatTable, OutputFormatPlain}
 var OutputFormatFlagAllowedValuesText = strings.Join(OutputFormatFlagAllowedValues, ", ")

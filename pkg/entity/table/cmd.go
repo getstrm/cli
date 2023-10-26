@@ -3,6 +3,7 @@ package table
 import (
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
+	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/processingplatform"
 )
 
@@ -21,15 +22,9 @@ func ListCmd() *cobra.Command {
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", "snowflake-demo")
-	flags.StringP(common.CatalogFlag, common.CatalogFlagShort, "", "")
-	flags.StringP(common.DatabaseFlag, common.DatabaseFlagShort, "", "")
-	flags.StringP(common.SchemaFlag, common.SchemaFlagShort, "", "")
-	err := cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, completion)
-	common.CliExit(err)
+	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	catalog.AddCatalogFlag(cmd, flags)
+	catalog.AddDatabaseFlag(flags)
+	catalog.AddSchemaFlag(flags)
 	return cmd
-}
-func completion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
-	s, c := processingplatform.PlatformIdsCompletion(cmd, args, complete)
-	return s, c
 }

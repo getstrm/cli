@@ -32,10 +32,7 @@ func list(cmd *cobra.Command) {
 		common.CliExit(err)
 		printer.Print(response)
 	} else {
-		catalogId := util.GetStringAndErr(flags, common.CatalogFlag)
-		databaseId := util.GetStringAndErr(flags, common.DatabaseFlag)
-		schemaId := util.GetStringAndErr(flags, common.SchemaFlag)
-		// ask a catalog
+		catalogId, databaseId, schemaId := common.CheckCatalogCoords(flags)
 		req := &data_policiesv1alpha.ListTablesRequest{
 			CatalogId:  catalogId,
 			DatabaseId: databaseId,

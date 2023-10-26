@@ -21,14 +21,7 @@ func ListCmd() *cobra.Command {
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	flags.StringP(common.CatalogFlag, common.CatalogFlagShort, "", "")
-	flags.StringP(common.DatabaseFlag, common.DatabaseFlagShort, "", "")
-	err := cmd.RegisterFlagCompletionFunc(common.CatalogFlag, completion)
-	common.CliExit(err)
+	catalog.AddCatalogFlag(cmd, flags)
+	catalog.AddDatabaseFlag(flags)
 	return cmd
-}
-
-func completion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
-	s, c := catalog.CatalogIdsCompletion(cmd, args, complete)
-	return s, c
 }

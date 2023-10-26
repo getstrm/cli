@@ -21,12 +21,10 @@ func ListCmd() *cobra.Command {
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", "snowflake-demo")
-	err := cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, completion)
-	common.CliExit(err)
+	processingplatform.AddProcessingPlatformFlag(cmd, flags)
 	return cmd
 }
 func completion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
-	s, c := processingplatform.PlatformIdsCompletion(cmd, args, complete)
+	s, c := processingplatform.IdsCompletion(cmd, args, complete)
 	return s, c
 }

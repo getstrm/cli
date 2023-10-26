@@ -5,10 +5,12 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"google.golang.org/grpc/status"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"runtime"
+	"strings"
 )
 
 var RootCommandName = "pace"
@@ -44,14 +46,6 @@ func Abort(format string, args ...interface{}) {
 	}
 }
 
-func UnauthenticatedError() error {
-	return errors.New(fmt.Sprintf("No login information found. Use: %v auth login first.", RootCommandName))
-}
-
-func UnauthenticatedErrorWithExit() {
-	CliExit(UnauthenticatedError())
-}
-
 func GrpcRequestCompletionError(err error) ([]string, cobra.ShellCompDirective) {
 	errorMessage := fmt.Sprintf("%v", err)
 	log.Errorln(errorMessage)
@@ -62,13 +56,6 @@ func GrpcRequestCompletionError(err error) ([]string, cobra.ShellCompDirective) 
 
 func NoFilesEmptyCompletion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
 	return nil, cobra.ShellCompDirectiveNoFileComp
-}
-
-func MarkRequiredFlags(cmd *cobra.Command, flagNames ...string) {
-	for _, flag := range flagNames {
-		err := cmd.MarkFlagRequired(flag)
-		CliExit(err)
-	}
 }
 
 func ConfigPath() string {
@@ -111,4 +98,27 @@ func LogFileName() string {
 	}
 
 	return logFileName
+}
+
+func CheckCatalogCoords(flags *pflag.FlagSet) (string, string, string) {
+	catalogId, err := flags.GetString(CatalogFlag)
+	databaseId, err := flags.GetString(DatabaseFlag)
+	schemaId, err := flags.GetString(SchemaFlag)
+	CliExit(err)
+	if catalogId == "" {
+		Abort("you must either specify a platform or a catalog")
+	}
+	if databaseId == "" {
+		Abort("you must specify a database when querying catalog %s", catalogId)
+	}
+	if schemaId == "" {
+		Abort("you must specify a schema when querying catalog %s and database", catalogId, databaseId)
+	}
+	return catalogId, databaseId, schemaId
+}
+
+func SetOutputFormats(flags *pflag.FlagSet, formats ...string) {
+	outputFormatFlagAllowedValuesText := strings.Join(formats, ", ")
+	flags.StringP(OutputFormatFlag, OutputFormatFlagShort, formats[0],
+		fmt.Sprintf("output format [%v]", outputFormatFlagAllowedValuesText))
 }

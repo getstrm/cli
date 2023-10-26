@@ -3,13 +3,18 @@ package datapolicy
 import (
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
+	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/processingplatform"
 )
 
+const bareFlag = "bare"
+const bareFlagShort = "b"
+
 func GetCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "datapolicy (table-id|policy-id)",
-		Short:             "Get a bare DataPolicy",
+		Use:               "data-policy (table-id|policy-id)",
+		Short:             "Get a data policy",
+		Long:              getHelp,
 		Example:           getExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -18,23 +23,22 @@ func GetCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			get(cmd, &args[0])
 		},
-		Args:              cobra.ExactArgs(1), // the stream name
+		Args:              cobra.ExactArgs(1), // the policy or table id
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", "")
-	flags.StringP(common.CatalogFlag, common.CatalogFlagShort, "", "")
-	flags.StringP(common.DatabaseFlag, common.DatabaseFlagShort, "", "")
-	flags.StringP(common.SchemaFlag, common.SchemaFlagShort, "", "")
-	flags.BoolP("bare", "b", false, "")
-	err := cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, completion)
-	common.CliExit(err)
+	common.SetOutputFormats(flags, common.OutputFormatJson, common.OutputFormatJsonRaw)
+	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	catalog.AddCatalogFlag(cmd, flags)
+	catalog.AddDatabaseFlag(flags)
+	catalog.AddSchemaFlag(flags)
+	flags.BoolP(bareFlag, bareFlagShort, false, "when true ask platform or catalog, otherwise ask Pace")
 	return cmd
 }
 
 func ListCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "datapolicies",
+		Use:               "data-policies",
 		Short:             "List Datapolicies",
 		Example:           "",
 		DisableAutoGenTag: true,
@@ -47,9 +51,4 @@ func ListCmd() *cobra.Command {
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	return cmd
-}
-
-func completion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
-	s, c := processingplatform.PlatformIdsCompletion(cmd, args, complete)
-	return s, c
 }

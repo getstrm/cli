@@ -10,10 +10,7 @@ import (
 	"pace/pace/pkg/util"
 )
 
-// strings used in the cli
-
 var apiContext context.Context
-
 var client data_policiesv1alphagrpc.DataPolicyServiceClient
 
 func SetupClient(clientConnection *grpc.ClientConn, ctx context.Context) {
