@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
+	"pace/pace/pkg/entity/group"
 	"pace/pace/pkg/entity/processingplatform"
 	"pace/pace/pkg/entity/table"
 )
@@ -18,4 +19,5 @@ func init() {
 	ListCmd.AddCommand(processingplatform.ListCmd())
 	ListCmd.AddCommand(catalog.ListCmd())
 	ListCmd.AddCommand(table.ListCmd())
+	ListCmd.AddCommand(group.ListCmd())
 }
