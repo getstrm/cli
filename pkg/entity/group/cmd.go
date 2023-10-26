@@ -3,6 +3,7 @@ package group
 import (
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
+	"pace/pace/pkg/entity/processingplatform"
 )
 
 func ListCmd() *cobra.Command {
@@ -21,5 +22,11 @@ func ListCmd() *cobra.Command {
 	}
 	flags := cmd.Flags()
 	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", "snowflake-demo")
+	err := cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, completion)
+	common.CliExit(err)
 	return cmd
+}
+func completion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+	s, c := processingplatform.PlatformIdsCompletion(cmd, args, complete)
+	return s, c
 }

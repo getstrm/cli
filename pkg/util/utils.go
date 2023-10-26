@@ -3,6 +3,7 @@ package util
 import (
 	"github.com/bykof/gostradamus"
 	"github.com/lithammer/dedent"
+	"github.com/samber/lo"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
@@ -61,4 +62,9 @@ func IsoFormat(tz gostradamus.Timezone, t *timestamppb.Timestamp) string {
 	tt := time.Unix(t.Seconds, int64(t.Nanos))
 	n := gostradamus.DateTimeFromTime(tt)
 	return n.InTimezone(tz).IsoFormatTZ()
+}
+func MapStrings[T any](vs []string, f func(string) T) []T {
+	return lo.Map[string, T](vs, func(s string, _ int) T {
+		return f(s)
+	})
 }

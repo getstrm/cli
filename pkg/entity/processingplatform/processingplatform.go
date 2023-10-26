@@ -26,3 +26,22 @@ func list(cmd *cobra.Command) {
 	common.CliExit(err)
 	printer.Print(response)
 }
+func PlatformIdsCompletion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		// this one means you don't get multiple completion suggestions for one stream
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	req := &data_policiesv1alpha.ListProcessingPlatformsRequest{}
+	response, err := client.ListProcessingPlatforms(apiContext, req)
+	if err != nil {
+		return common.GrpcRequestCompletionError(err)
+	}
+
+	names := make([]string, 0, len(response.ProcessingPlatforms))
+	for _, s := range response.ProcessingPlatforms {
+		names = append(names, s.Id)
+	}
+
+	return names, cobra.ShellCompDirectiveNoFileComp
+}
