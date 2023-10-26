@@ -1,4 +1,4 @@
-package table
+package datapolicy
 
 import (
 	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/api/data_policies/v1alpha/data_policiesv1alphagrpc"
@@ -21,14 +21,31 @@ func SetupClient(clientConnection *grpc.ClientConn, ctx context.Context) {
 	client = data_policiesv1alphagrpc.NewDataPolicyServiceClient(clientConnection)
 }
 
-func list(cmd *cobra.Command) {
+func get(cmd *cobra.Command, tableId *string) {
+	flags := cmd.Flags()
+	bare := util.GetBoolAndErr(flags, "bare")
+	if bare {
+		getBare(cmd, tableId)
+	} else {
+		req := &data_policiesv1alpha.GetDataPolicyRequest{
+			DataPolicyId: *tableId,
+		}
+		response, err := client.GetDataPolicy(apiContext, req)
+		common.CliExit(err)
+		printer.Print(response)
+	}
+}
+
+func getBare(cmd *cobra.Command, tableId *string) {
 	flags := cmd.Flags()
 	platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
 	if platformId != "" {
-		req := &data_policiesv1alpha.ListProcessingPlatformTablesRequest{
+		// ask a processing platform
+		req := &data_policiesv1alpha.GetProcessingPlatformBarePolicyRequest{
 			PlatformId: platformId,
+			Table:      *tableId,
 		}
-		response, err := client.ListProcessingPlatformTables(apiContext, req)
+		response, err := client.GetProcessingPlatformBarePolicy(apiContext, req)
 		common.CliExit(err)
 		printer.Print(response)
 	} else {
@@ -36,14 +53,20 @@ func list(cmd *cobra.Command) {
 		databaseId := util.GetStringAndErr(flags, common.DatabaseFlag)
 		schemaId := util.GetStringAndErr(flags, common.SchemaFlag)
 		// ask a catalog
-		req := &data_policiesv1alpha.ListTablesRequest{
+		req := &data_policiesv1alpha.GetCatalogBarePolicyRequest{
 			CatalogId:  catalogId,
 			DatabaseId: databaseId,
 			SchemaId:   schemaId,
+			TableId:    *tableId,
 		}
-		response, err := client.ListTables(apiContext, req)
+		response, err := client.GetCatalogBarePolicy(apiContext, req)
 		common.CliExit(err)
 		printer.Print(response)
-
 	}
+}
+func list(cmd *cobra.Command) {
+	req := &data_policiesv1alpha.ListDataPoliciesRequest{}
+	response, err := client.ListDataPolicies(apiContext, req)
+	common.CliExit(err)
+	printer.Print(response)
 }

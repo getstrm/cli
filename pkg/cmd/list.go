@@ -31,5 +31,6 @@ func init() {
 	ListCmd.AddCommand(group.ListCmd())
 	ListCmd.AddCommand(schema.ListCmd())
 	ListCmd.AddCommand(database.ListCmd())
-	GetCmd.AddCommand(datapolicy.GetBarePolicy())
+	ListCmd.AddCommand(datapolicy.ListCmd())
+	GetCmd.AddCommand(datapolicy.GetCmd())
 }

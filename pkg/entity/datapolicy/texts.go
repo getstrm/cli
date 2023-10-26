@@ -2,6 +2,6 @@ package datapolicy
 
 import "pace/pace/pkg/util"
 
-var getBareExample = util.DedentTrim(`
+var getExample = util.DedentTrim(`
 	 TODO
 `)

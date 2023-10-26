@@ -42,5 +42,8 @@ const CatalogFlagShort = "c"
 const DatabaseFlag = "database"
 const DatabaseFlagShort = "d"
 
+const SchemaFlag = "schema"
+const SchemaFlagShort = "s"
+
 var OutputFormatFlagAllowedValues = []string{OutputFormatJson, OutputFormatJsonRaw, OutputFormatTable, OutputFormatPlain}
 var OutputFormatFlagAllowedValuesText = strings.Join(OutputFormatFlagAllowedValues, ", ")

@@ -22,6 +22,9 @@ func ListCmd() *cobra.Command {
 	}
 	flags := cmd.Flags()
 	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", "snowflake-demo")
+	flags.StringP(common.CatalogFlag, common.CatalogFlagShort, "", "")
+	flags.StringP(common.DatabaseFlag, common.DatabaseFlagShort, "", "")
+	flags.StringP(common.SchemaFlag, common.SchemaFlagShort, "", "")
 	err := cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, completion)
 	common.CliExit(err)
 	return cmd
