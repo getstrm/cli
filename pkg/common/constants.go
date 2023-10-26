@@ -25,6 +25,8 @@ const ListCommandName = "list"
 const CreateCommandName = "create"
 const DeleteCommandName = "delete"
 const UpdateCommandName = "update"
+
+const OutputFormatYaml = "yaml"
 const OutputFormatJson = "json"
 const OutputFormatJsonRaw = "json-raw"
 const OutputFormatTable = "table"
@@ -49,5 +51,5 @@ const SchemaFlag = "schema"
 const SchemaFlagShort = "s"
 const SchemaFlagUsage = "schema in database on catalog"
 
-var OutputFormatFlagAllowedValues = []string{OutputFormatJson, OutputFormatJsonRaw, OutputFormatTable, OutputFormatPlain}
+var OutputFormatFlagAllowedValues = []string{OutputFormatYaml, OutputFormatJson, OutputFormatJsonRaw, OutputFormatTable, OutputFormatPlain}
 var OutputFormatFlagAllowedValuesText = strings.Join(OutputFormatFlagAllowedValues, ", ")

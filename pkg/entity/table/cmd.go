@@ -22,6 +22,7 @@ func ListCmd() *cobra.Command {
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
+	common.SetOutputFormats(flags, common.OutputFormatYaml, common.OutputFormatJson, common.OutputFormatJsonRaw)
 	processingplatform.AddProcessingPlatformFlag(cmd, flags)
 	catalog.AddCatalogFlag(cmd, flags)
 	catalog.AddDatabaseFlag(flags)

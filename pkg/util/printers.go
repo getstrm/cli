@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/goccy/go-yaml"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -22,6 +23,11 @@ var DefaultPrinters = map[string]Printer{
 	common.OutputFormatJson + common.DeleteCommandName:    ProtoMessageJsonPrettyPrinter{},
 	common.OutputFormatJson + common.CreateCommandName:    ProtoMessageJsonPrettyPrinter{},
 	common.OutputFormatJson + common.UpdateCommandName:    ProtoMessageJsonPrettyPrinter{},
+	common.OutputFormatYaml + common.ListCommandName:      ProtoMessageYamlPrinter{},
+	common.OutputFormatYaml + common.GetCommandName:       ProtoMessageYamlPrinter{},
+	common.OutputFormatYaml + common.DeleteCommandName:    ProtoMessageYamlPrinter{},
+	common.OutputFormatYaml + common.CreateCommandName:    ProtoMessageYamlPrinter{},
+	common.OutputFormatYaml + common.UpdateCommandName:    ProtoMessageYamlPrinter{},
 	common.OutputFormatJsonRaw + common.ListCommandName:   ProtoMessageJsonRawPrinter{},
 	common.OutputFormatJsonRaw + common.GetCommandName:    ProtoMessageJsonRawPrinter{},
 	common.OutputFormatJsonRaw + common.DeleteCommandName: ProtoMessageJsonRawPrinter{},
@@ -31,6 +37,7 @@ var DefaultPrinters = map[string]Printer{
 
 type ProtoMessageJsonRawPrinter struct{}
 type ProtoMessageJsonPrettyPrinter struct{}
+type ProtoMessageYamlPrinter struct{}
 
 func (p ProtoMessageJsonRawPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
@@ -42,6 +49,12 @@ func (p ProtoMessageJsonPrettyPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
 	prettyJson := protoMessageToPrettyJson(protoContent)
 	fmt.Println(string(prettyJson.Bytes()))
+}
+
+func (p ProtoMessageYamlPrinter) Print(content interface{}) {
+	protoContent, _ := (content).(proto.Message)
+	yaml, _ := yaml.Marshal(protoContent)
+	fmt.Println(string(yaml))
 }
 
 func protoMessageToPrettyJson(proto proto.Message) bytes.Buffer {
@@ -57,7 +70,6 @@ func protoMessageToRawJson(proto proto.Message) bytes.Buffer {
 
 func CompactJson(rawJson []byte) bytes.Buffer {
 	buffer := bytes.Buffer{}
-
 	errCompact := json.Compact(&buffer, rawJson)
 	common.CliExit(errCompact)
 	return buffer
@@ -65,10 +77,8 @@ func CompactJson(rawJson []byte) bytes.Buffer {
 
 func PrettifyJson(rawJson bytes.Buffer) bytes.Buffer {
 	prettyJson := bytes.Buffer{}
-
 	errIndent := json.Indent(&prettyJson, rawJson.Bytes(), "", "    ")
 	common.CliExit(errIndent)
-
 	return prettyJson
 }
 
@@ -81,26 +91,6 @@ func MergePrinterMaps(maps ...map[string]Printer) (result map[string]Printer) {
 		}
 	}
 	return result
-}
-
-func RenderPlain(text string) {
-	if len(text) == 0 {
-		fmt.Println("No entities of this resource type exist.")
-	} else {
-		fmt.Println(text)
-	}
-}
-
-func RenderCsv(headers table.Row, rows []table.Row) {
-	if len(rows) == 0 {
-		fmt.Println("No usage in the provided time period.")
-	} else {
-		t := table.NewWriter()
-		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(headers)
-		t.AppendRows(rows)
-		t.RenderCSV()
-	}
 }
 
 func RenderTable(headers table.Row, rows []table.Row) {
