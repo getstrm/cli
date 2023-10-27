@@ -22,17 +22,17 @@ var DefaultPrinters = map[string]Printer{
 	common.OutputFormatJson + common.GetCommandName:       ProtoMessageJsonPrettyPrinter{},
 	common.OutputFormatJson + common.DeleteCommandName:    ProtoMessageJsonPrettyPrinter{},
 	common.OutputFormatJson + common.CreateCommandName:    ProtoMessageJsonPrettyPrinter{},
-	common.OutputFormatJson + common.UpdateCommandName:    ProtoMessageJsonPrettyPrinter{},
+	common.OutputFormatJson + common.UpsertCommandName:    ProtoMessageJsonPrettyPrinter{},
 	common.OutputFormatYaml + common.ListCommandName:      ProtoMessageYamlPrinter{},
 	common.OutputFormatYaml + common.GetCommandName:       ProtoMessageYamlPrinter{},
 	common.OutputFormatYaml + common.DeleteCommandName:    ProtoMessageYamlPrinter{},
 	common.OutputFormatYaml + common.CreateCommandName:    ProtoMessageYamlPrinter{},
-	common.OutputFormatYaml + common.UpdateCommandName:    ProtoMessageYamlPrinter{},
+	common.OutputFormatYaml + common.UpsertCommandName:    ProtoMessageYamlPrinter{},
 	common.OutputFormatJsonRaw + common.ListCommandName:   ProtoMessageJsonRawPrinter{},
 	common.OutputFormatJsonRaw + common.GetCommandName:    ProtoMessageJsonRawPrinter{},
 	common.OutputFormatJsonRaw + common.DeleteCommandName: ProtoMessageJsonRawPrinter{},
 	common.OutputFormatJsonRaw + common.CreateCommandName: ProtoMessageJsonRawPrinter{},
-	common.OutputFormatJsonRaw + common.UpdateCommandName: ProtoMessageJsonRawPrinter{},
+	common.OutputFormatJsonRaw + common.UpsertCommandName: ProtoMessageJsonRawPrinter{},
 }
 
 type ProtoMessageJsonRawPrinter struct{}

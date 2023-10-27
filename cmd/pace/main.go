@@ -82,7 +82,7 @@ func init() {
 	logFile := common.LogFileName()
 	log.Traceln(fmt.Sprintf("Log file can be found at %v", logFile))
 	persistentFlags := RootCmd.PersistentFlags()
-	persistentFlags.String(apiHostFlag, "localhost", "api host")
+	persistentFlags.String(apiHostFlag, "localhost:50051", "api host")
 	persistentFlags.StringP(common.OutputFormatFlag, common.OutputFormatFlagShort, common.OutputFormatTable, fmt.Sprintf("output format [%v]", common.OutputFormatFlagAllowedValuesText))
 
 	err := RootCmd.RegisterFlagCompletionFunc(common.OutputFormatFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

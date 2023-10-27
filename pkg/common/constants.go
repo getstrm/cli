@@ -17,14 +17,15 @@ const DefaultConfigFilename = "config"
 const DefaultConfigFileSuffix = ".yaml"
 
 var DefaultConfigFileContents = []byte(`# The following configuration options are reflected in the CLI's flags
-# api-host: localhost
+# api-host: localhost:50051
+# output: yaml
 `)
 
 const GetCommandName = "get"
 const ListCommandName = "list"
 const CreateCommandName = "create"
 const DeleteCommandName = "delete"
-const UpdateCommandName = "update"
+const UpsertCommandName = "upsert"
 
 const OutputFormatYaml = "yaml"
 const OutputFormatJson = "json"

@@ -10,6 +10,29 @@ import (
 const bareFlag = "bare"
 const bareFlagShort = "b"
 
+func UpsertCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "data-policy (table-id|policy-id)",
+		Short:             "Upsert a data policy",
+		Long:              upsertHelp,
+		Example:           upsertExample,
+		DisableAutoGenTag: true,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			printer = configurePrinter(cmd)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			upsert(cmd, &args[0])
+		},
+		Args: cobra.ExactArgs(1), // the policy file (yaml or json),
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"yaml", "json"}, cobra.ShellCompDirectiveFilterFileExt
+		},
+	}
+	flags := cmd.Flags()
+	common.SetOutputFormats(flags, common.OutputFormatYaml, common.OutputFormatJson, common.OutputFormatJsonRaw)
+	return cmd
+}
+
 func GetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policy (table-id|policy-id)",

@@ -2,6 +2,11 @@ package datapolicy
 
 import "pace/pace/pkg/util"
 
+var upsertHelp = util.LongDocs(`
+`)
+var upsertExample = util.LongDocs(`
+`)
+
 var getHelp = util.LongDocs(`
 retrieves a DataPolicy from Pace.
 

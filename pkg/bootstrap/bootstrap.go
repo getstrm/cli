@@ -36,6 +36,7 @@ in Pace.
 func SetupVerbs(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(cmd.ListCmd)
 	rootCmd.AddCommand(cmd.GetCmd)
+	rootCmd.AddCommand(cmd.UpsertCmd)
 }
 
 func SetupServiceClients(accessToken *string) {
