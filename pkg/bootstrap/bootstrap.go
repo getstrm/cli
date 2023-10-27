@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/api/data_policies/v1alpha/data_policiesv1alphagrpc"
 	"context"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -27,8 +28,7 @@ const (
 )
 
 /*
-*
-these are the top level commands, i.e. the verbs.
+	these are the top level commands, i.e. the verbs.
 
 Each verb sits in its own package, and will have subcommands for all the entity types
 in Pace.
@@ -41,14 +41,14 @@ func SetupVerbs(rootCmd *cobra.Command) {
 
 func SetupServiceClients(accessToken *string) {
 	clientConnection, ctx := SetupGrpc(common.ApiHost)
-
-	processingplatform.SetupClient(clientConnection, ctx)
-	catalog.SetupClient(clientConnection, ctx)
-	table.SetupClient(clientConnection, ctx)
-	group.SetupClient(clientConnection, ctx)
-	schema.SetupClient(clientConnection, ctx)
-	database.SetupClient(clientConnection, ctx)
-	datapolicy.SetupClient(clientConnection, ctx)
+	dataPolicyServiceClient := data_policiesv1alphagrpc.NewDataPolicyServiceClient(clientConnection)
+	processingplatform.SetupClient(dataPolicyServiceClient, ctx)
+	catalog.SetupClient(dataPolicyServiceClient, ctx)
+	table.SetupClient(dataPolicyServiceClient, ctx)
+	group.SetupClient(dataPolicyServiceClient, ctx)
+	schema.SetupClient(dataPolicyServiceClient, ctx)
+	database.SetupClient(dataPolicyServiceClient, ctx)
+	datapolicy.SetupClient(dataPolicyServiceClient, ctx)
 }
 
 func InitializeConfig(cmd *cobra.Command) error {

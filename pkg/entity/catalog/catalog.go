@@ -2,25 +2,24 @@ package catalog
 
 import (
 	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/api/data_policies/v1alpha/data_policiesv1alphagrpc"
-	data_policiesv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
+	datapolicies "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
 	"context"
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"google.golang.org/grpc"
 	"pace/pace/pkg/common"
 )
 
 var apiContext context.Context
 var client data_policiesv1alphagrpc.DataPolicyServiceClient
 
-func SetupClient(clientConnection *grpc.ClientConn, ctx context.Context) {
+func SetupClient(clientConnection data_policiesv1alphagrpc.DataPolicyServiceClient, ctx context.Context) {
 	apiContext = ctx
-	client = data_policiesv1alphagrpc.NewDataPolicyServiceClient(clientConnection)
+	client = clientConnection
 }
 
-func list(cmd *cobra.Command) {
-	req := &data_policiesv1alpha.ListCatalogsRequest{}
-	response, err := client.ListCatalogs(apiContext, req)
+func list() {
+	response, err := client.ListCatalogs(apiContext, &datapolicies.ListCatalogsRequest{})
 	common.CliExit(err)
 	printer.Print(response)
 }
@@ -31,17 +30,14 @@ func IdsCompletion(cmd *cobra.Command, args []string, complete string) ([]string
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	req := &data_policiesv1alpha.ListCatalogsRequest{}
+	req := &datapolicies.ListCatalogsRequest{}
 	response, err := client.ListCatalogs(apiContext, req)
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
-
-	names := make([]string, 0, len(response.Catalogs))
-	for _, s := range response.Catalogs {
-		names = append(names, s.Id)
-	}
-
+	names := lo.Map(response.Catalogs, func(catalog *datapolicies.DataCatalog, _ int) string {
+		return catalog.Id
+	})
 	return names, cobra.ShellCompDirectiveNoFileComp
 }
 

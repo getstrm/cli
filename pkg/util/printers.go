@@ -3,19 +3,38 @@ package util
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/goccy/go-yaml"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/samber/lo"
+	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"os"
 	"pace/pace/pkg/common"
+	"sigs.k8s.io/yaml"
 )
 
 type Printer interface {
 	Print(data interface{})
 }
+
+/*
+TODO BvD proposes this mechanism instead of the string concat
+which would allow better error handling for absent printers.
+
+type PrinterKey struct {
+	format  string
+	command string
+}
+var DefaultPrinters = map[PrinterKey]Printer {
+	PrinterKey{
+		format: common.OutputFormatJson, command: common.ListCommandName,
+	}: ProtoMessageJsonPrettyPrinter{},
+}
+
+*/
 
 var DefaultPrinters = map[string]Printer{
 	common.OutputFormatJson + common.ListCommandName:      ProtoMessageJsonPrettyPrinter{},
@@ -38,6 +57,17 @@ var DefaultPrinters = map[string]Printer{
 type ProtoMessageJsonRawPrinter struct{}
 type ProtoMessageJsonPrettyPrinter struct{}
 type ProtoMessageYamlPrinter struct{}
+
+func ConfigurePrinter(command *cobra.Command, printers map[string]Printer) Printer {
+	outputFormat, _ := command.Flags().GetString(common.OutputFormatFlag)
+	p := printers[outputFormat+command.Parent().Name()]
+	// TODO this mechanism is not suitable for correctly providing feedback for entities that do not support the
+	// default or plain mechanism.
+	if p == nil {
+		common.CliExit(errors.New(fmt.Sprintf("Output format '%v' is not supported. Allowed values: %v", outputFormat, common.OutputFormatFlagAllowedValuesText)))
+	}
+	return p
+}
 
 func (p ProtoMessageJsonRawPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
@@ -86,14 +116,7 @@ func PrettifyJson(rawJson bytes.Buffer) bytes.Buffer {
 }
 
 func MergePrinterMaps(maps ...map[string]Printer) (result map[string]Printer) {
-	result = make(map[string]Printer)
-
-	for _, m := range maps {
-		for k, v := range m {
-			result[k] = v
-		}
-	}
-	return result
+	return lo.Assign[string, Printer](maps...)
 }
 
 func RenderTable(headers table.Row, rows []table.Row) {

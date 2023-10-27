@@ -15,10 +15,7 @@ import (
 
 var RootCommandName = "pace"
 
-var ApiAuthHost string
 var ApiHost string
-
-var ProjectId string
 
 func CliExit(err error) {
 	if err != nil {
@@ -100,20 +97,11 @@ func LogFileName() string {
 	return logFileName
 }
 
-func CheckCatalogCoords(flags *pflag.FlagSet) (string, string, string) {
+func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string) {
 	catalogId, err := flags.GetString(CatalogFlag)
 	databaseId, err := flags.GetString(DatabaseFlag)
 	schemaId, err := flags.GetString(SchemaFlag)
 	CliExit(err)
-	if catalogId == "" {
-		Abort("you must either specify a platform or a catalog")
-	}
-	if databaseId == "" {
-		Abort("you must specify a database when querying catalog %s", catalogId)
-	}
-	if schemaId == "" {
-		Abort("you must specify a schema when querying catalog %s and database", catalogId, databaseId)
-	}
 	return catalogId, databaseId, schemaId
 }
 

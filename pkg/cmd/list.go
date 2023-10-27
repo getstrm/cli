@@ -18,19 +18,6 @@ var ListCmd = &cobra.Command{
 	Short:             "List entities",
 }
 
-var GetCmd = &cobra.Command{
-	Use:               common.GetCommandName,
-	DisableAutoGenTag: true,
-	Short:             "Get entities",
-}
-
-var UpsertCmd = &cobra.Command{
-	Use:               common.UpsertCommandName,
-	DisableAutoGenTag: true,
-	Short:             "Upsert entities",
-	Long:              "Insert or Update an entity",
-}
-
 func init() {
 	ListCmd.AddCommand(processingplatform.ListCmd())
 	ListCmd.AddCommand(catalog.ListCmd())
@@ -39,6 +26,4 @@ func init() {
 	ListCmd.AddCommand(schema.ListCmd())
 	ListCmd.AddCommand(database.ListCmd())
 	ListCmd.AddCommand(datapolicy.ListCmd())
-	GetCmd.AddCommand(datapolicy.GetCmd())
-	UpsertCmd.AddCommand(datapolicy.UpsertCmd())
 }

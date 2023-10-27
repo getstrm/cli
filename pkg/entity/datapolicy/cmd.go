@@ -5,6 +5,7 @@ import (
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/processingplatform"
+	"pace/pace/pkg/util"
 )
 
 const bareFlag = "bare"
@@ -12,13 +13,13 @@ const bareFlagShort = "b"
 
 func UpsertCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "data-policy (table-id|policy-id)",
+		Use:               "data-policy (yaml or json file)",
 		Short:             "Upsert a data policy",
 		Long:              upsertHelp,
 		Example:           upsertExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = configurePrinter(cmd)
+			printer = util.ConfigurePrinter(cmd, util.DefaultPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			upsert(cmd, &args[0])
@@ -41,7 +42,7 @@ func GetCmd() *cobra.Command {
 		Example:           getExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = configurePrinter(cmd)
+			printer = util.ConfigurePrinter(cmd, util.DefaultPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			get(cmd, &args[0])
@@ -66,7 +67,7 @@ func ListCmd() *cobra.Command {
 		Example:           "",
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = configurePrinter(cmd)
+			printer = util.ConfigurePrinter(cmd, util.DefaultPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			list(cmd)

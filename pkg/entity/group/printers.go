@@ -2,27 +2,14 @@ package group
 
 import (
 	data_policiesv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
-	"errors"
 	"fmt"
 	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/spf13/cobra"
+	"github.com/samber/lo"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/util"
 )
 
 var printer util.Printer
-
-func configurePrinter(command *cobra.Command) util.Printer {
-	outputFormat := util.GetStringAndErr(command.Flags(), common.OutputFormatFlag)
-
-	p := availablePrinters()[outputFormat+command.Parent().Name()]
-
-	if p == nil {
-		common.CliExit(errors.New(fmt.Sprintf("Output format '%v' is not supported. Allowed values: %v", outputFormat, common.OutputFormatFlagAllowedValuesText)))
-	}
-
-	return p
-}
 
 func availablePrinters() map[string]util.Printer {
 	return util.MergePrinterMaps(
@@ -44,19 +31,17 @@ func (p listTablePrinter) Print(data interface{}) {
 
 func (p listPlainPrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*data_policiesv1alpha.ListProcessingPlatformGroupsResponse)
-	printPlain(listResponse.Groups)
+	for _, group := range listResponse.Groups {
+		fmt.Println(group)
+	}
 }
 
 func printTable(groups []string) {
-	rows := make([]table.Row, 0, len(groups))
-	for _, group := range groups {
-
-		row := table.Row{
+	rows := lo.Map(groups, func(group string, _ int) table.Row {
+		return table.Row{
 			group,
 		}
-		rows = append(rows, row)
-	}
-
+	})
 	headers := table.Row{
 		"Name",
 	}

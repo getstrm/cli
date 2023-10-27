@@ -2,8 +2,8 @@ package processingplatform
 
 import "pace/pace/pkg/util"
 
-var listExample = util.DedentTrim(`
-pace list processing-platforms
+var listExample = util.LongDocs(`
+!pace list processing-platforms
  ID                                 TYPE
 
  databricks-pim@getstrm.com   DATABRICKS

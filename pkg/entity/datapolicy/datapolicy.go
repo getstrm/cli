@@ -2,11 +2,10 @@ package datapolicy
 
 import (
 	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/api/data_policies/v1alpha/data_policiesv1alphagrpc"
-	data_policies "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
+	datapolicies "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
 	"context"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
 	"os"
 	"pace/pace/pkg/common"
@@ -21,14 +20,14 @@ var apiContext context.Context
 
 var client data_policiesv1alphagrpc.DataPolicyServiceClient
 
-func SetupClient(clientConnection *grpc.ClientConn, ctx context.Context) {
+func SetupClient(clientConnection data_policiesv1alphagrpc.DataPolicyServiceClient, ctx context.Context) {
 	apiContext = ctx
-	client = data_policiesv1alphagrpc.NewDataPolicyServiceClient(clientConnection)
+	client = clientConnection
 }
 
 func upsert(cmd *cobra.Command, filename *string) {
 	policy := readPolicy(*filename)
-	req := &data_policies.UpsertDataPolicyRequest{
+	req := &datapolicies.UpsertDataPolicyRequest{
 		DataPolicy: policy,
 	}
 	response, err := client.UpsertDataPolicy(apiContext, req)
@@ -41,7 +40,7 @@ func get(cmd *cobra.Command, tableId *string) {
 	if util.GetBoolAndErr(flags, bareFlag) {
 		getBare(cmd, tableId)
 	} else {
-		req := &data_policies.GetDataPolicyRequest{
+		req := &datapolicies.GetDataPolicyRequest{
 			DataPolicyId: *tableId,
 		}
 		response, err := client.GetDataPolicy(apiContext, req)
@@ -61,8 +60,8 @@ func getBare(cmd *cobra.Command, tableId *string) {
 }
 
 func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
-	catalogId, databaseId, schemaId := common.CheckCatalogCoords(flags)
-	req := &data_policies.GetCatalogBarePolicyRequest{
+	catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
+	req := &datapolicies.GetCatalogBarePolicyRequest{
 		CatalogId:  catalogId,
 		DatabaseId: databaseId,
 		SchemaId:   schemaId,
@@ -74,7 +73,7 @@ func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
 }
 
 func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
-	req := &data_policies.GetProcessingPlatformBarePolicyRequest{
+	req := &datapolicies.GetProcessingPlatformBarePolicyRequest{
 		PlatformId: platformId,
 		Table:      *tableId,
 	}
@@ -84,19 +83,19 @@ func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
 }
 
 func list(cmd *cobra.Command) {
-	req := &data_policies.ListDataPoliciesRequest{}
+	req := &datapolicies.ListDataPoliciesRequest{}
 	response, err := client.ListDataPolicies(apiContext, req)
 	common.CliExit(err)
 	printer.Print(response)
 }
-func readPolicy(filename string) *data_policies.DataPolicy {
+func readPolicy(filename string) *datapolicies.DataPolicy {
 	file, err := os.ReadFile(filename)
 	common.CliExit(err)
 
 	if strings.HasSuffix(filename, ".yaml") {
 		file, _ = yaml.YAMLToJSON(file)
 	}
-	dataPolicy := &data_policies.DataPolicy{}
+	dataPolicy := &datapolicies.DataPolicy{}
 	protojson.Unmarshal(file, dataPolicy)
 	return dataPolicy
 }
