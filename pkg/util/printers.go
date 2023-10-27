@@ -53,8 +53,9 @@ func (p ProtoMessageJsonPrettyPrinter) Print(content interface{}) {
 
 func (p ProtoMessageYamlPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
-	yaml, _ := yaml.Marshal(protoContent)
-	fmt.Println(string(yaml))
+	jsonBytes := protoMessageToRawJson(protoContent)
+	m, _ := yaml.JSONToYAML(jsonBytes.Bytes())
+	fmt.Println(string(m))
 }
 
 func protoMessageToPrettyJson(proto proto.Message) bytes.Buffer {
@@ -64,7 +65,9 @@ func protoMessageToPrettyJson(proto proto.Message) bytes.Buffer {
 func protoMessageToRawJson(proto proto.Message) bytes.Buffer {
 	// As protojson.Marshal adds random spaces, we use json.Compact to omit the random spaces in the output.
 	// Linked issue in google/protobuf: https://github.com/golang/protobuf/issues/1082
-	marshal, _ := protojson.Marshal(proto)
+	marshal, _ := protojson.MarshalOptions{
+		UseProtoNames: true,
+	}.Marshal(proto)
 	return CompactJson(marshal)
 }
 

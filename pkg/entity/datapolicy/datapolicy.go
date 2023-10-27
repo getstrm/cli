@@ -4,7 +4,6 @@ import (
 	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/api/data_policies/v1alpha/data_policiesv1alphagrpc"
 	data_policies "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
 	"context"
-	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"google.golang.org/grpc"
@@ -12,6 +11,7 @@ import (
 	"os"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/util"
+	"sigs.k8s.io/yaml"
 	"strings"
 )
 
@@ -90,15 +90,13 @@ func list(cmd *cobra.Command) {
 	printer.Print(response)
 }
 func readPolicy(filename string) *data_policies.DataPolicy {
-	file, _ := os.ReadFile(filename)
-	dataPolicy := &data_policies.DataPolicy{}
-
-	var err error
-	if strings.HasSuffix(filename, ".json") {
-		err = protojson.Unmarshal(file, dataPolicy)
-	} else {
-		err = yaml.Unmarshal(file, dataPolicy)
-	}
+	file, err := os.ReadFile(filename)
 	common.CliExit(err)
+
+	if strings.HasSuffix(filename, ".yaml") {
+		file, _ = yaml.YAMLToJSON(file)
+	}
+	dataPolicy := &data_policies.DataPolicy{}
+	protojson.Unmarshal(file, dataPolicy)
 	return dataPolicy
 }

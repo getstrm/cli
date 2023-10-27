@@ -17,6 +17,7 @@ require (
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+	sigs.k8s.io/yaml v1.4.0
 )
 
 require (
