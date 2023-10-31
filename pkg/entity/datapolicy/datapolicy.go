@@ -54,7 +54,7 @@ func get(cmd *cobra.Command, tableId *string) {
 		}
 		response, err := polClient.GetDataPolicy(apiContext, req)
 		util.CliExit(err)
-		printer.Print(response)
+		printer.Print(response.DataPolicy)
 	}
 }
 
@@ -78,7 +78,7 @@ func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
 	}
 	response, err := catClient.GetBarePolicy(apiContext, req)
 	util.CliExit(err)
-	printer.Print(response)
+	printer.Print(response.DataPolicy)
 }
 
 func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
@@ -88,7 +88,7 @@ func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
 	}
 	response, err := pClient.GetBarePolicy(apiContext, req)
 	util.CliExit(err)
-	printer.Print(response)
+	printer.Print(response.DataPolicy)
 }
 
 func list(_ *cobra.Command) {

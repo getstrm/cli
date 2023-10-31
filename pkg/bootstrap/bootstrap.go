@@ -117,16 +117,11 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper) {
 
 func SetupGrpc(host string) (*grpc.ClientConn, context.Context) {
 
-	var err error
 	var creds grpc.DialOption
-
 	creds = grpc.WithTransportCredentials(insecure.NewCredentials())
-
 	clientConnection, err := grpc.Dial(host, creds, grpc.WithUnaryInterceptor(clientInterceptor))
 	util.CliExit(err)
-
 	var mdMap = map[string]string{cliVersionHeader: common.Version}
-
 	return clientConnection, metadata.NewOutgoingContext(context.Background(), metadata.New(mdMap))
 }
 
@@ -139,10 +134,8 @@ func clientInterceptor(
 	invoker grpc.UnaryInvoker,
 	opts ...grpc.CallOption,
 ) error {
-
 	var header metadata.MD
 	opts = append(opts, grpc.Header(&header))
 	err := invoker(ctx, method, req, reply, cc, opts...)
-
 	return err
 }

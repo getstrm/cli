@@ -87,8 +87,7 @@ func protoMessageToRawJson(proto proto.Message) bytes.Buffer {
 		UseProtoNames: true,
 	}.Marshal(proto)
 	buffer := bytes.Buffer{}
-	errCompact := json.Compact(&buffer, marshal)
-	util.CliExit(errCompact)
+	_ = json.Compact(&buffer, marshal)
 	return buffer
 }
 
@@ -108,8 +107,8 @@ func RenderTable(headers table.Row, rows []table.Row) {
 
 func protoMessageToPrettyJson(proto proto.Message) bytes.Buffer {
 	prettyJson := bytes.Buffer{}
-	errIndent := json.Indent(&prettyJson, protoMessageToRawJson(proto).Bytes(), "", "    ")
-	util.CliExit(errIndent)
+	rawJson := protoMessageToRawJson(proto)
+	_ = json.Indent(&prettyJson, rawJson.Bytes(), "", "    ")
 	return prettyJson
 }
 
