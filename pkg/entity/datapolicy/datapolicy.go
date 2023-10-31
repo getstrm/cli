@@ -47,24 +47,21 @@ func upsert(_ *cobra.Command, filename *string) {
 func get(cmd *cobra.Command, tableId *string) {
 	flags := cmd.Flags()
 	if util.GetBoolAndErr(flags, bareFlag) {
-		getBare(cmd, tableId)
+		// a bare policy only exists on processing platforms or catalogs
+		platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
+		if platformId != "" {
+			getBarePolicyFromProcessingPlatform(platformId, tableId)
+		} else {
+			getBarePolicyFromCatalog(flags, tableId)
+		}
 	} else {
+		// return a data policy from the Pace database.
 		req := &GetDataPolicyRequest{
 			DataPolicyId: *tableId,
 		}
 		response, err := polClient.GetDataPolicy(apiContext, req)
 		util.CliExit(err)
 		printer.Print(response.DataPolicy)
-	}
-}
-
-func getBare(cmd *cobra.Command, tableId *string) {
-	flags := cmd.Flags()
-	platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
-	if platformId != "" {
-		getBarePolicyFromProcessingPlatform(platformId, tableId)
-	} else {
-		getBarePolicyFromCatalog(flags, tableId)
 	}
 }
 
@@ -97,12 +94,16 @@ func list(_ *cobra.Command) {
 	util.CliExit(err)
 	printer.Print(response)
 }
+
+// readPolicy
+// read a json or yaml encoded policy from the filesystem.
 func readPolicy(filename string) *DataPolicy {
 	file, err := os.ReadFile(filename)
 	util.CliExit(err)
 
 	if strings.HasSuffix(filename, ".yaml") {
-		file, _ = yaml.YAMLToJSON(file)
+		file, err = yaml.YAMLToJSON(file)
+		util.CliExit(err)
 	}
 	dataPolicy := &DataPolicy{}
 	err = protojson.Unmarshal(file, dataPolicy)

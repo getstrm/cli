@@ -50,9 +50,11 @@ func AddCatalogFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
 	err := cmd.RegisterFlagCompletionFunc(common.CatalogFlag, IdsCompletion)
 	util.CliExit(err)
 }
+
 func AddDatabaseFlag(flags *pflag.FlagSet) {
 	flags.StringP(common.DatabaseFlag, common.DatabaseFlagShort, "", common.DatabaseFlagUsage)
 }
+
 func AddSchemaFlag(flags *pflag.FlagSet) {
 	flags.StringP(common.SchemaFlag, common.SchemaFlagShort, "", common.SchemaFlagUsage)
 }
