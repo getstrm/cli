@@ -9,7 +9,6 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"pace/pace/pkg/util"
-	"strings"
 )
 
 var ApiHost string
@@ -82,10 +81,4 @@ func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string) {
 	schemaId, err := flags.GetString(SchemaFlag)
 	util.CliExit(err)
 	return catalogId, databaseId, schemaId
-}
-
-func SetOutputFormats(flags *pflag.FlagSet, formats ...string) {
-	outputFormatFlagAllowedValuesText := strings.Join(formats, ", ")
-	flags.StringP(OutputFormatFlag, OutputFormatFlagShort, formats[0],
-		fmt.Sprintf("output format [%v]", outputFormatFlagAllowedValuesText))
 }

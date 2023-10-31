@@ -28,8 +28,6 @@ func UpsertCmd() *cobra.Command {
 			return []string{"yaml", "json"}, cobra.ShellCompDirectiveFilterFileExt
 		},
 	}
-	flags := cmd.Flags()
-	common.SetOutputFormats(flags, common.OutputFormatYaml, common.OutputFormatJson, common.OutputFormatJsonRaw)
 	return cmd
 }
 
@@ -50,7 +48,6 @@ func GetCmd() *cobra.Command {
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	common.SetOutputFormats(flags, common.OutputFormatYaml, common.OutputFormatJson, common.OutputFormatJsonRaw)
 	processingplatform.AddProcessingPlatformFlag(cmd, flags)
 	catalog.AddCatalogFlag(cmd, flags)
 	catalog.AddDatabaseFlag(flags)
@@ -73,7 +70,5 @@ func ListCmd() *cobra.Command {
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
-	flags := cmd.Flags()
-	common.SetOutputFormats(flags, common.OutputFormatYaml, common.OutputFormatJson, common.OutputFormatJsonRaw)
 	return cmd
 }

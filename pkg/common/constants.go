@@ -1,7 +1,5 @@
 package common
 
-import "strings"
-
 var configPath string
 var logFileName string
 
@@ -23,8 +21,6 @@ var DefaultConfigFileContents = []byte(`# The following configuration options ar
 
 const GetCommandName = "get"
 const ListCommandName = "list"
-const CreateCommandName = "create"
-const DeleteCommandName = "delete"
 const UpsertCommandName = "upsert"
 
 const OutputFormatYaml = "yaml"
@@ -51,6 +47,3 @@ const DatabaseFlagUsage = "database in the catalog"
 const SchemaFlag = "schema"
 const SchemaFlagShort = "s"
 const SchemaFlagUsage = "schema in database on catalog"
-
-var OutputFormatFlagAllowedValues = []string{OutputFormatYaml, OutputFormatJson, OutputFormatJsonRaw, OutputFormatTable, OutputFormatPlain}
-var OutputFormatFlagAllowedValuesText = strings.Join(OutputFormatFlagAllowedValues, ", ")

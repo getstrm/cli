@@ -66,7 +66,7 @@ var RootCmd = &cobra.Command{
 	DisableAutoGenTag: true,
 }
 
-func rootCmdPreRun(cmd *cobra.Command, args []string) error {
+func rootCmdPreRun(cmd *cobra.Command, _ []string) error {
 	CreateConfigDirAndFileIfNotExists()
 	err := bootstrap.InitializeConfig(cmd)
 	log.Infoln(fmt.Sprintf("Executing command: %v", cmd.CommandPath()))
@@ -85,10 +85,12 @@ func init() {
 	log.Traceln(fmt.Sprintf("Log file can be found at %v", logFile))
 	persistentFlags := RootCmd.PersistentFlags()
 	persistentFlags.String(apiHostFlag, "localhost:50051", "api host")
-	persistentFlags.StringP(common.OutputFormatFlag, common.OutputFormatFlagShort, common.OutputFormatTable, fmt.Sprintf("output format [%v]", common.OutputFormatFlagAllowedValuesText))
+	persistentFlags.StringP(common.OutputFormatFlag, common.OutputFormatFlagShort,
+		common.DefaultPrinters.Keys()[0],
+		fmt.Sprintf("output format [%v]", strings.Join(common.DefaultPrinters.Keys(), ", ")))
 
 	err := RootCmd.RegisterFlagCompletionFunc(common.OutputFormatFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return common.OutputFormatFlagAllowedValues, cobra.ShellCompDirectiveNoFileComp
+		return common.DefaultPrinters.Keys(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	util.CliExit(err)

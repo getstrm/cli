@@ -3,6 +3,7 @@ package group
 import (
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"fmt"
+	"github.com/elliotchance/orderedmap/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
 	"pace/pace/pkg/common"
@@ -10,14 +11,11 @@ import (
 
 var printer common.Printer
 
-func availablePrinters() map[string]common.Printer {
-	return common.MergePrinterMaps(
-		common.DefaultPrinters,
-		map[string]common.Printer{
-			common.OutputFormatTable + common.ListCommandName: listTablePrinter{},
-			common.OutputFormatPlain + common.ListCommandName: listPlainPrinter{},
-		},
-	)
+func availablePrinters() orderedmap.OrderedMap[string, common.Printer] {
+	printers := common.DefaultPrinters.Copy()
+	printers.Set(common.OutputFormatTable, listTablePrinter{})
+	printers.Set(common.OutputFormatPlain, listPlainPrinter{})
+	return *printers
 }
 
 type listTablePrinter struct{}

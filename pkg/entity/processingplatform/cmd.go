@@ -6,7 +6,7 @@ import (
 )
 
 func ListCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:               "processing-platforms",
 		Short:             "List Processing Platforms",
 		Example:           listExample,
@@ -19,4 +19,7 @@ func ListCmd() *cobra.Command {
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
+	flags := cmd.Flags()
+	common.ConfigureExtraPrinters(cmd, flags, availablePrinters())
+	return cmd
 }

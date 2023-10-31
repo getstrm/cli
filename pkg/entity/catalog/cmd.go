@@ -6,7 +6,7 @@ import (
 )
 
 func ListCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:               "catalogs",
 		Short:             "List Catalogs",
 		Long:              docs,
@@ -20,4 +20,7 @@ func ListCmd() *cobra.Command {
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
+	flags := cmd.Flags()
+	common.ConfigureExtraPrinters(cmd, flags, availablePrinters())
+	return cmd
 }

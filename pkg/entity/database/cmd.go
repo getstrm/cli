@@ -21,6 +21,7 @@ func ListCmd() *cobra.Command {
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
+	common.ConfigureExtraPrinters(cmd, flags, availablePrinters())
 	catalog.AddCatalogFlag(cmd, flags)
 	return cmd
 }

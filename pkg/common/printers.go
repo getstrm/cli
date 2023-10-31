@@ -5,68 +5,60 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/elliotchance/orderedmap/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"github.com/samber/lo"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"os"
 	"pace/pace/pkg/util"
 	"sigs.k8s.io/yaml"
+	"strings"
 )
+
+var DefaultPrinters orderedmap.OrderedMap[string, Printer]
+
+func init() {
+	// the order is important. The first one is the default output for every command
+	DefaultPrinters = *orderedmap.NewOrderedMap[string, Printer]()
+	DefaultPrinters.Set(OutputFormatYaml, ProtoMessageYamlPrinter{})
+	DefaultPrinters.Set(OutputFormatJson, ProtoMessageJsonPrettyPrinter{})
+	DefaultPrinters.Set(OutputFormatJsonRaw, ProtoMessageJsonRawPrinter{})
+}
 
 type Printer interface {
 	Print(data interface{})
-}
-
-/*
-TODO BvD proposes this mechanism instead of the string concat
-which would allow better error handling for absent printers.
-
-type PrinterKey struct {
-	format  string
-	command string
-}
-var DefaultPrinters = map[PrinterKey]Printer {
-	PrinterKey{
-		format: common.OutputFormatJson, command: common.ListCommandName,
-	}: ProtoMessageJsonPrettyPrinter{},
-}
-
-*/
-
-var DefaultPrinters = map[string]Printer{
-	OutputFormatJson + ListCommandName:      ProtoMessageJsonPrettyPrinter{},
-	OutputFormatJson + GetCommandName:       ProtoMessageJsonPrettyPrinter{},
-	OutputFormatJson + DeleteCommandName:    ProtoMessageJsonPrettyPrinter{},
-	OutputFormatJson + CreateCommandName:    ProtoMessageJsonPrettyPrinter{},
-	OutputFormatJson + UpsertCommandName:    ProtoMessageJsonPrettyPrinter{},
-	OutputFormatYaml + ListCommandName:      ProtoMessageYamlPrinter{},
-	OutputFormatYaml + GetCommandName:       ProtoMessageYamlPrinter{},
-	OutputFormatYaml + DeleteCommandName:    ProtoMessageYamlPrinter{},
-	OutputFormatYaml + CreateCommandName:    ProtoMessageYamlPrinter{},
-	OutputFormatYaml + UpsertCommandName:    ProtoMessageYamlPrinter{},
-	OutputFormatJsonRaw + ListCommandName:   ProtoMessageJsonRawPrinter{},
-	OutputFormatJsonRaw + GetCommandName:    ProtoMessageJsonRawPrinter{},
-	OutputFormatJsonRaw + DeleteCommandName: ProtoMessageJsonRawPrinter{},
-	OutputFormatJsonRaw + CreateCommandName: ProtoMessageJsonRawPrinter{},
-	OutputFormatJsonRaw + UpsertCommandName: ProtoMessageJsonRawPrinter{},
 }
 
 type ProtoMessageJsonRawPrinter struct{}
 type ProtoMessageJsonPrettyPrinter struct{}
 type ProtoMessageYamlPrinter struct{}
 
-func ConfigurePrinter(command *cobra.Command, printers map[string]Printer) Printer {
+// ConfigurePrinter
+// this function is called just before the command execution
+// the output format has already been set.
+func ConfigurePrinter(command *cobra.Command, printers orderedmap.OrderedMap[string, Printer]) Printer {
 	outputFormat, _ := command.Flags().GetString(OutputFormatFlag)
-	p := printers[outputFormat+command.Parent().Name()]
-	// TODO this mechanism is not suitable for correctly providing feedback for entities that do not support the
-	// default or plain mechanism.
-	if p == nil {
-		util.CliExit(errors.New(fmt.Sprintf("Output format '%v' is not supported. Allowed values: %v", outputFormat, OutputFormatFlagAllowedValuesText)))
+	printer, ok := printers.Get(outputFormat)
+	if !ok {
+		util.CliExit(errors.New(fmt.Sprintf("Output format '%v' is not supported. Allowed values: %v", outputFormat, strings.Join(printers.Keys(), ", "))))
 	}
-	return p
+	return printer
+}
+
+// ConfigureExtraPrinters
+// this function is called after construction of the Cobra command in case a method wants to provide more than the DefaultPrinters
+// entities that only need the default universal printers don't need to call this.
+func ConfigureExtraPrinters(cmd *cobra.Command, flags *pflag.FlagSet, printers orderedmap.OrderedMap[string, Printer]) {
+	formats := printers.Keys()
+	flags.StringP(OutputFormatFlag, OutputFormatFlagShort, formats[0],
+		fmt.Sprintf("output formats [%v]", strings.Join(formats, ", ")))
+	err := cmd.RegisterFlagCompletionFunc(OutputFormatFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return formats, cobra.ShellCompDirectiveNoFileComp
+	})
+	util.CliExit(err)
 }
 
 func (p ProtoMessageJsonRawPrinter) Print(content interface{}) {
@@ -88,35 +80,16 @@ func (p ProtoMessageYamlPrinter) Print(content interface{}) {
 	fmt.Println(string(m))
 }
 
-func protoMessageToPrettyJson(proto proto.Message) bytes.Buffer {
-	return PrettifyJson(protoMessageToRawJson(proto))
-}
-
 func protoMessageToRawJson(proto proto.Message) bytes.Buffer {
 	// As protojson.Marshal adds random spaces, we use json.Compact to omit the random spaces in the output.
 	// Linked issue in google/protobuf: https://github.com/golang/protobuf/issues/1082
 	marshal, _ := protojson.MarshalOptions{
 		UseProtoNames: true,
 	}.Marshal(proto)
-	return CompactJson(marshal)
-}
-
-func CompactJson(rawJson []byte) bytes.Buffer {
 	buffer := bytes.Buffer{}
-	errCompact := json.Compact(&buffer, rawJson)
+	errCompact := json.Compact(&buffer, marshal)
 	util.CliExit(errCompact)
 	return buffer
-}
-
-func PrettifyJson(rawJson bytes.Buffer) bytes.Buffer {
-	prettyJson := bytes.Buffer{}
-	errIndent := json.Indent(&prettyJson, rawJson.Bytes(), "", "    ")
-	util.CliExit(errIndent)
-	return prettyJson
-}
-
-func MergePrinterMaps(maps ...map[string]Printer) (result map[string]Printer) {
-	return lo.Assign[string, Printer](maps...)
 }
 
 func RenderTable(headers table.Row, rows []table.Row) {
@@ -131,6 +104,13 @@ func RenderTable(headers table.Row, rows []table.Row) {
 		t.SetStyle(noBordersStyle)
 		t.Render()
 	}
+}
+
+func protoMessageToPrettyJson(proto proto.Message) bytes.Buffer {
+	prettyJson := bytes.Buffer{}
+	errIndent := json.Indent(&prettyJson, protoMessageToRawJson(proto).Bytes(), "", "    ")
+	util.CliExit(errIndent)
+	return prettyJson
 }
 
 var noBordersStyle = table.Style{
