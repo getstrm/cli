@@ -52,7 +52,7 @@ func GetCmd() *cobra.Command {
 	catalog.AddCatalogFlag(cmd, flags)
 	catalog.AddDatabaseFlag(flags)
 	catalog.AddSchemaFlag(flags)
-	flags.BoolP(bareFlag, bareFlagShort, false, "when true ask platform or catalog, otherwise ask Pace")
+	flags.BoolP(bareFlag, bareFlagShort, false, "when true ask platform or catalog, otherwise ask Pace itself")
 	return cmd
 }
 

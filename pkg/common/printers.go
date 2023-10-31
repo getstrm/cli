@@ -3,7 +3,6 @@ package common
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -19,6 +18,17 @@ import (
 )
 
 var DefaultPrinters orderedmap.OrderedMap[string, Printer]
+
+const (
+	OutputFormatYaml    = "yaml"
+	OutputFormatJson    = "json"
+	OutputFormatJsonRaw = "json-raw"
+	OutputFormatTable   = "table"
+	OutputFormatPlain   = "plain"
+
+	OutputFormatFlag      = "output"
+	OutputFormatFlagShort = "o"
+)
 
 func init() {
 	// the order is important. The first one is the default output for every command
@@ -36,14 +46,17 @@ type ProtoMessageJsonRawPrinter struct{}
 type ProtoMessageJsonPrettyPrinter struct{}
 type ProtoMessageYamlPrinter struct{}
 
-// ConfigurePrinter
-// this function is called just before the command execution
-// the output format has already been set.
+/*
+ConfigurePrinter
+
+this function is called just before the command execution
+the output format has already been set.
+*/
 func ConfigurePrinter(command *cobra.Command, printers orderedmap.OrderedMap[string, Printer]) Printer {
 	outputFormat, _ := command.Flags().GetString(OutputFormatFlag)
 	printer, ok := printers.Get(outputFormat)
 	if !ok {
-		util.CliExit(errors.New(fmt.Sprintf("Output format '%v' is not supported. Allowed values: %v", outputFormat, strings.Join(printers.Keys(), ", "))))
+		Abort("Output format '%v' is not supported. Allowed values: %v", outputFormat, strings.Join(printers.Keys(), ", "))
 	}
 	return printer
 }

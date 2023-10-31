@@ -13,7 +13,6 @@ import (
 )
 
 var apiContext context.Context
-
 var client catalogs.DataCatalogsServiceClient
 
 func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx context.Context) {
@@ -34,8 +33,7 @@ func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.S
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	req := &ListCatalogsRequest{}
-	response, err := client.ListCatalogs(apiContext, req)
+	response, err := client.ListCatalogs(apiContext, &ListCatalogsRequest{})
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}

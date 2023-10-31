@@ -22,16 +22,6 @@ var DefaultConfigFileContents = []byte(`# The following configuration options ar
 const GetCommandName = "get"
 const ListCommandName = "list"
 const UpsertCommandName = "upsert"
-
-const OutputFormatYaml = "yaml"
-const OutputFormatJson = "json"
-const OutputFormatJsonRaw = "json-raw"
-const OutputFormatTable = "table"
-const OutputFormatPlain = "plain"
-
-const OutputFormatFlag = "output"
-const OutputFormatFlagShort = "o"
-
 const ProcessingPlatformFlag = "processing-platform"
 const ProcessingPlatformFlagShort = "p"
 const ProcessingPlatformFlagUsage = `id of processing platform`
