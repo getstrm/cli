@@ -1,7 +1,8 @@
 package database
 
 import (
-	data_policiesv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	"fmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
@@ -25,8 +26,8 @@ type listTablePrinter struct{}
 type listPlainPrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListDatabasesResponse)
-	rows := lo.Map(listResponse.Databases, func(catalog *data_policiesv1alpha.DataCatalog_DataBase, _ int) table.Row {
+	listResponse, _ := (data).(*ListDatabasesResponse)
+	rows := lo.Map(listResponse.Databases, func(catalog *DataCatalog_Database, _ int) table.Row {
 		return table.Row{
 			catalog.Id,
 			catalog.DisplayName,
@@ -39,7 +40,7 @@ func (p listTablePrinter) Print(data interface{}) {
 }
 
 func (p listPlainPrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListDatabasesResponse)
+	listResponse, _ := (data).(*ListDatabasesResponse)
 	for _, database := range listResponse.Databases {
 		fmt.Println(database)
 	}

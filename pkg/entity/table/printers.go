@@ -1,7 +1,7 @@
 package table
 
 import (
-	data_policiesv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"fmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
@@ -25,7 +25,7 @@ func availablePrinters() map[string]util.Printer {
 }
 
 func (p listTablePrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListProcessingPlatformTablesResponse)
+	listResponse, _ := (data).(*ListTablesResponse)
 	rows := lo.Map(listResponse.Tables, func(group string, _ int) table.Row {
 		return table.Row{
 			group,
@@ -38,7 +38,7 @@ func (p listTablePrinter) Print(data interface{}) {
 }
 
 func (p listPlainPrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListProcessingPlatformTablesResponse)
+	listResponse, _ := (data).(*ListTablesResponse)
 	for _, t := range listResponse.Tables {
 		fmt.Println(t)
 	}

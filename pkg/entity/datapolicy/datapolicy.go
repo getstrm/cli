@@ -1,8 +1,13 @@
 package datapolicy
 
 import (
-	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/api/data_policies/v1alpha/data_policiesv1alphagrpc"
-	datapolicies "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
+	catalogs "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_catalogs/v1alpha/data_catalogsv1alphagrpc"
+	datapolicies "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_policies/v1alpha/data_policiesv1alphagrpc"
+	processingplatforms "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/processing_platforms/v1alpha/processing_platformsv1alphagrpc"
+	catalogentities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_policies/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
+	ppentities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"context"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -18,19 +23,23 @@ import (
 
 var apiContext context.Context
 
-var client data_policiesv1alphagrpc.DataPolicyServiceClient
+var polClient datapolicies.DataPoliciesServiceClient
+var catClient catalogs.DataCatalogsServiceClient
+var pClient processingplatforms.ProcessingPlatformsServiceClient
 
-func SetupClient(clientConnection data_policiesv1alphagrpc.DataPolicyServiceClient, ctx context.Context) {
+func SetupClient(policiesServiceClient datapolicies.DataPoliciesServiceClient, catalogsClient catalogs.DataCatalogsServiceClient, ppClient processingplatforms.ProcessingPlatformsServiceClient, ctx context.Context) {
 	apiContext = ctx
-	client = clientConnection
+	polClient = policiesServiceClient
+	catClient = catalogsClient
+	pClient = ppClient
 }
 
-func upsert(cmd *cobra.Command, filename *string) {
+func upsert(_ *cobra.Command, filename *string) {
 	policy := readPolicy(*filename)
-	req := &datapolicies.UpsertDataPolicyRequest{
+	req := &UpsertDataPolicyRequest{
 		DataPolicy: policy,
 	}
-	response, err := client.UpsertDataPolicy(apiContext, req)
+	response, err := polClient.UpsertDataPolicy(apiContext, req)
 	common.CliExit(err)
 	printer.Print(response)
 }
@@ -40,10 +49,10 @@ func get(cmd *cobra.Command, tableId *string) {
 	if util.GetBoolAndErr(flags, bareFlag) {
 		getBare(cmd, tableId)
 	} else {
-		req := &datapolicies.GetDataPolicyRequest{
+		req := &GetDataPolicyRequest{
 			DataPolicyId: *tableId,
 		}
-		response, err := client.GetDataPolicy(apiContext, req)
+		response, err := polClient.GetDataPolicy(apiContext, req)
 		common.CliExit(err)
 		printer.Print(response)
 	}
@@ -61,41 +70,42 @@ func getBare(cmd *cobra.Command, tableId *string) {
 
 func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
 	catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
-	req := &datapolicies.GetCatalogBarePolicyRequest{
+	req := &catalogentities.GetBarePolicyRequest{
 		CatalogId:  catalogId,
 		DatabaseId: databaseId,
 		SchemaId:   schemaId,
 		TableId:    *tableId,
 	}
-	response, err := client.GetCatalogBarePolicy(apiContext, req)
+	response, err := catClient.GetBarePolicy(apiContext, req)
 	common.CliExit(err)
 	printer.Print(response)
 }
 
 func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
-	req := &datapolicies.GetProcessingPlatformBarePolicyRequest{
+	req := &ppentities.GetBarePolicyRequest{
 		PlatformId: platformId,
 		Table:      *tableId,
 	}
-	response, err := client.GetProcessingPlatformBarePolicy(apiContext, req)
+	response, err := pClient.GetBarePolicy(apiContext, req)
 	common.CliExit(err)
 	printer.Print(response)
 }
 
-func list(cmd *cobra.Command) {
-	req := &datapolicies.ListDataPoliciesRequest{}
-	response, err := client.ListDataPolicies(apiContext, req)
+func list(_ *cobra.Command) {
+	req := &ListDataPoliciesRequest{}
+	response, err := polClient.ListDataPolicies(apiContext, req)
 	common.CliExit(err)
 	printer.Print(response)
 }
-func readPolicy(filename string) *datapolicies.DataPolicy {
+func readPolicy(filename string) *DataPolicy {
 	file, err := os.ReadFile(filename)
 	common.CliExit(err)
 
 	if strings.HasSuffix(filename, ".yaml") {
 		file, _ = yaml.YAMLToJSON(file)
 	}
-	dataPolicy := &datapolicies.DataPolicy{}
-	protojson.Unmarshal(file, dataPolicy)
+	dataPolicy := &DataPolicy{}
+	err = protojson.Unmarshal(file, dataPolicy)
+	common.CliExit(err)
 	return dataPolicy
 }

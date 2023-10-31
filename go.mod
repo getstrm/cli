@@ -3,10 +3,9 @@ module pace/pace
 go 1.20
 
 require (
-	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231026111541-4f2899b25279.2
-	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231026111541-4f2899b25279.4
+	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231031090016-c6b25eab8021.2
+	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231031090016-c6b25eab8021.4
 	github.com/bykof/gostradamus v1.0.4
-	github.com/goccy/go-yaml v1.11.2
 	github.com/jedib0t/go-pretty/v6 v6.4.0
 	github.com/lithammer/dedent v1.1.0
 	github.com/samber/lo v1.33.0
@@ -23,14 +22,11 @@ require (
 require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.28.1-20231017183020-0de7443d03cf.4 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
-	github.com/fatih/color v1.15.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
@@ -45,7 +41,6 @@ require (
 	golang.org/x/net v0.11.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.10.0 // indirect
-	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

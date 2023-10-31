@@ -1,7 +1,7 @@
 package group
 
 import (
-	data_policiesv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"fmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
@@ -25,12 +25,12 @@ type listTablePrinter struct{}
 type listPlainPrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListProcessingPlatformGroupsResponse)
+	listResponse, _ := (data).(*ListGroupsResponse)
 	printTable(listResponse.Groups)
 }
 
 func (p listPlainPrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListProcessingPlatformGroupsResponse)
+	listResponse, _ := (data).(*ListGroupsResponse)
 	for _, group := range listResponse.Groups {
 		fmt.Println(group)
 	}

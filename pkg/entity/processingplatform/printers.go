@@ -1,7 +1,8 @@
 package processingplatform
 
 import (
-	data_policiesv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"fmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
@@ -25,20 +26,20 @@ type listTablePrinter struct{}
 type listPlainPrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListProcessingPlatformsResponse)
+	listResponse, _ := (data).(*ListProcessingPlatformsResponse)
 	printTable(listResponse.ProcessingPlatforms)
 }
 
 func (p listPlainPrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*data_policiesv1alpha.ListProcessingPlatformsResponse)
+	listResponse, _ := (data).(*ListProcessingPlatformsResponse)
 	for _, platform := range listResponse.ProcessingPlatforms {
 
 		fmt.Println(platform.Id, platform.PlatformType)
 	}
 }
 
-func printTable(platforms []*data_policiesv1alpha.DataPolicy_ProcessingPlatform) {
-	rows := lo.Map(platforms, func(platform *data_policiesv1alpha.DataPolicy_ProcessingPlatform, _ int) table.Row {
+func printTable(platforms []*DataPolicy_ProcessingPlatform) {
+	rows := lo.Map(platforms, func(platform *DataPolicy_ProcessingPlatform, _ int) table.Row {
 		return table.Row{
 			platform.Id,
 			platform.PlatformType,

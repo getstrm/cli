@@ -1,7 +1,8 @@
 package schema
 
 import (
-	datapolicies "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/api/data_policies/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	"fmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
@@ -25,8 +26,8 @@ type listTablePrinter struct{}
 type listPlainPrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*datapolicies.ListSchemasResponse)
-	rows := lo.Map(listResponse.Schemas, func(schema *datapolicies.DataCatalog_Schema, _ int) table.Row {
+	listResponse, _ := (data).(*ListSchemasResponse)
+	rows := lo.Map(listResponse.Schemas, func(schema *DataCatalog_Schema, _ int) table.Row {
 		return table.Row{
 			schema.Id,
 			schema.Name,
@@ -39,7 +40,7 @@ func (p listTablePrinter) Print(data interface{}) {
 }
 
 func (p listPlainPrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*datapolicies.ListSchemasResponse)
+	listResponse, _ := (data).(*ListSchemasResponse)
 	for _, schema := range listResponse.Schemas {
 		fmt.Println(schema)
 	}
