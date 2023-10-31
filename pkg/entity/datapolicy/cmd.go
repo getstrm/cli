@@ -5,7 +5,6 @@ import (
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/processingplatform"
-	"pace/pace/pkg/util"
 )
 
 const bareFlag = "bare"
@@ -19,7 +18,7 @@ func UpsertCmd() *cobra.Command {
 		Example:           upsertExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = util.ConfigurePrinter(cmd, util.DefaultPrinters)
+			printer = common.ConfigurePrinter(cmd, common.DefaultPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			upsert(cmd, &args[0])
@@ -42,7 +41,7 @@ func GetCmd() *cobra.Command {
 		Example:           getExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = util.ConfigurePrinter(cmd, util.DefaultPrinters)
+			printer = common.ConfigurePrinter(cmd, common.DefaultPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			get(cmd, &args[0])
@@ -67,7 +66,7 @@ func ListCmd() *cobra.Command {
 		Example:           "",
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = util.ConfigurePrinter(cmd, util.DefaultPrinters)
+			printer = common.ConfigurePrinter(cmd, common.DefaultPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			list(cmd)

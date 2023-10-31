@@ -25,6 +25,6 @@ func list(cmd *cobra.Command) {
 		CatalogId: catalogId,
 	}
 	response, err := client.ListDatabases(apiContext, req)
-	common.CliExit(err)
+	util.CliExit(err)
 	printer.Print(response)
 }

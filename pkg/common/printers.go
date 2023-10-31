@@ -1,4 +1,4 @@
-package util
+package common
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"os"
-	"pace/pace/pkg/common"
+	"pace/pace/pkg/util"
 	"sigs.k8s.io/yaml"
 )
 
@@ -37,21 +37,21 @@ var DefaultPrinters = map[PrinterKey]Printer {
 */
 
 var DefaultPrinters = map[string]Printer{
-	common.OutputFormatJson + common.ListCommandName:      ProtoMessageJsonPrettyPrinter{},
-	common.OutputFormatJson + common.GetCommandName:       ProtoMessageJsonPrettyPrinter{},
-	common.OutputFormatJson + common.DeleteCommandName:    ProtoMessageJsonPrettyPrinter{},
-	common.OutputFormatJson + common.CreateCommandName:    ProtoMessageJsonPrettyPrinter{},
-	common.OutputFormatJson + common.UpsertCommandName:    ProtoMessageJsonPrettyPrinter{},
-	common.OutputFormatYaml + common.ListCommandName:      ProtoMessageYamlPrinter{},
-	common.OutputFormatYaml + common.GetCommandName:       ProtoMessageYamlPrinter{},
-	common.OutputFormatYaml + common.DeleteCommandName:    ProtoMessageYamlPrinter{},
-	common.OutputFormatYaml + common.CreateCommandName:    ProtoMessageYamlPrinter{},
-	common.OutputFormatYaml + common.UpsertCommandName:    ProtoMessageYamlPrinter{},
-	common.OutputFormatJsonRaw + common.ListCommandName:   ProtoMessageJsonRawPrinter{},
-	common.OutputFormatJsonRaw + common.GetCommandName:    ProtoMessageJsonRawPrinter{},
-	common.OutputFormatJsonRaw + common.DeleteCommandName: ProtoMessageJsonRawPrinter{},
-	common.OutputFormatJsonRaw + common.CreateCommandName: ProtoMessageJsonRawPrinter{},
-	common.OutputFormatJsonRaw + common.UpsertCommandName: ProtoMessageJsonRawPrinter{},
+	OutputFormatJson + ListCommandName:      ProtoMessageJsonPrettyPrinter{},
+	OutputFormatJson + GetCommandName:       ProtoMessageJsonPrettyPrinter{},
+	OutputFormatJson + DeleteCommandName:    ProtoMessageJsonPrettyPrinter{},
+	OutputFormatJson + CreateCommandName:    ProtoMessageJsonPrettyPrinter{},
+	OutputFormatJson + UpsertCommandName:    ProtoMessageJsonPrettyPrinter{},
+	OutputFormatYaml + ListCommandName:      ProtoMessageYamlPrinter{},
+	OutputFormatYaml + GetCommandName:       ProtoMessageYamlPrinter{},
+	OutputFormatYaml + DeleteCommandName:    ProtoMessageYamlPrinter{},
+	OutputFormatYaml + CreateCommandName:    ProtoMessageYamlPrinter{},
+	OutputFormatYaml + UpsertCommandName:    ProtoMessageYamlPrinter{},
+	OutputFormatJsonRaw + ListCommandName:   ProtoMessageJsonRawPrinter{},
+	OutputFormatJsonRaw + GetCommandName:    ProtoMessageJsonRawPrinter{},
+	OutputFormatJsonRaw + DeleteCommandName: ProtoMessageJsonRawPrinter{},
+	OutputFormatJsonRaw + CreateCommandName: ProtoMessageJsonRawPrinter{},
+	OutputFormatJsonRaw + UpsertCommandName: ProtoMessageJsonRawPrinter{},
 }
 
 type ProtoMessageJsonRawPrinter struct{}
@@ -59,12 +59,12 @@ type ProtoMessageJsonPrettyPrinter struct{}
 type ProtoMessageYamlPrinter struct{}
 
 func ConfigurePrinter(command *cobra.Command, printers map[string]Printer) Printer {
-	outputFormat, _ := command.Flags().GetString(common.OutputFormatFlag)
+	outputFormat, _ := command.Flags().GetString(OutputFormatFlag)
 	p := printers[outputFormat+command.Parent().Name()]
 	// TODO this mechanism is not suitable for correctly providing feedback for entities that do not support the
 	// default or plain mechanism.
 	if p == nil {
-		common.CliExit(errors.New(fmt.Sprintf("Output format '%v' is not supported. Allowed values: %v", outputFormat, common.OutputFormatFlagAllowedValuesText)))
+		util.CliExit(errors.New(fmt.Sprintf("Output format '%v' is not supported. Allowed values: %v", outputFormat, OutputFormatFlagAllowedValuesText)))
 	}
 	return p
 }
@@ -104,14 +104,14 @@ func protoMessageToRawJson(proto proto.Message) bytes.Buffer {
 func CompactJson(rawJson []byte) bytes.Buffer {
 	buffer := bytes.Buffer{}
 	errCompact := json.Compact(&buffer, rawJson)
-	common.CliExit(errCompact)
+	util.CliExit(errCompact)
 	return buffer
 }
 
 func PrettifyJson(rawJson bytes.Buffer) bytes.Buffer {
 	prettyJson := bytes.Buffer{}
 	errIndent := json.Indent(&prettyJson, rawJson.Bytes(), "", "    ")
-	common.CliExit(errIndent)
+	util.CliExit(errIndent)
 	return prettyJson
 }
 

@@ -1,8 +1,7 @@
 package datapolicy
 
 import (
-	"pace/pace/pkg/util"
+	"pace/pace/pkg/common"
 )
 
-var printer util.Printer
-
+var printer common.Printer

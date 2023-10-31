@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
+	"pace/pace/pkg/util"
 )
 
 // strings used in the cli
@@ -25,7 +26,7 @@ func SetupClient(clientConnection processingplatforms.ProcessingPlatformsService
 func list(_ *cobra.Command) {
 	req := &ListProcessingPlatformsRequest{}
 	response, err := client.ListProcessingPlatforms(apiContext, req)
-	common.CliExit(err)
+	util.CliExit(err)
 	printer.Print(response)
 }
 
@@ -50,5 +51,5 @@ func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.S
 func AddProcessingPlatformFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
 	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", common.ProcessingPlatformFlagUsage)
 	err := cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, IdsCompletion)
-	common.CliExit(err)
+	util.CliExit(err)
 }

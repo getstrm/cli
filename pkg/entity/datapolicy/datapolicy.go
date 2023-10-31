@@ -40,7 +40,7 @@ func upsert(_ *cobra.Command, filename *string) {
 		DataPolicy: policy,
 	}
 	response, err := polClient.UpsertDataPolicy(apiContext, req)
-	common.CliExit(err)
+	util.CliExit(err)
 	printer.Print(response)
 }
 
@@ -53,7 +53,7 @@ func get(cmd *cobra.Command, tableId *string) {
 			DataPolicyId: *tableId,
 		}
 		response, err := polClient.GetDataPolicy(apiContext, req)
-		common.CliExit(err)
+		util.CliExit(err)
 		printer.Print(response)
 	}
 }
@@ -77,7 +77,7 @@ func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
 		TableId:    *tableId,
 	}
 	response, err := catClient.GetBarePolicy(apiContext, req)
-	common.CliExit(err)
+	util.CliExit(err)
 	printer.Print(response)
 }
 
@@ -87,25 +87,25 @@ func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
 		Table:      *tableId,
 	}
 	response, err := pClient.GetBarePolicy(apiContext, req)
-	common.CliExit(err)
+	util.CliExit(err)
 	printer.Print(response)
 }
 
 func list(_ *cobra.Command) {
 	req := &ListDataPoliciesRequest{}
 	response, err := polClient.ListDataPolicies(apiContext, req)
-	common.CliExit(err)
+	util.CliExit(err)
 	printer.Print(response)
 }
 func readPolicy(filename string) *DataPolicy {
 	file, err := os.ReadFile(filename)
-	common.CliExit(err)
+	util.CliExit(err)
 
 	if strings.HasSuffix(filename, ".yaml") {
 		file, _ = yaml.YAMLToJSON(file)
 	}
 	dataPolicy := &DataPolicy{}
 	err = protojson.Unmarshal(file, dataPolicy)
-	common.CliExit(err)
+	util.CliExit(err)
 	return dataPolicy
 }

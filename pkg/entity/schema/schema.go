@@ -28,6 +28,6 @@ func list(cmd *cobra.Command) {
 		DatabaseId: databaseId,
 	}
 	response, err := client.ListSchemas(apiContext, req)
-	common.CliExit(err)
+	util.CliExit(err)
 	printer.Print(response)
 }

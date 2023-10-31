@@ -6,15 +6,14 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/util"
 )
 
-var printer util.Printer
+var printer common.Printer
 
-func availablePrinters() map[string]util.Printer {
-	return util.MergePrinterMaps(
-		util.DefaultPrinters,
-		map[string]util.Printer{
+func availablePrinters() map[string]common.Printer {
+	return common.MergePrinterMaps(
+		common.DefaultPrinters,
+		map[string]common.Printer{
 			common.OutputFormatTable + common.ListCommandName: listTablePrinter{},
 			common.OutputFormatPlain + common.ListCommandName: listPlainPrinter{},
 		},
@@ -45,7 +44,7 @@ func printTable(groups []string) {
 	headers := table.Row{
 		"Name",
 	}
-	util.RenderTable(headers, rows)
+	common.RenderTable(headers, rows)
 }
 func printPlain(groups []string) {
 	for _, group := range groups {

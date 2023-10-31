@@ -5,7 +5,6 @@ import (
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/processingplatform"
-	"pace/pace/pkg/util"
 )
 
 func ListCmd() *cobra.Command {
@@ -15,7 +14,7 @@ func ListCmd() *cobra.Command {
 		Example:           listExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = util.ConfigurePrinter(cmd, availablePrinters())
+			printer = common.ConfigurePrinter(cmd, availablePrinters())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			list(cmd)

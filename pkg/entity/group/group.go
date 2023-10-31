@@ -27,6 +27,6 @@ func list(cmd *cobra.Command) {
 		PlatformId: platformId,
 	}
 	response, err := client.ListGroups(apiContext, req)
-	common.CliExit(err)
+	util.CliExit(err)
 	printer.Print(response)
 }

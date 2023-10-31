@@ -6,10 +6,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 	"github.com/spf13/pflag"
+	"os"
 	"pace/pace/pkg/bootstrap"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/util"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -29,7 +31,7 @@ func main() {
 
 	err = RootCmd.Execute()
 	if err != nil {
-		common.CliExit(err)
+		util.CliExit(err)
 	}
 
 	const fmTemplate = `---
@@ -53,19 +55,19 @@ hide_title: true
 
 	if util.GetBoolAndErr(flags, generateDocsFlag) {
 		err := doc.GenMarkdownTreeCustom(RootCmd, "./generated_docs", filePrepender, linkHandler)
-		common.CliExit(err)
+		util.CliExit(err)
 	}
 }
 
 var RootCmd = &cobra.Command{
-	Use:               common.RootCommandName,
+	Use:               util.RootCommandName,
 	Short:             fmt.Sprintf("Pace CLI %s", common.Version),
 	PersistentPreRunE: rootCmdPreRun,
 	DisableAutoGenTag: true,
 }
 
 func rootCmdPreRun(cmd *cobra.Command, args []string) error {
-	util.CreateConfigDirAndFileIfNotExists()
+	CreateConfigDirAndFileIfNotExists()
 	err := bootstrap.InitializeConfig(cmd)
 	log.Infoln(fmt.Sprintf("Executing command: %v", cmd.CommandPath()))
 	cmd.Flags().Visit(func(flag *pflag.Flag) {
@@ -89,6 +91,23 @@ func init() {
 		return common.OutputFormatFlagAllowedValues, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	common.CliExit(err)
+	util.CliExit(err)
 	bootstrap.SetupVerbs(RootCmd)
+}
+
+func CreateConfigDirAndFileIfNotExists() {
+	err := os.MkdirAll(filepath.Dir(common.ConfigPath()), 0700)
+	util.CliExit(err)
+
+	configFilepath := path.Join(common.ConfigPath(), common.DefaultConfigFilename+common.DefaultConfigFileSuffix)
+
+	if _, _ = os.Stat(configFilepath); os.IsNotExist(err) {
+		writeFileError := os.WriteFile(
+			configFilepath,
+			common.DefaultConfigFileContents,
+			0644,
+		)
+
+		util.CliExit(writeFileError)
+	}
 }

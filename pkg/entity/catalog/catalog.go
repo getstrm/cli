@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
+	"pace/pace/pkg/util"
 )
 
 var apiContext context.Context
@@ -23,7 +24,7 @@ func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx contex
 func list() {
 	req := &ListCatalogsRequest{}
 	response, err := client.ListCatalogs(apiContext, req)
-	common.CliExit(err)
+	util.CliExit(err)
 	printer.Print(response)
 }
 
@@ -47,7 +48,7 @@ func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.S
 func AddCatalogFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
 	flags.StringP(common.CatalogFlag, common.CatalogFlagShort, "", common.CatalogFlagUsage)
 	err := cmd.RegisterFlagCompletionFunc(common.CatalogFlag, IdsCompletion)
-	common.CliExit(err)
+	util.CliExit(err)
 }
 func AddDatabaseFlag(flags *pflag.FlagSet) {
 	flags.StringP(common.DatabaseFlag, common.DatabaseFlagShort, "", common.DatabaseFlagUsage)

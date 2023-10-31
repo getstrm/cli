@@ -22,6 +22,7 @@ import (
 	"pace/pace/pkg/entity/processingplatform"
 	"pace/pace/pkg/entity/schema"
 	"pace/pace/pkg/entity/table"
+	"pace/pace/pkg/util"
 	"strings"
 )
 
@@ -102,14 +103,14 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper) {
 		if strings.Contains(f.Name, "-") {
 			envVarSuffix := strings.ToUpper(strings.ReplaceAll(f.Name, "-", "_"))
 			err := v.BindEnv(f.Name, fmt.Sprintf("%s_%s", common.EnvPrefix, envVarSuffix))
-			common.CliExit(err)
+			util.CliExit(err)
 		}
 
 		// Apply the viper config value to the flag when the flag is not set and viper has a value
 		if !f.Changed && v.IsSet(f.Name) {
 			val := v.Get(f.Name)
 			err := cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
-			common.CliExit(err)
+			util.CliExit(err)
 		}
 	})
 }
@@ -122,7 +123,7 @@ func SetupGrpc(host string) (*grpc.ClientConn, context.Context) {
 	creds = grpc.WithTransportCredentials(insecure.NewCredentials())
 
 	clientConnection, err := grpc.Dial(host, creds, grpc.WithUnaryInterceptor(clientInterceptor))
-	common.CliExit(err)
+	util.CliExit(err)
 
 	var mdMap = map[string]string{cliVersionHeader: common.Version}
 

@@ -6,40 +6,19 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"google.golang.org/grpc/status"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
-	"runtime"
+	"pace/pace/pkg/util"
 	"strings"
 )
 
-var RootCommandName = "pace"
-
 var ApiHost string
-
-func CliExit(err error) {
-	if err != nil {
-		_, file, line, _ := runtime.Caller(1)
-		log.WithFields(log.Fields{"file": file, "line": line}).Error(err)
-
-		st, ok := status.FromError(err)
-
-		if ok {
-			_, _ = fmt.Fprintln(os.Stderr, fmt.Sprintf(`Error code = %s
-Details = %s`, (*st).Code(), (*st).Message()))
-		} else {
-			_, _ = fmt.Fprintln(os.Stderr, err)
-		}
-
-		os.Exit(1)
-	}
-}
 
 func Abort(format string, args ...interface{}) {
 	if len(args) == 0 {
-		CliExit(errors.New(format))
+		util.CliExit(errors.New(format))
 	} else {
-		CliExit(errors.New(fmt.Sprintf(format, args...)))
+		util.CliExit(errors.New(fmt.Sprintf(format, args...)))
 	}
 }
 
@@ -76,7 +55,7 @@ func ConfigPath() string {
 			configPath, err = ExpandTilde(defaultConfigPath)
 		}
 
-		CliExit(err)
+		util.CliExit(err)
 	}
 
 	return configPath
@@ -84,7 +63,7 @@ func ConfigPath() string {
 
 func LogFileName() string {
 	if logFileName == "" {
-		logFileName = ConfigPath() + "/" + RootCommandName + ".log"
+		logFileName = ConfigPath() + "/" + util.RootCommandName + ".log"
 		log.SetLevel(log.TraceLevel)
 		log.SetOutput(&lumberjack.Logger{
 			Filename:   LogFileName(),
@@ -101,7 +80,7 @@ func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string) {
 	catalogId, err := flags.GetString(CatalogFlag)
 	databaseId, err := flags.GetString(DatabaseFlag)
 	schemaId, err := flags.GetString(SchemaFlag)
-	CliExit(err)
+	util.CliExit(err)
 	return catalogId, databaseId, schemaId
 }
 

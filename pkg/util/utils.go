@@ -1,51 +1,34 @@
 package util
 
 import (
+	"fmt"
 	"github.com/bykof/gostradamus"
 	"github.com/lithammer/dedent"
-	"github.com/samber/lo"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
-	"pace/pace/pkg/common"
-	"path"
-	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
 
 func GetStringAndErr(f *pflag.FlagSet, k string) string {
 	v, err := f.GetString(k)
-	common.CliExit(err)
+	CliExit(err)
 	return v
 }
 func GetBoolAndErr(f *pflag.FlagSet, k string) bool {
 	v, err := f.GetBool(k)
-	common.CliExit(err)
+	CliExit(err)
 	return v
-}
-
-func CreateConfigDirAndFileIfNotExists() {
-	err := os.MkdirAll(filepath.Dir(common.ConfigPath()), 0700)
-	common.CliExit(err)
-
-	configFilepath := path.Join(common.ConfigPath(), common.DefaultConfigFilename+common.DefaultConfigFileSuffix)
-
-	if _, err := os.Stat(configFilepath); os.IsNotExist(err) {
-		writeFileError := os.WriteFile(
-			configFilepath,
-			common.DefaultConfigFileContents,
-			0644,
-		)
-
-		common.CliExit(writeFileError)
-	}
 }
 
 // LongDocs dedents, trims surrounding whitespace, changes !pace for the command Name and changes ° for `
 func LongDocs(s string) string {
 	s2 := DedentTrim(strings.Replace(
-		strings.Replace(s, "!pace", common.RootCommandName, -1), "°", "`", -1))
+		strings.Replace(s, "!pace", RootCommandName, -1), "°", "`", -1))
 	return s2
 }
 
@@ -63,8 +46,23 @@ func IsoFormat(tz gostradamus.Timezone, t *timestamppb.Timestamp) string {
 	n := gostradamus.DateTimeFromTime(tt)
 	return n.InTimezone(tz).IsoFormatTZ()
 }
-func MapStrings[T any](vs []string, f func(string) T) []T {
-	return lo.Map[string, T](vs, func(s string, _ int) T {
-		return f(s)
-	})
+
+var RootCommandName = "pace"
+
+func CliExit(err error) {
+	if err != nil {
+		_, file, line, _ := runtime.Caller(1)
+		logrus.WithFields(logrus.Fields{"file": file, "line": line}).Error(err)
+
+		st, ok := status.FromError(err)
+
+		if ok {
+			_, _ = fmt.Fprintln(os.Stderr, fmt.Sprintf(`Error code = %s
+Details = %s`, (*st).Code(), (*st).Message()))
+		} else {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+		}
+
+		os.Exit(1)
+	}
 }

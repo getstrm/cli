@@ -30,7 +30,7 @@ func list(cmd *cobra.Command) {
 			PlatformId: platformId,
 		}
 		response, err := ppclient.ListTables(apiContext, req)
-		common.CliExit(err)
+		util.CliExit(err)
 		printer.Print(response)
 	} else {
 		catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
@@ -40,7 +40,7 @@ func list(cmd *cobra.Command) {
 			SchemaId:   schemaId,
 		}
 		response, err := catclient.ListTables(apiContext, req)
-		common.CliExit(err)
+		util.CliExit(err)
 		printer.Print(response)
 
 	}
