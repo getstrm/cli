@@ -43,7 +43,7 @@ jobs:
           git config --global user.name "${BOT_USERNAME}"
           tag_name="${GITHUB_REF##*/}"
           cd dist
-          git clone "https://git:${GITHUB_TOKEN}@github.com/pace/homebrew-cli.git"
+          git clone "https://git:${GITHUB_TOKEN}@github.com/getstrm/homebrew-cli.git"
           cp -f homebrew/Formula/pace.rb homebrew-cli
           cd homebrew-cli
           git add .
