@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/getstrm/cli/compare/v1.0.1...v1.1.0) (2023-11-01)
+
+
+### Features
+
+* **main:** uses gh cli tool ([ba02189](https://github.com/getstrm/cli/commit/ba021892d3c6704af42008ed3554d3d2eae3cbdd))
+
 ## [1.0.1](https://github.com/getstrm/cli/compare/v1.0.0...v1.0.1) (2023-11-01)
 
 
