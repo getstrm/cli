@@ -25,7 +25,7 @@ func ListCmd() *cobra.Command {
 	common.ConfigureExtraPrinters(cmd, flags, availablePrinters())
 	processingplatform.AddProcessingPlatformFlag(cmd, flags)
 	catalog.AddCatalogFlag(cmd, flags)
-	catalog.AddDatabaseFlag(flags)
-	catalog.AddSchemaFlag(flags)
+	catalog.AddDatabaseFlag(cmd, flags)
+	catalog.AddSchemaFlag(cmd, flags)
 	return cmd
 }

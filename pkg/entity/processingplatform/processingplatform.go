@@ -32,7 +32,6 @@ func list(_ *cobra.Command) {
 
 func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	if len(args) != 0 {
-		// this one means you don't get multiple completion suggestions for one stream
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 

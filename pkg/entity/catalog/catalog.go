@@ -29,7 +29,6 @@ func list() {
 
 func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	if len(args) != 0 {
-		// this one means you don't get multiple completion suggestions for one stream
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
@@ -43,16 +42,107 @@ func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.S
 	return names, cobra.ShellCompDirectiveNoFileComp
 }
 
+func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	flags := cmd.Flags()
+	catalogId, _ := flags.GetString(common.CatalogFlag)
+	if catalogId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	response, err := client.ListDatabases(apiContext, &ListDatabasesRequest{
+		CatalogId: catalogId,
+	})
+	if err != nil {
+		return common.GrpcRequestCompletionError(err)
+	}
+	names := lo.Map(response.Databases, func(catalog *DataCatalog_Database, _ int) string {
+		return catalog.Id
+	})
+	return names, cobra.ShellCompDirectiveNoFileComp
+}
+
+func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	flags := cmd.Flags()
+	catalogId, _ := flags.GetString(common.CatalogFlag)
+	if catalogId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	databaseId, _ := flags.GetString(common.DatabaseFlag)
+	if databaseId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	response, err := client.ListSchemas(apiContext, &ListSchemasRequest{
+		CatalogId:  catalogId,
+		DatabaseId: databaseId,
+	})
+	if err != nil {
+		return common.GrpcRequestCompletionError(err)
+	}
+	names := lo.Map(response.Schemas, func(catalog *DataCatalog_Schema, _ int) string {
+		return catalog.Id
+	})
+	return names, cobra.ShellCompDirectiveNoFileComp
+}
+
+/*
+TODO needs to check the `--bare` flag, and then depending on that flag
+as well as processing platform or catalog flags.
+
+WIP
+
+func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	flags := cmd.Flags()
+	catalogId, _ := flags.GetString(common.CatalogFlag)
+	if catalogId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	databaseId, _ := flags.GetString(common.DatabaseFlag)
+	if databaseId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	schemaId, _ := flags.GetString(common.SchemaFlag)
+	if schemaId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	response, err := client.ListTables(apiContext, &ListTablesRequest{
+		CatalogId:  catalogId,
+		DatabaseId: databaseId,
+		SchemaId:   schemaId,
+	})
+	if err != nil {
+		return common.GrpcRequestCompletionError(err)
+	}
+	names := lo.Map(response.Tables, func(table *DataCatalog_Table, _ int) string {
+		return table.Id
+	})
+	return names, cobra.ShellCompDirectiveNoFileComp
+}
+
+*/
+
 func AddCatalogFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
 	flags.StringP(common.CatalogFlag, common.CatalogFlagShort, "", common.CatalogFlagUsage)
 	err := cmd.RegisterFlagCompletionFunc(common.CatalogFlag, IdsCompletion)
 	util.CliExit(err)
 }
 
-func AddDatabaseFlag(flags *pflag.FlagSet) {
+func AddDatabaseFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
 	flags.StringP(common.DatabaseFlag, common.DatabaseFlagShort, "", common.DatabaseFlagUsage)
+	_ = cmd.RegisterFlagCompletionFunc(common.DatabaseFlag, DatabaseIdsCompletion)
 }
 
-func AddSchemaFlag(flags *pflag.FlagSet) {
+func AddSchemaFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
 	flags.StringP(common.SchemaFlag, common.SchemaFlagShort, "", common.SchemaFlagUsage)
+	_ = cmd.RegisterFlagCompletionFunc(common.SchemaFlag, SchemaIdsCompletion)
 }

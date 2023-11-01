@@ -23,6 +23,6 @@ func ListCmd() *cobra.Command {
 	flags := cmd.Flags()
 	common.ConfigureExtraPrinters(cmd, flags, availablePrinters())
 	catalog.AddCatalogFlag(cmd, flags)
-	catalog.AddDatabaseFlag(flags)
+	catalog.AddDatabaseFlag(cmd, flags)
 	return cmd
 }

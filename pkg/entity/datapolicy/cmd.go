@@ -50,8 +50,8 @@ func GetCmd() *cobra.Command {
 	flags := cmd.Flags()
 	processingplatform.AddProcessingPlatformFlag(cmd, flags)
 	catalog.AddCatalogFlag(cmd, flags)
-	catalog.AddDatabaseFlag(flags)
-	catalog.AddSchemaFlag(flags)
+	catalog.AddDatabaseFlag(cmd, flags)
+	catalog.AddSchemaFlag(cmd, flags)
 	flags.BoolP(bareFlag, bareFlagShort, false, "when true ask platform or catalog, otherwise ask Pace itself")
 	return cmd
 }
