@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/getstrm/cli/compare/v1.1.0...v1.2.0) (2023-11-01)
+
+
+### Bug Fixes
+
+* **main:** getstrm/homebrew-cli ([1daf21a](https://github.com/getstrm/cli/commit/1daf21aadfd3156fbf8335c6c2a3471d1c1cdb66))
+
+
+### Features
+
+* **main:** uses gh cli tool ([4103fc9](https://github.com/getstrm/cli/commit/4103fc944478ee5dd0602513a6d62d2bee7996de))
+
 # [1.1.0](https://github.com/getstrm/cli/compare/v1.0.1...v1.1.0) (2023-11-01)
 
 
