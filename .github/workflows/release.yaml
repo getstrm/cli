@@ -23,8 +23,8 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
-          GIT_AUTHOR_NAME: ${{secrets.APIS_USERNAME}}
-          GIT_COMMITTER_NAME: ${{secrets.APIS_USERNAME}}
-          GIT_AUTHOR_EMAIL: ${{secrets.APIS_EMAIL}}
-          GIT_COMMITTER_EMAIL: ${{secrets.APIS_EMAIL}}
+          GIT_AUTHOR_NAME: ${{secrets.BOT_USERNAME}}
+          GIT_COMMITTER_NAME: ${{secrets.BOT_USERNAME}}
+          GIT_AUTHOR_EMAIL: ${{secrets.BOT_EMAIL}}
+          GIT_COMMITTER_EMAIL: ${{secrets.BOT_EMAIL}}
         run: npm run semantic-release -- --repository-url "$(git config --get remote.origin.url)"
