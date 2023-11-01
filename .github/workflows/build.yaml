@@ -36,11 +36,11 @@ jobs:
       - name: Upload Homebrew formula
         env:
           GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
-          APIS_USERNAME: ${{secrets.APIS_USERNAME}}
-          APIS_EMAIL: ${{secrets.APIS_EMAIL}}
+          BOT_USERNAME: ${{secrets.BOT_USERNAME}}
+          BOT_EMAIL: ${{secrets.BOT_EMAIL}}
         run: |
-          git config --global user.email "${APIS_EMAIL}"
-          git config --global user.name "${APIS_USERNAME}"
+          git config --global user.email "${BOT_EMAIL}"
+          git config --global user.name "${BOT_USERNAME}"
           tag_name="${GITHUB_REF##*/}"
           cd dist
           git clone "https://git:${GITHUB_TOKEN}@github.com/pace/homebrew-cli.git"
@@ -54,7 +54,7 @@ jobs:
       - name: Publish Docs
         env:
           GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
-          APIS_USERNAME: ${{secrets.APIS_USERNAME}}
-          APIS_EMAIL: ${{secrets.APIS_EMAIL}}
+          BOT_USERNAME: ${{secrets.BOT_USERNAME}}
+          BOT_EMAIL: ${{secrets.BOT_EMAIL}}
         run: |
           ./scripts/publish_docs.sh
