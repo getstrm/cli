@@ -9,7 +9,6 @@ test/.env
 dist
 dpace
 *.log
-*.json
 *.tar.gz
 s3.json
 /*.yaml
