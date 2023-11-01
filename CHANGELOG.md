@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/getstrm/cli/compare/v1.0.0...v1.0.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **main:** brew install hub ([7935176](https://github.com/getstrm/cli/commit/793517633d3952b45f7c79d62d9f192505c4aa2c))
+* **main:** checkout ([eba95de](https://github.com/getstrm/cli/commit/eba95de8ca8f3e8728bf2e53144686f56983a579))
+
 # 1.0.0 (2023-11-01)
 
 
