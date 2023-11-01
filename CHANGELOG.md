@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/getstrm/cli/compare/v1.2.0...v1.2.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **main:** getstrm/homebrew-cli ([2bc6bad](https://github.com/getstrm/cli/commit/2bc6bad492aba38e6bed04bf7aaf5767a36ed398))
+* **main:** removed call to publish_docs script ([eafa053](https://github.com/getstrm/cli/commit/eafa053d59ed60ae1de80cb56e6081f3499142eb))
+
 # [1.2.0](https://github.com/getstrm/cli/compare/v1.1.0...v1.2.0) (2023-11-01)
 
 
