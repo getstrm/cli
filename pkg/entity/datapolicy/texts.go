@@ -2,7 +2,7 @@ package datapolicy
 
 import "pace/pace/pkg/util"
 
-var upsertHelp = util.LongDocs(`
+var upsertLongHelp = util.LongDocs(`
 Upserts (inserts or updates) a data policy into Pace AND
 applies it to the target platform.
 
@@ -30,7 +30,7 @@ data_policy:
         type: integer
       transforms:
       - fixed:
-          value: blabla
+          value: "****"
 ...
 `)
 
@@ -48,10 +48,10 @@ data policies.
 
 var getExample = util.LongDocs(`
 # get a bare policy without rulesets from Catalog Collibra
-pace get datapolicy --bare --catalog COLLIBRA-testdrive \
+pace get data-policy --bare --catalog COLLIBRA-testdrive \
 	--database 99379294-6e87-4e26-9f09-21c6bf86d415 \
-	--schema 342f676c-341e-4229-b3c2-3e71f9ed0fcd 
-	6e978083-bb8f-459d-a48b-c9a50289b327 | json-case -y
+	--schema 342f676c-341e-4229-b3c2-3e71f9ed0fcd \
+	6e978083-bb8f-459d-a48b-c9a50289b327
 data_policy:
   info:
     title: employee_yearly_income
@@ -64,9 +64,12 @@ data_policy:
       - path_components:
           - employee_id
         type: varchar
+	...
 
 # get a bare policy without rulesets from Processing Platform BigQuery
-pace get datapolicy --bare --processing-platform bigquery-dev stream-machine-development.dynamic_view_poc.gddemo | json2yaml
+pace get data-policy --bare \
+	--processing-platform bigquery-dev \
+	stream-machine-development.dynamic_view_poc.gddemo
 dataPolicy:
   info:
     createTime: '2023-10-04T09:04:56.246Z'
@@ -87,7 +90,7 @@ dataPolicy:
 
 
 # get a complete datapolicy from the Pace database
-pace get datapolicy 414c8334-08e4-4655-979a-32f1c8951817 | json2yaml
+pace get data-policy 414c8334-08e4-4655-979a-32f1c8951817
 dataPolicy:
   id: 414c8334-08e4-4655-979a-32f1c8951817
   info:
@@ -103,7 +106,7 @@ dataPolicy:
         - HIGHCHOL
       transforms:
       - fixed:
-          value: bla bla
+          value: "****"
     target:
       fullname: POC.CDC_DIABETES_VIEW
   source:

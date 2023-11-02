@@ -9,7 +9,7 @@ import (
 	"os"
 	"pace/pace/pkg/bootstrap"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/util"
+	. "pace/pace/pkg/util"
 	"path"
 	"path/filepath"
 	"strings"
@@ -21,19 +21,18 @@ const (
 
 func main() {
 	RootCmd.AddCommand(&cobra.Command{
-		Use:   "generate-docs",
-		Short: "D",
+		Use:  "generate-docs",
+		Long: LongDocs(`Generate markdown documentation in the generated_docs subdirectory.`),
 		Run: func(_ *cobra.Command, _ []string) {
-			err := doc.GenMarkdownTree(RootCmd, "./generated_docs")
-			util.CliExit(err)
+			CliExit(doc.GenMarkdownTree(RootCmd, "./generated_docs"))
 		},
 		Hidden: true,
 	})
-	util.CliExit(RootCmd.Execute())
+	CliExit(RootCmd.Execute())
 }
 
 var RootCmd = &cobra.Command{
-	Use:               util.RootCommandName,
+	Use:               RootCommandName,
 	Short:             fmt.Sprintf("Pace CLI %s", common.Version),
 	PersistentPreRunE: rootCmdPreRun,
 	DisableAutoGenTag: true,
@@ -46,8 +45,8 @@ func rootCmdPreRun(cmd *cobra.Command, _ []string) error {
 	cmd.Flags().Visit(func(flag *pflag.Flag) {
 		log.Infoln(fmt.Sprintf("flag %v=%v", flag.Name, flag.Value))
 	})
-	common.ApiHost = util.GetStringAndErr(cmd.Flags(), apiHostFlag)
-	bootstrap.SetupServiceClients(nil)
+	common.ApiHost = GetStringAndErr(cmd.Flags(), apiHostFlag)
+	bootstrap.SetupServiceClients()
 	return err
 }
 
@@ -57,30 +56,23 @@ func init() {
 	persistentFlags := RootCmd.PersistentFlags()
 	persistentFlags.String(apiHostFlag, "localhost:50051", "api host")
 	persistentFlags.StringP(common.OutputFormatFlag, common.OutputFormatFlagShort,
-		common.DefaultPrinters.Keys()[0],
-		fmt.Sprintf("output format [%v]", strings.Join(common.DefaultPrinters.Keys(), ", ")))
+		common.StandardPrinters.Keys()[0],
+		fmt.Sprintf("output format [%v]", strings.Join(common.StandardPrinters.Keys(), ", ")))
 
-	err := RootCmd.RegisterFlagCompletionFunc(common.OutputFormatFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return common.DefaultPrinters.Keys(), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	util.CliExit(err)
+	CliExit(RootCmd.RegisterFlagCompletionFunc(common.OutputFormatFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return common.StandardPrinters.Keys(), cobra.ShellCompDirectiveNoFileComp
+	}))
 	bootstrap.SetupVerbs(RootCmd)
 }
 
 func CreateConfigDirAndFileIfNotExists() {
-	err := os.MkdirAll(filepath.Dir(common.ConfigPath()), 0700)
-	util.CliExit(err)
-
+	CliExit(os.MkdirAll(filepath.Dir(common.ConfigPath()), 0700))
 	configFilepath := path.Join(common.ConfigPath(), common.DefaultConfigFilename+common.DefaultConfigFileSuffix)
-
-	if _, _ = os.Stat(configFilepath); os.IsNotExist(err) {
-		writeFileError := os.WriteFile(
+	if _, _ = os.Stat(configFilepath); os.IsNotExist(os.MkdirAll(filepath.Dir(common.ConfigPath()), 0700)) {
+		CliExit(os.WriteFile(
 			configFilepath,
 			common.DefaultConfigFileContents,
 			0644,
-		)
-
-		util.CliExit(writeFileError)
+		))
 	}
 }

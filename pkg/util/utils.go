@@ -27,9 +27,8 @@ func GetBoolAndErr(f *pflag.FlagSet, k string) bool {
 
 // LongDocs dedents, trims surrounding whitespace, changes !pace for the command Name and changes ° for `
 func LongDocs(s string) string {
-	s2 := DedentTrim(strings.Replace(
+	return DedentTrim(strings.Replace(
 		strings.Replace(s, "!pace", RootCommandName, -1), "°", "`", -1))
-	return s2
 }
 
 func LongDocsUsage(s string) string {
@@ -38,13 +37,10 @@ func LongDocsUsage(s string) string {
 
 func DedentTrim(s string) string {
 	return strings.TrimSpace(dedent.Dedent(s))
-
 }
 
 func IsoFormat(tz gostradamus.Timezone, t *timestamppb.Timestamp) string {
-	tt := time.Unix(t.Seconds, int64(t.Nanos))
-	n := gostradamus.DateTimeFromTime(tt)
-	return n.InTimezone(tz).IsoFormatTZ()
+	return gostradamus.DateTimeFromTime(time.Unix(t.Seconds, int64(t.Nanos))).InTimezone(tz).IsoFormatTZ()
 }
 
 var RootCommandName = "pace"

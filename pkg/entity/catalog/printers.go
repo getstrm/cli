@@ -13,7 +13,7 @@ import (
 var printer common.Printer
 
 func availablePrinters() orderedmap.OrderedMap[string, common.Printer] {
-	printers := common.DefaultPrinters.Copy()
+	printers := common.StandardPrinters.Copy()
 	printers.Set(common.OutputFormatTable, listTablePrinter{})
 	printers.Set(common.OutputFormatPlain, listPlainPrinter{})
 	return *printers
@@ -24,18 +24,15 @@ type listPlainPrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*ListCatalogsResponse)
-	rows := lo.Map(listResponse.Catalogs, func(catalog *DataCatalog, _ int) table.Row {
+	common.RenderTable(table.Row{
+		"ID",
+		"Type",
+	}, lo.Map(listResponse.Catalogs, func(catalog *DataCatalog, _ int) table.Row {
 		return table.Row{
 			catalog.Id,
 			catalog.Type,
 		}
-	})
-
-	headers := table.Row{
-		"ID",
-		"Type",
-	}
-	common.RenderTable(headers, rows)
+	}))
 }
 
 func (p listPlainPrinter) Print(data interface{}) {

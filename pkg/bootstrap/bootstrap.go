@@ -42,11 +42,11 @@ func SetupVerbs(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(cmd.UpsertCmd)
 }
 
-func SetupServiceClients(accessToken *string) {
-	clientConnection, ctx := SetupGrpc(common.ApiHost)
-	datapoliciesClient := NewDataPoliciesServiceClient(clientConnection)
-	catalogsClient := NewDataCatalogsServiceClient(clientConnection)
-	ppClient := NewProcessingPlatformsServiceClient(clientConnection)
+func SetupServiceClients() {
+	connection, ctx := SetupGrpc(common.ApiHost)
+	datapoliciesClient := NewDataPoliciesServiceClient(connection)
+	catalogsClient := NewDataCatalogsServiceClient(connection)
+	ppClient := NewProcessingPlatformsServiceClient(connection)
 	processingplatform.SetupClient(ppClient, ctx)
 	catalog.SetupClient(catalogsClient, ctx)
 	table.SetupClient(ppClient, catalogsClient, ctx)

@@ -9,8 +9,8 @@ func ListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "catalogs",
 		Short:             "List Catalogs",
-		Long:              docs,
-		Example:           listExample,
+		Long:              listCatalogsDocs,
+		Example:           listCatalogsExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			printer = common.ConfigurePrinter(cmd, availablePrinters())

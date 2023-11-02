@@ -13,7 +13,7 @@ import (
 var printer common.Printer
 
 func availablePrinters() orderedmap.OrderedMap[string, common.Printer] {
-	printers := common.DefaultPrinters.Copy()
+	printers := common.StandardPrinters.Copy()
 	printers.Set(common.OutputFormatTable, listTablePrinter{})
 	printers.Set(common.OutputFormatPlain, listPlainPrinter{})
 	return *printers

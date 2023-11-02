@@ -1,12 +1,14 @@
 package table
 
 import (
-	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
+	api "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
+	entities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	"fmt"
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
 	"pace/pace/pkg/common"
+	"strings"
 )
 
 var printer common.Printer
@@ -15,28 +17,30 @@ type listTablePrinter struct{}
 type listPlainPrinter struct{}
 
 func availablePrinters() orderedmap.OrderedMap[string, common.Printer] {
-	printers := common.DefaultPrinters.Copy()
+	printers := common.StandardPrinters.Copy()
 	printers.Set(common.OutputFormatTable, listTablePrinter{})
 	printers.Set(common.OutputFormatPlain, listPlainPrinter{})
 	return *printers
 }
 
 func (p listTablePrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*ListTablesResponse)
-	rows := lo.Map(listResponse.Tables, func(group string, _ int) table.Row {
+	listResponse, _ := (data).(*api.ListTablesResponse)
+	rows := lo.Map(listResponse.Tables, func(catalogTable *entities.DataCatalog_Table, _ int) table.Row {
 		return table.Row{
-			group,
+			catalogTable.Id,
+			catalogTable.Name,
+			strings.Join(catalogTable.Tags, ","),
 		}
 	})
 	headers := table.Row{
-		"ID",
+		"ID", "Name", "Tags",
 	}
 	common.RenderTable(headers, rows)
 }
 
 func (p listPlainPrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*ListTablesResponse)
+	listResponse, _ := (data).(*api.ListTablesResponse)
 	for _, t := range listResponse.Tables {
-		fmt.Println(t)
+		fmt.Println(t.Id, t.Name, strings.Join(t.Tags, ","))
 	}
 }

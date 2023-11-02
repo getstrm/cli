@@ -3,7 +3,7 @@ package processingplatform
 import "pace/pace/pkg/util"
 
 var listExample = util.LongDocs(`
-!pace list processing-platforms
+!pace list processing-platforms --output table
  ID                                 TYPE
 
  databricks-pim@getstrm.com   DATABRICKS

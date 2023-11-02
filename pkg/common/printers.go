@@ -17,7 +17,10 @@ import (
 	"strings"
 )
 
-var DefaultPrinters orderedmap.OrderedMap[string, Printer]
+// StandardPrinters
+// these are the printers that can always be used because they
+// understand every type of protobuf message
+var StandardPrinters orderedmap.OrderedMap[string, Printer]
 
 const (
 	OutputFormatYaml    = "yaml"
@@ -32,10 +35,10 @@ const (
 
 func init() {
 	// the order is important. The first one is the default output for every command
-	DefaultPrinters = *orderedmap.NewOrderedMap[string, Printer]()
-	DefaultPrinters.Set(OutputFormatYaml, ProtoMessageYamlPrinter{})
-	DefaultPrinters.Set(OutputFormatJson, ProtoMessageJsonPrettyPrinter{})
-	DefaultPrinters.Set(OutputFormatJsonRaw, ProtoMessageJsonRawPrinter{})
+	StandardPrinters = *orderedmap.NewOrderedMap[string, Printer]()
+	StandardPrinters.Set(OutputFormatYaml, ProtoMessageYamlPrinter{})
+	StandardPrinters.Set(OutputFormatJson, ProtoMessageJsonPrettyPrinter{})
+	StandardPrinters.Set(OutputFormatJsonRaw, ProtoMessageJsonRawPrinter{})
 }
 
 type Printer interface {
@@ -62,8 +65,8 @@ func ConfigurePrinter(command *cobra.Command, printers orderedmap.OrderedMap[str
 }
 
 // ConfigureExtraPrinters
-// this function is called after construction of the Cobra command in case a method wants to provide more than the DefaultPrinters
-// entities that only need the default universal printers don't need to call this.
+// this function is called after construction of the Cobra command in case a method wants to provide more than the StandardPrinters
+// entities that only need the standard niversal printers don't need to call this.
 func ConfigureExtraPrinters(cmd *cobra.Command, flags *pflag.FlagSet, printers orderedmap.OrderedMap[string, Printer]) {
 	formats := printers.Keys()
 	flags.StringP(OutputFormatFlag, OutputFormatFlagShort, formats[0],

@@ -2,8 +2,8 @@ package database
 
 import "pace/pace/pkg/util"
 
-var listExample = util.DedentTrim(`
-pace list databases --catalog COLLIBRA-testdrive
+var listDatabasesExample = util.DedentTrim(`
+pace list databases --catalog COLLIBRA-testdrive --output table
  ID                                     NAME
 
  8665f375-e08a-4810-add6-7af490f748ad

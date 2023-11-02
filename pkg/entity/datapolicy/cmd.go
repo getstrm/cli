@@ -14,11 +14,11 @@ func UpsertCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policy (yaml or json file)",
 		Short:             "Upsert a data policy",
-		Long:              upsertHelp,
+		Long:              upsertLongHelp,
 		Example:           upsertExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.DefaultPrinters)
+			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			upsert(cmd, &args[0])
@@ -39,7 +39,7 @@ func GetCmd() *cobra.Command {
 		Example:           getExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.DefaultPrinters)
+			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			get(cmd, &args[0])
@@ -63,7 +63,7 @@ func ListCmd() *cobra.Command {
 		Example:           "",
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.DefaultPrinters)
+			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			list(cmd)

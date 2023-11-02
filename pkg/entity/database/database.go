@@ -19,8 +19,7 @@ func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx contex
 }
 
 func list(cmd *cobra.Command) {
-	flags := cmd.Flags()
-	catalogId := util.GetStringAndErr(flags, common.CatalogFlag)
+	catalogId := util.GetStringAndErr(cmd.Flags(), common.CatalogFlag)
 	response, err := client.ListDatabases(apiContext, &ListDatabasesRequest{
 		CatalogId: catalogId,
 	})

@@ -10,7 +10,7 @@ func ListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "databases",
 		Short:             "List Databases",
-		Example:           listExample,
+		Example:           listDatabasesExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			printer = common.ConfigurePrinter(cmd, availablePrinters())

@@ -8,16 +8,16 @@ import (
 	"github.com/spf13/pflag"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
-	"pace/pace/pkg/util"
+	. "pace/pace/pkg/util"
 )
 
 var ApiHost string
 
 func Abort(format string, args ...interface{}) {
 	if len(args) == 0 {
-		util.CliExit(errors.New(format))
+		CliExit(errors.New(format))
 	} else {
-		util.CliExit(errors.New(fmt.Sprintf(format, args...)))
+		CliExit(errors.New(fmt.Sprintf(format, args...)))
 	}
 }
 
@@ -25,7 +25,6 @@ func GrpcRequestCompletionError(err error) ([]string, cobra.ShellCompDirective) 
 	errorMessage := fmt.Sprintf("%v", err)
 	log.Errorln(errorMessage)
 	cobra.CompErrorln(errorMessage)
-
 	return nil, cobra.ShellCompDirectiveNoFileComp
 }
 
@@ -54,7 +53,7 @@ func ConfigPath() string {
 			configPath, err = ExpandTilde(defaultConfigPath)
 		}
 
-		util.CliExit(err)
+		CliExit(err)
 	}
 
 	return configPath
@@ -62,7 +61,7 @@ func ConfigPath() string {
 
 func LogFileName() string {
 	if logFileName == "" {
-		logFileName = ConfigPath() + "/" + util.RootCommandName + ".log"
+		logFileName = ConfigPath() + "/" + RootCommandName + ".log"
 		log.SetLevel(log.TraceLevel)
 		log.SetOutput(&lumberjack.Logger{
 			Filename:   LogFileName(),
@@ -79,6 +78,6 @@ func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string) {
 	catalogId, err := flags.GetString(CatalogFlag)
 	databaseId, err := flags.GetString(DatabaseFlag)
 	schemaId, err := flags.GetString(SchemaFlag)
-	util.CliExit(err)
+	CliExit(err)
 	return catalogId, databaseId, schemaId
 }
