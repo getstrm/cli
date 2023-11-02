@@ -36,8 +36,8 @@ func list(cmd *cobra.Command) {
 		catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
 		req := &data_catalogsv1alpha.ListTablesRequest{
 			CatalogId:  catalogId,
-			DatabaseId: databaseId,
-			SchemaId:   schemaId,
+			DatabaseId: &databaseId,
+			SchemaId:   &schemaId,
 		}
 		response, err := catclient.ListTables(apiContext, req)
 		util.CliExit(err)

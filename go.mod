@@ -3,8 +3,8 @@ module pace/pace
 go 1.20
 
 require (
-	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231031090016-c6b25eab8021.2
-	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231031090016-c6b25eab8021.4
+	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231102122336-346d571a4cc2.2
+	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231102122336-346d571a4cc2.4
 	github.com/bykof/gostradamus v1.0.4
 	github.com/elliotchance/orderedmap/v2 v2.2.0
 	github.com/jedib0t/go-pretty/v6 v6.4.0
