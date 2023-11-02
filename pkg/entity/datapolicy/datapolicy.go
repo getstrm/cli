@@ -47,9 +47,9 @@ func upsert(_ *cobra.Command, filename *string) {
 
 func get(cmd *cobra.Command, tableId *string) {
 	flags := cmd.Flags()
+	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
 	if GetBoolAndErr(flags, bareFlag) {
 		// a bare policy only exists on processing platforms or catalogs
-		platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
 		if platformId != "" {
 			getBarePolicyFromProcessingPlatform(platformId, tableId)
 		} else {
@@ -59,6 +59,7 @@ func get(cmd *cobra.Command, tableId *string) {
 		// return a data policy from the Pace database.
 		req := &GetDataPolicyRequest{
 			DataPolicyId: *tableId,
+			PlatformId:   platformId,
 		}
 		response, err := polClient.GetDataPolicy(apiContext, req)
 		CliExit(err)
@@ -70,8 +71,8 @@ func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
 	catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
 	req := &catalogentities.GetBarePolicyRequest{
 		CatalogId:  catalogId,
-		DatabaseId: databaseId,
-		SchemaId:   schemaId,
+		DatabaseId: &databaseId,
+		SchemaId:   &schemaId,
 		TableId:    *tableId,
 	}
 	response, err := catClient.GetBarePolicy(apiContext, req)
@@ -82,7 +83,7 @@ func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
 func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
 	req := &ppentities.GetBarePolicyRequest{
 		PlatformId: platformId,
-		Table:      *tableId,
+		TableId:    *tableId,
 	}
 	response, err := pClient.GetBarePolicy(apiContext, req)
 	CliExit(err)
@@ -132,7 +133,9 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 	// talking to a processing platform
 	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
 	if platformId != "" {
-		response, err := pClient.ListTables(apiContext, &ppentities.ListTablesRequest{})
+		response, err := pClient.ListTables(apiContext, &ppentities.ListTablesRequest{
+			PlatformId: platformId,
+		})
 		CliExit(err)
 		return response.Tables, cobra.ShellCompDirectiveNoFileComp
 	}
@@ -153,8 +156,8 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 
 	response, err := catClient.ListTables(apiContext, &catalogentities.ListTablesRequest{
 		CatalogId:  catalogId,
-		DatabaseId: databaseId,
-		SchemaId:   schemaId,
+		DatabaseId: &databaseId,
+		SchemaId:   &schemaId,
 	})
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)

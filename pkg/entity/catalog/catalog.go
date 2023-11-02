@@ -79,7 +79,7 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 
 	response, err := client.ListSchemas(apiContext, &ListSchemasRequest{
 		CatalogId:  catalogId,
-		DatabaseId: databaseId,
+		DatabaseId: &databaseId,
 	})
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
