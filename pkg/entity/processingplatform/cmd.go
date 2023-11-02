@@ -9,17 +9,17 @@ func ListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "processing-platforms",
 		Short:             "List Processing Platforms",
+		Long:              listLongDocs,
 		Example:           listExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, availablePrinters())
+			printer = common.ConfigurePrinter(cmd, listPrinters())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			list(cmd)
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
-	flags := cmd.Flags()
-	common.ConfigureExtraPrinters(cmd, flags, availablePrinters())
+	common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
 	return cmd
 }

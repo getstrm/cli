@@ -10,3 +10,8 @@ var listExample = util.LongDocs(`
  68c97f58-fa4f-4b55-b8c3-95c321f7dae9   Snowflake Protect>DC22_PROTECT_TESTDRIVE>DCC_22_DEMO
  10255be7-c2ac-43ae-be0a-a34d4e7c88b7   Snowflake Protect>DC22_PROTECT_TESTDRIVE>DEMO
 `)
+
+var listSchemasLongDocs = util.LongDocs(`
+Lists all schemas in a certain database. Some catalogs (like Collibra) are hierarchical, while others
+are just a flat list of tables. In that case we might  just return a single 'Schema' for the whole catalog.
+`)

@@ -10,10 +10,11 @@ func ListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "databases",
 		Short:             "List Databases",
+		Long:              listDatabasesLongDocs,
 		Example:           listDatabasesExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, availablePrinters())
+			printer = common.ConfigurePrinter(cmd, listPrinters())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			list(cmd)
@@ -21,7 +22,7 @@ func ListCmd() *cobra.Command {
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	common.ConfigureExtraPrinters(cmd, flags, availablePrinters())
+	common.ConfigureExtraPrinters(cmd, flags, listPrinters())
 	catalog.AddCatalogFlag(cmd, flags)
 	return cmd
 }

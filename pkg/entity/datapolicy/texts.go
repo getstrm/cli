@@ -1,8 +1,8 @@
 package datapolicy
 
-import "pace/pace/pkg/util"
+import . "pace/pace/pkg/util"
 
-var upsertLongHelp = util.LongDocs(`
+var upsertLongDocs = LongDocs(`
 Upserts (inserts or updates) a data policy into Pace AND
 applies it to the target platform.
 
@@ -10,7 +10,7 @@ The file to upsert is checked for validity, a transformation is generated
 for the processing platform, and then applied on it.
 `)
 
-var upsertExample = util.LongDocs(`
+var upsertExample = LongDocs(`
 !pace upsert data-policy sample_data/bigquery-cdc.json
 data_policy:
   id: fb76958d-63a9-4b5e-bf36-fdc4d7ab807f
@@ -34,7 +34,7 @@ data_policy:
 ...
 `)
 
-var getHelp = util.LongDocs(`
+var getLongDoc = LongDocs(`
 retrieves a DataPolicy from Pace.
 
 °--bare° means we retrieve a policy without RuleSets from a Catalog or
@@ -46,9 +46,9 @@ Without °--bare° it just means we interact with the Pace database and retrieve
 data policies.
 `)
 
-var getExample = util.LongDocs(`
+var getExample = LongDocs(`
 # get a bare policy without rulesets from Catalog Collibra
-pace get data-policy --bare --catalog COLLIBRA-testdrive \
+!pace get data-policy --bare --catalog COLLIBRA-testdrive \
 	--database 99379294-6e87-4e26-9f09-21c6bf86d415 \
 	--schema 342f676c-341e-4229-b3c2-3e71f9ed0fcd \
 	6e978083-bb8f-459d-a48b-c9a50289b327
@@ -67,7 +67,7 @@ data_policy:
 	...
 
 # get a bare policy without rulesets from Processing Platform BigQuery
-pace get data-policy --bare \
+!pace get data-policy --bare \
 	--processing-platform bigquery-dev \
 	stream-machine-development.dynamic_view_poc.gddemo
 dataPolicy:
@@ -90,27 +90,40 @@ dataPolicy:
 
 
 # get a complete datapolicy from the Pace database
-pace get data-policy 414c8334-08e4-4655-979a-32f1c8951817
-dataPolicy:
-  id: 414c8334-08e4-4655-979a-32f1c8951817
-  info:
-    createTime: '2023-10-24T13:58:05.140442789Z'
-    updateTime: '2023-10-24T13:58:05.140442789Z'
-  platform:
-    id: snowflake-demo
-    platformType: SNOWFLAKE
-  ruleSets:
-  - fieldTransforms:
-    - attribute:
-        pathComponents:
-        - HIGHCHOL
-      transforms:
-      - fixed:
-          value: "****"
-    target:
-      fullname: POC.CDC_DIABETES_VIEW
-  source:
-    attributes:
-    - pathComponents:
-      - HIGHBP
+!pace get data-policy --processing-platform bigquery-dev \
+	stream-machine-development.dynamic_views.cdc_diabetes
+
+id: stream-machine-development.dynamic_views.cdc_diabetes
+metadata:
+  create_time: "2023-11-02T12:51:23.108319730Z"
+  description: ""
+  title: stream-machine-development.dynamic_views.cdc_diabetes
+  update_time: "2023-11-02T12:51:23.108319730Z"
+  version: 1
+platform:
+  id: bigquery-dev
+  platform_type: BIGQUERY
+rule_sets:
+- field_transforms:
+  - field:
+      name_parts:
+      - HighChol
+      type: integer
+    transforms:
+    - fixed:
+        value: blabla
+  target:
+`)
+
+var listExample = LongDocs(`
+!pace list data-policies --output table
+ PLATFORM       SOURCE                                                  TAGS
+
+ bigquery-dev   stream-machine-development.dynamic_views.cdc_diabetes
+`)
+
+var listLongDoc = LongDocs(`
+lists all the active policies defined and applied by PACE.
+
+These will always include at least one rule set.
 `)

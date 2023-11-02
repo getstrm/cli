@@ -12,7 +12,7 @@ zsh-completion:
 # for a speedier build than with goreleaser
 source_files := $(shell find . -name "*.go")
 
-targetVar := pace/pace/pkg/common.RootCommandName
+targetVar := pace/pace/pkg/util.RootCommandName
 
 target := dpace
 

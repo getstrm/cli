@@ -14,7 +14,7 @@ func UpsertCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policy (yaml or json file)",
 		Short:             "Upsert a data policy",
-		Long:              upsertLongHelp,
+		Long:              upsertLongDocs,
 		Example:           upsertExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -35,7 +35,7 @@ func GetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policy (table-id|policy-id)",
 		Short:             "Get a data policy",
-		Long:              getHelp,
+		Long:              getLongDoc,
 		Example:           getExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -52,7 +52,7 @@ func GetCmd() *cobra.Command {
 	catalog.AddCatalogFlag(cmd, flags)
 	catalog.AddDatabaseFlag(cmd, flags)
 	catalog.AddSchemaFlag(cmd, flags)
-	flags.BoolP(bareFlag, bareFlagShort, false, "when true ask platform or catalog, otherwise ask Pace itself")
+	flags.BoolP(bareFlag, bareFlagShort, false, "when true ask platform or catalog for a bare data policy without rulesets.")
 	return cmd
 }
 
@@ -60,15 +60,17 @@ func ListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policies",
 		Short:             "List Datapolicies",
-		Example:           "",
+		Example:           listExample,
+		Long:              listLongDoc,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
+			printer = common.ConfigurePrinter(cmd, listPrinters())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			list(cmd)
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
+	common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
 	return cmd
 }

@@ -6,7 +6,7 @@ import (
 	"context"
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/util"
+	. "pace/pace/pkg/util"
 )
 
 // strings used in the cli
@@ -21,10 +21,10 @@ func SetupClient(clientConnection processingplatforms.ProcessingPlatformsService
 }
 
 func list(cmd *cobra.Command) {
-	platformId := util.GetStringAndErr(cmd.Flags(), common.ProcessingPlatformFlag)
+	platformId := GetStringAndErr(cmd.Flags(), common.ProcessingPlatformFlag)
 	response, err := client.ListGroups(apiContext, &ListGroupsRequest{
 		PlatformId: platformId,
 	})
-	util.CliExit(err)
+	CliExit(err)
 	printer.Print(response)
 }

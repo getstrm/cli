@@ -25,24 +25,28 @@ func GetBoolAndErr(f *pflag.FlagSet, k string) bool {
 	return v
 }
 
-// LongDocs dedents, trims surrounding whitespace, changes !pace for the command Name and changes ° for `
+/*
+LongDocs
+dedents, trims surrounding whitespace, changes !pace for the command Name and changes ° for `
+The trick with the ° command is to avoid painful string concatenations that collide with
+the backticks used in Go raw strings.
+*/
 func LongDocs(s string) string {
-	return DedentTrim(strings.Replace(
-		strings.Replace(s, "!pace", RootCommandName, -1), "°", "`", -1))
-}
-
-func LongDocsUsage(s string) string {
-	return LongDocs(s) + "\n\n### Usage"
-}
-
-func DedentTrim(s string) string {
-	return strings.TrimSpace(dedent.Dedent(s))
+	return strings.TrimSpace(dedent.Dedent(strings.Replace(
+		strings.Replace(s, "!pace", RootCommandName, -1), "°", "`", -1)))
 }
 
 func IsoFormat(tz gostradamus.Timezone, t *timestamppb.Timestamp) string {
 	return gostradamus.DateTimeFromTime(time.Unix(t.Seconds, int64(t.Nanos))).InTimezone(tz).IsoFormatTZ()
 }
 
+/*
+	RootCommandName
+
+util.RootCommandName is modified in the Makefile to create the `dpace` completion.
+If you move or rename this variable, also fix the Makefile (targetVar). If you get this wrong
+completion won't work for dpace.
+*/
 var RootCommandName = "pace"
 
 func CliExit(err error) {

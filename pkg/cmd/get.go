@@ -9,7 +9,7 @@ import (
 var GetCmd = &cobra.Command{
 	Use:               common.GetCommandName,
 	DisableAutoGenTag: true,
-	Short:             "Get entities",
+	Short:             "Get a single entity",
 }
 
 func init() {

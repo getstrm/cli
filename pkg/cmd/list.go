@@ -16,6 +16,7 @@ var ListCmd = &cobra.Command{
 	Use:               common.ListCommandName,
 	DisableAutoGenTag: true,
 	Short:             "List entities",
+	Long:              "return 0 or more entities of a certain type",
 }
 
 func init() {

@@ -16,7 +16,9 @@ var printer common.Printer
 type listTablePrinter struct{}
 type listPlainPrinter struct{}
 
-func availablePrinters() orderedmap.OrderedMap[string, common.Printer] {
+// listPrinters
+// printers that can handle the output of the list command
+func listPrinters() orderedmap.OrderedMap[string, common.Printer] {
 	printers := common.StandardPrinters.Copy()
 	printers.Set(common.OutputFormatTable, listTablePrinter{})
 	printers.Set(common.OutputFormatPlain, listPlainPrinter{})

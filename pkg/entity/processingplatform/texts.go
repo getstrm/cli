@@ -1,8 +1,12 @@
 package processingplatform
 
-import "pace/pace/pkg/util"
+import . "pace/pace/pkg/util"
 
-var listExample = util.LongDocs(`
+var listLongDocs = LongDocs(`
+list all the processing platforms that are connected to PACE.
+`)
+
+var listExample = LongDocs(`
 !pace list processing-platforms --output table
  ID                                 TYPE
 

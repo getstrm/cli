@@ -2,6 +2,10 @@ package table
 
 import "pace/pace/pkg/util"
 
+var listTablesLongDocs = util.LongDocs(`
+Lists all tables in a certain schema. 
+`)
+
 var listExample = util.LongDocs(`
 !pace list tables --catalog COLLIBRA-testdrive \
 	--database b6e043a7-88f1-42ee-8e81-0fdc1c96f471  \

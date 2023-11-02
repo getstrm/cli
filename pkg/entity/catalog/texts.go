@@ -1,14 +1,14 @@
 package catalog
 
-import "pace/pace/pkg/util"
+import . "pace/pace/pkg/util"
 
-var listCatalogsDocs = util.LongDocs(`
+var listCatalogsDocs = LongDocs(`
 Shows all the catalogs that have been configured on this Pace instance.
 
 Catalogs are connected via configuration, and only read upon startup of the Pace server.
 `)
 
-var listCatalogsExample = util.LongDocs(`
+var listCatalogsExample = LongDocs(`
 !pace list catalogs --output table
  ID                       TYPE
 

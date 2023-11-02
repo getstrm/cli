@@ -12,7 +12,9 @@ import (
 
 var printer common.Printer
 
-func availablePrinters() orderedmap.OrderedMap[string, common.Printer] {
+// listPrinters
+// printers that can handle the output of the list command
+func listPrinters() orderedmap.OrderedMap[string, common.Printer] {
 	printers := common.StandardPrinters.Copy()
 	printers.Set(common.OutputFormatTable, listTablePrinter{})
 	printers.Set(common.OutputFormatPlain, listPlainPrinter{})
@@ -25,11 +27,12 @@ type listPlainPrinter struct{}
 func (p listTablePrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*ListDatabasesResponse)
 	common.RenderTable(table.Row{
-		"ID", "Name",
-	}, lo.Map(listResponse.Databases, func(catalog *DataCatalog_Database, _ int) table.Row {
+		"ID", "Name", "Type",
+	}, lo.Map(listResponse.Databases, func(database *DataCatalog_Database, _ int) table.Row {
 		return table.Row{
-			catalog.Id,
-			catalog.DisplayName,
+			database.Id,
+			database.DisplayName,
+			database.Type,
 		}
 	}))
 }
@@ -37,6 +40,6 @@ func (p listTablePrinter) Print(data interface{}) {
 func (p listPlainPrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*ListDatabasesResponse)
 	for _, database := range listResponse.Databases {
-		fmt.Println(database)
+		fmt.Println(database.Id, database.DisplayName, database.Type)
 	}
 }
