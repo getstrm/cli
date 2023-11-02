@@ -21,10 +21,11 @@ const (
 
 func main() {
 	RootCmd.AddCommand(&cobra.Command{
-		Use:  "generate-docs",
-		Long: LongDocs(`Generate markdown documentation in the generated_docs subdirectory.`),
+		Use:   "generate-docs",
+		Short: "D",
 		Run: func(_ *cobra.Command, _ []string) {
-			CliExit(doc.GenMarkdownTree(RootCmd, "./generated_docs"))
+			err := doc.GenMarkdownTree(RootCmd, "./generated_docs")
+			CliExit(err)
 		},
 		Hidden: true,
 	})
