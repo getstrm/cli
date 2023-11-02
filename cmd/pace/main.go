@@ -4,6 +4,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/cobra/doc"
 	"github.com/spf13/pflag"
 	"os"
 	"pace/pace/pkg/bootstrap"
@@ -19,10 +20,16 @@ const (
 )
 
 func main() {
-	err := RootCmd.Execute()
-	if err != nil {
-		util.CliExit(err)
-	}
+	RootCmd.AddCommand(&cobra.Command{
+		Use:   "generate-docs",
+		Short: "D",
+		Run: func(_ *cobra.Command, _ []string) {
+			err := doc.GenMarkdownTree(RootCmd, "./generated_docs")
+			util.CliExit(err)
+		},
+		Hidden: true,
+	})
+	util.CliExit(RootCmd.Execute())
 }
 
 var RootCmd = &cobra.Command{
