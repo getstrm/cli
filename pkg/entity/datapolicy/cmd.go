@@ -45,7 +45,7 @@ func GetCmd() *cobra.Command {
 			get(cmd, &args[0])
 		},
 		Args:              cobra.ExactArgs(1), // the policy or table id
-		ValidArgsFunction: common.NoFilesEmptyCompletion,
+		ValidArgsFunction: TableIdsCompletion,
 	}
 	flags := cmd.Flags()
 	processingplatform.AddProcessingPlatformFlag(cmd, flags)

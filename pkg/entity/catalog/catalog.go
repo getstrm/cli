@@ -94,39 +94,6 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 TODO needs to check the `--bare` flag, and then depending on that flag
 as well as processing platform or catalog flags.
 
-WIP
-
-func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-	if len(args) != 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-	flags := cmd.Flags()
-	catalogId, _ := flags.GetString(common.CatalogFlag)
-	if catalogId == "" {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-	databaseId, _ := flags.GetString(common.DatabaseFlag)
-	if databaseId == "" {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-	schemaId, _ := flags.GetString(common.SchemaFlag)
-	if schemaId == "" {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	response, err := client.ListTables(apiContext, &ListTablesRequest{
-		CatalogId:  catalogId,
-		DatabaseId: databaseId,
-		SchemaId:   schemaId,
-	})
-	if err != nil {
-		return common.GrpcRequestCompletionError(err)
-	}
-	names := lo.Map(response.Tables, func(table *DataCatalog_Table, _ int) string {
-		return table.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
-}
 
 */
 

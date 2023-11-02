@@ -9,12 +9,13 @@ import (
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	ppentities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"context"
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/encoding/protojson"
 	"os"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/util"
+	. "pace/pace/pkg/util"
 	"sigs.k8s.io/yaml"
 	"strings"
 )
@@ -40,15 +41,15 @@ func upsert(_ *cobra.Command, filename *string) {
 		DataPolicy: policy,
 	}
 	response, err := polClient.UpsertDataPolicy(apiContext, req)
-	util.CliExit(err)
+	CliExit(err)
 	printer.Print(response)
 }
 
 func get(cmd *cobra.Command, tableId *string) {
 	flags := cmd.Flags()
-	if util.GetBoolAndErr(flags, bareFlag) {
+	if GetBoolAndErr(flags, bareFlag) {
 		// a bare policy only exists on processing platforms or catalogs
-		platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
+		platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
 		if platformId != "" {
 			getBarePolicyFromProcessingPlatform(platformId, tableId)
 		} else {
@@ -60,7 +61,7 @@ func get(cmd *cobra.Command, tableId *string) {
 			DataPolicyId: *tableId,
 		}
 		response, err := polClient.GetDataPolicy(apiContext, req)
-		util.CliExit(err)
+		CliExit(err)
 		printer.Print(response.DataPolicy)
 	}
 }
@@ -74,7 +75,7 @@ func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
 		TableId:    *tableId,
 	}
 	response, err := catClient.GetBarePolicy(apiContext, req)
-	util.CliExit(err)
+	CliExit(err)
 	printer.Print(response.DataPolicy)
 }
 
@@ -84,14 +85,14 @@ func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
 		Table:      *tableId,
 	}
 	response, err := pClient.GetBarePolicy(apiContext, req)
-	util.CliExit(err)
+	CliExit(err)
 	printer.Print(response.DataPolicy)
 }
 
 func list(_ *cobra.Command) {
 	req := &ListDataPoliciesRequest{}
 	response, err := polClient.ListDataPolicies(apiContext, req)
-	util.CliExit(err)
+	CliExit(err)
 	printer.Print(response)
 }
 
@@ -99,14 +100,67 @@ func list(_ *cobra.Command) {
 // read a json or yaml encoded policy from the filesystem.
 func readPolicy(filename string) *DataPolicy {
 	file, err := os.ReadFile(filename)
-	util.CliExit(err)
+	CliExit(err)
 
 	if strings.HasSuffix(filename, ".yaml") {
 		file, err = yaml.YAMLToJSON(file)
-		util.CliExit(err)
+		CliExit(err)
 	}
 	dataPolicy := &DataPolicy{}
 	err = protojson.Unmarshal(file, dataPolicy)
-	util.CliExit(err)
+	CliExit(err)
 	return dataPolicy
+}
+
+func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	flags := cmd.Flags()
+	bare, _ := flags.GetBool(bareFlag)
+
+	// talking to the Pace database
+	if !bare {
+		response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
+		CliExit(err)
+		return lo.Map(response.DataPolicies, func(table *DataPolicy, _ int) string {
+			return table.Id
+		}), cobra.ShellCompDirectiveNoFileComp
+	}
+
+	// talking to a processing platform
+	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
+	if platformId != "" {
+		response, err := pClient.ListTables(apiContext, &ppentities.ListTablesRequest{})
+		CliExit(err)
+		return response.Tables, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	// talking to a catalog!
+	catalogId, _ := flags.GetString(common.CatalogFlag)
+	if catalogId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	databaseId, _ := flags.GetString(common.DatabaseFlag)
+	if databaseId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	schemaId, _ := flags.GetString(common.SchemaFlag)
+	if schemaId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	response, err := catClient.ListTables(apiContext, &catalogentities.ListTablesRequest{
+		CatalogId:  catalogId,
+		DatabaseId: databaseId,
+		SchemaId:   schemaId,
+	})
+	if err != nil {
+		return common.GrpcRequestCompletionError(err)
+	}
+	names := lo.Map(response.Tables, func(table *DataCatalog_Table, _ int) string {
+		return table.Id
+	})
+	return names, cobra.ShellCompDirectiveNoFileComp
 }
