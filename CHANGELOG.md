@@ -1,3 +1,11 @@
+# [1.4.0](https://github.com/getstrm/cli/compare/v1.3.0...v1.4.0) (2023-11-02)
+
+
+### Features
+
+* **main:** primary key data-policy is platform id + policy id ([9a38472](https://github.com/getstrm/cli/commit/9a384726cf74c1093c03a70a83ba813c4c04ed1a))
+* **main:** richer table printing ([817ece7](https://github.com/getstrm/cli/commit/817ece7a9d7892712a917cc2413f585a27b200fb))
+
 # [1.3.0](https://github.com/getstrm/cli/compare/v1.2.2...v1.3.0) (2023-11-02)
 
 
