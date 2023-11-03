@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/getstrm/cli/compare/v1.4.0...v1.4.1) (2023-11-03)
+
+
+### Bug Fixes
+
+* brew url template ([046ad61](https://github.com/getstrm/cli/commit/046ad619111fc81f4b4574a59557d36bd3c8383a))
+
 # [1.4.0](https://github.com/getstrm/cli/compare/v1.3.0...v1.4.0) (2023-11-02)
 
 
