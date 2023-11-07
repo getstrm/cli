@@ -34,7 +34,7 @@ In order to set up command completion, please follow the instructions below:
 The CLI is also available through Homebrew. Install the formula as follows:
 
 ```
-brew install pace/cli/pace
+brew install getstrm/cli/pace
 ```
 
 Setup command completion as described above.
