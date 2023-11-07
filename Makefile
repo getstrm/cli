@@ -1,4 +1,4 @@
-.PHONY: build test clean all
+.PHONY: build test clean all docs
 .DEFAULT_GOAL := all
 
 SHELL := /bin/bash
@@ -31,3 +31,9 @@ test: dist/${target}
 	go test ./test -v
 
 all: dist/${target}
+
+dist/pace: ${source_files} Makefile
+	go build -o $@ ./cmd/pace
+
+docs: dist/pace
+	pace generate-docs

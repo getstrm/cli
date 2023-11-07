@@ -7,9 +7,6 @@ import (
 	"pace/pace/pkg/entity/processingplatform"
 )
 
-const bareFlag = "bare"
-const bareFlagShort = "b"
-
 func UpsertCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policy (yaml or json file)",
@@ -52,7 +49,6 @@ func GetCmd() *cobra.Command {
 	catalog.AddCatalogFlag(cmd, flags)
 	catalog.AddDatabaseFlag(cmd, flags)
 	catalog.AddSchemaFlag(cmd, flags)
-	flags.BoolP(bareFlag, bareFlagShort, false, "when true ask platform or catalog for a bare data policy without rulesets.")
 	return cmd
 }
 
