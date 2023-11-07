@@ -8,17 +8,17 @@ applies it to the target platform.
 
 The file to upsert is checked for validity, a transformation is generated
 for the processing platform, and then applied on it.
+
+When updating an existing policy, the latest existing version should be set
+in the metadata. When creating a new policy, no version needs to be specified.
 `)
 
 var upsertExample = LongDocs(`
 !pace upsert data-policy examples/sample_data/bigquery-cdc.json
 data_policy:
   id: fb76958d-63a9-4b5e-bf36-fdc4d7ab807f
-  info:
-    context: 120ee556-8666-4438-9c2b-315a0ab2f494
-    create_time: "2023-10-27T11:28:37.658384414Z"
+  metadata:
     title: stream-machine-development.dynamic_views.cdc_diabetes
-    update_time: "2023-10-27T14:17:14.422071500Z"
   platform:
     id: bigquery-dev
     platform_type: BIGQUERY
@@ -37,23 +37,23 @@ data_policy:
 var getLongDoc = LongDocs(`
 retrieves a DataPolicy from Pace.
 
-°--bare° means we retrieve a policy without RuleSets from a Catalog or
-Processing Platform. This means we use the table information in the platform to
+A bare policy is a policy without a rule set that can be retrieved from a data catalog or a
+processing platform. This means we use the table information in the platform to
 build the °source° part of a data policy. We must either provide a platform or a catalog
 id to make the call succeed.
 
-Without °--bare° it just means we interact with the Pace database and retrieve succesfully applied
-data policies.
+Without a °--processing-platform° or a °--catalog° it just means we interact with the Pace
+database and retrieve succesfully applied data policies.
 `)
 
 var getExample = LongDocs(`
 # get a bare policy without rulesets from Catalog Collibra
-!pace get data-policy --bare --catalog COLLIBRA-testdrive \
+!pace get data-policy --catalog COLLIBRA-testdrive \
 	--database 99379294-6e87-4e26-9f09-21c6bf86d415 \
 	--schema 342f676c-341e-4229-b3c2-3e71f9ed0fcd \
 	6e978083-bb8f-459d-a48b-c9a50289b327
 data_policy:
-  info:
+  metadata:
     title: employee_yearly_income
     description: Google BigQuery
   source:
@@ -67,11 +67,11 @@ data_policy:
 	...
 
 # get a bare policy without rulesets from Processing Platform BigQuery
-!pace get data-policy --bare \
+!pace get data-policy \
 	--processing-platform bigquery-dev \
 	stream-machine-development.dynamic_view_poc.gddemo
 dataPolicy:
-  info:
+  metadata:
     createTime: '2023-10-04T09:04:56.246Z'
     description: ''
     title: stream-machine-development.dynamic_view_poc.gddemo

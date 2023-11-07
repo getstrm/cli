@@ -47,8 +47,8 @@ func upsert(_ *cobra.Command, filename *string) {
 
 func get(cmd *cobra.Command, tableId *string) {
 	flags := cmd.Flags()
-	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
-	if GetBoolAndErr(flags, bareFlag) {
+	platformId, _, bare := isBare(flags)
+	if bare {
 		// a bare policy only exists on processing platforms or catalogs
 		if platformId != "" {
 			getBarePolicyFromProcessingPlatform(platformId, tableId)
@@ -121,8 +121,8 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 	}
 
 	flags := cmd.Flags()
-	bare, _ := flags.GetBool(bareFlag)
 
+	platformId, catalogId, bare := isBare(flags)
 	// talking to the Pace database
 	if !bare {
 		response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
@@ -133,7 +133,6 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 	}
 
 	// talking to a processing platform
-	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
 	if platformId != "" {
 		response, err := pClient.ListTables(apiContext, &ppentities.ListTablesRequest{
 			PlatformId: platformId,
@@ -143,7 +142,6 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 	}
 
 	// talking to a catalog!
-	catalogId, _ := flags.GetString(common.CatalogFlag)
 	if catalogId == "" {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
@@ -168,4 +166,16 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 		return table.Id
 	})
 	return names, cobra.ShellCompDirectiveNoFileComp
+}
+
+/*
+	isBare
+
+Reads catalog and platform flags and determines if this is
+a call for a bare data policy.
+*/
+func isBare(flags *pflag.FlagSet) (string, string, bool) {
+	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	catalogId := GetStringAndErr(flags, common.CatalogFlag)
+	return platformId, catalogId, platformId != "" || catalogId != ""
 }
