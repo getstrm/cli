@@ -67,3 +67,5 @@ that are present in your config or environment.
 ## More resources
 
 See our [documentation](https://pace.getstrm.com/docs/readme/installation).
+
+.
