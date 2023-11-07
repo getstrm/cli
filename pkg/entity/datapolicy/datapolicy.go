@@ -103,10 +103,12 @@ func readPolicy(filename string) *DataPolicy {
 	file, err := os.ReadFile(filename)
 	CliExit(err)
 
-	if strings.HasSuffix(filename, ".yaml") {
+	// check if the file is yaml and convert it to json
+	if strings.HasSuffix(filename, ".yaml") || strings.HasSuffix(filename, ".yml") {
 		file, err = yaml.YAMLToJSON(file)
 		CliExit(err)
 	}
+
 	dataPolicy := &DataPolicy{}
 	err = protojson.Unmarshal(file, dataPolicy)
 	CliExit(err)

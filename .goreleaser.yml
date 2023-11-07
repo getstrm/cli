@@ -32,7 +32,7 @@ brews:
   - tap:
       owner: pace
       name: homebrew-cli
-    url_template: "https://github.com/pace/cli/releases/download/{{ .Tag }}/{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}.tar.gz"
+    url_template: "https://github.com/getstrm/cli/releases/download/{{ .Tag }}/{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}.tar.gz"
     homepage: "https://pace.io"
     description: "Command Line Interface for https://pace.io"
     install: |
@@ -40,6 +40,7 @@ brews:
     folder: Formula
     test: |
       system "#{bin}/{{ .ProjectName }} --version"
+    # Look at https://github.com/bufbuild/buf/blob/main/make/buf/scripts/brew.sh to see how autocomplete is installed automatically
     caveats: |
       In order to set up auto completion, please follow the instructions below. When you've set up auto completion in the past, you can skip these instructions.
 

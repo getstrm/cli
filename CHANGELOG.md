@@ -1,3 +1,25 @@
+# [1.5.0](https://github.com/getstrm/cli/compare/v1.4.1...v1.5.0) (2023-11-07)
+
+
+### Features
+
+* postgres processing platform integration ([c74c1f4](https://github.com/getstrm/cli/commit/c74c1f440ac7c2b9a2b8e16386b8a3d7a8d5e9bd))
+
+## [1.4.1](https://github.com/getstrm/cli/compare/v1.4.0...v1.4.1) (2023-11-03)
+
+
+### Bug Fixes
+
+* brew url template ([046ad61](https://github.com/getstrm/cli/commit/046ad619111fc81f4b4574a59557d36bd3c8383a))
+
+# [1.4.0](https://github.com/getstrm/cli/compare/v1.3.0...v1.4.0) (2023-11-02)
+
+
+### Features
+
+* **main:** primary key data-policy is platform id + policy id ([9a38472](https://github.com/getstrm/cli/commit/9a384726cf74c1093c03a70a83ba813c4c04ed1a))
+* **main:** richer table printing ([817ece7](https://github.com/getstrm/cli/commit/817ece7a9d7892712a917cc2413f585a27b200fb))
+
 # [1.3.0](https://github.com/getstrm/cli/compare/v1.2.2...v1.3.0) (2023-11-02)
 
 
