@@ -90,13 +90,6 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 	return names, cobra.ShellCompDirectiveNoFileComp
 }
 
-/*
-TODO needs to check the `--bare` flag, and then depending on that flag
-as well as processing platform or catalog flags.
-
-
-*/
-
 func AddCatalogFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
 	flags.StringP(common.CatalogFlag, common.CatalogFlagShort, "", common.CatalogFlagUsage)
 	_ = cmd.RegisterFlagCompletionFunc(common.CatalogFlag, IdsCompletion)

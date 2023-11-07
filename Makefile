@@ -1,4 +1,4 @@
-.PHONY: build test clean all
+.PHONY: build test clean all docs
 .DEFAULT_GOAL := all
 
 SHELL := /bin/bash
@@ -22,7 +22,7 @@ dist/${target}: ${source_files} Makefile
 	go build -ldflags="${ldflags}" -o $@ ./cmd/pace
 
 clean:
-	rm -f dist/${target}
+	rm -f dist/${target} dist/pace
 
 # Make sure the .env containing all `STRM_TEST_*` variables is present in the ./test directory
 # godotenv loads the .env file from that directory when running the tests
@@ -31,3 +31,9 @@ test: dist/${target}
 	go test ./test -v
 
 all: dist/${target}
+
+dist/pace: ${source_files} Makefile
+	go build -o $@ ./cmd/pace
+
+docs: dist/pace
+	dist/pace generate-docs
