@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/getstrm/cli/compare/v1.5.0...v1.6.0) (2023-11-07)
+
+
+### Features
+
+* **main:** trigger ci ([12e0973](https://github.com/getstrm/cli/commit/12e09734569ab26890a289c8c30bbf95b697ebf1))
+
 # [1.5.0](https://github.com/getstrm/cli/compare/v1.4.1...v1.5.0) (2023-11-07)
 
 
