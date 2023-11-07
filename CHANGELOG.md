@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/getstrm/cli/compare/v1.4.1...v1.5.0) (2023-11-07)
+
+
+### Features
+
+* postgres processing platform integration ([c74c1f4](https://github.com/getstrm/cli/commit/c74c1f440ac7c2b9a2b8e16386b8a3d7a8d5e9bd))
+
 ## [1.4.1](https://github.com/getstrm/cli/compare/v1.4.0...v1.4.1) (2023-11-03)
 
 
