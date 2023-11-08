@@ -39,7 +39,7 @@ func GetCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			get(cmd, args[0], args[1])
 		},
-		Args: cobra.ExactArgs(2), // the policy or table id
+		Args: cobra.ExactArgs(2), // ref and type
 	}
 	return cmd
 }
@@ -53,17 +53,17 @@ func DeleteCmd() *cobra.Command {
 			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			get(cmd, args[0], args[1])
+			delete(cmd, args[0], args[1])
 		},
-		Args: cobra.ExactArgs(1), // the policy or table id
+		Args: cobra.ExactArgs(2), // ref and type
 	}
 	return cmd
 }
 
 func ListCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "data-policies",
-		Short:             "List Datapolicies",
+		Use:               "global-transforms",
+		Short:             "List Global Transforms",
 		Example:           listExample,
 		Long:              listLongDoc,
 		DisableAutoGenTag: true,
