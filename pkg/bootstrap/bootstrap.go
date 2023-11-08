@@ -3,6 +3,7 @@ package bootstrap
 import (
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_catalogs/v1alpha/data_catalogsv1alphagrpc"
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_policies/v1alpha/data_policiesv1alphagrpc"
+	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/global_transforms/v1alpha/global_transformsv1alphagrpc"
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/processing_platforms/v1alpha/processing_platformsv1alphagrpc"
 	"context"
 	"fmt"
@@ -18,6 +19,7 @@ import (
 	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/database"
 	"pace/pace/pkg/entity/datapolicy"
+	"pace/pace/pkg/entity/globaltransform"
 	"pace/pace/pkg/entity/group"
 	"pace/pace/pkg/entity/processingplatform"
 	"pace/pace/pkg/entity/schema"
@@ -48,6 +50,7 @@ func SetupServiceClients() {
 	datapoliciesClient := NewDataPoliciesServiceClient(connection)
 	catalogsClient := NewDataCatalogsServiceClient(connection)
 	ppClient := NewProcessingPlatformsServiceClient(connection)
+	gtClient := NewGlobalTransformsServiceClient(connection)
 	processingplatform.SetupClient(ppClient, ctx)
 	catalog.SetupClient(catalogsClient, ctx)
 	table.SetupClient(ppClient, catalogsClient, ctx)
@@ -55,6 +58,7 @@ func SetupServiceClients() {
 	schema.SetupClient(catalogsClient, ctx)
 	database.SetupClient(catalogsClient, ctx)
 	datapolicy.SetupClient(datapoliciesClient, catalogsClient, ppClient, ctx)
+	globaltransform.SetupClient(gtClient, ctx)
 }
 
 func InitializeConfig(cmd *cobra.Command) error {
