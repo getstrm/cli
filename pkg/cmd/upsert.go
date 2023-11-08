@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/datapolicy"
+	"pace/pace/pkg/entity/globaltransform"
 )
 
 var UpsertCmd = &cobra.Command{
@@ -15,4 +16,5 @@ var UpsertCmd = &cobra.Command{
 
 func init() {
 	UpsertCmd.AddCommand(datapolicy.UpsertCmd())
+	UpsertCmd.AddCommand(globaltransform.UpsertCmd())
 }
