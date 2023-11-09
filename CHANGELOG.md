@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/getstrm/cli/compare/v1.6.0...v1.7.0) (2023-11-09)
+
+
+### Features
+
+* **pace-24:** upgrade proto definition dependencies ([f910fe1](https://github.com/getstrm/cli/commit/f910fe1db8b67d51d2215f592b90405ebc84360b))
+
 # [1.6.0](https://github.com/getstrm/cli/compare/v1.5.0...v1.6.0) (2023-11-07)
 
 
