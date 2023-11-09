@@ -2,9 +2,10 @@ package globaltransform
 
 import (
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/global_transforms/v1alpha/global_transformsv1alphagrpc"
-	v1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
+	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/global_transforms/v1alpha"
 	"context"
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/encoding/protojson"
 	"os"
@@ -34,29 +35,24 @@ func upsert(_ *cobra.Command, filename *string) {
 	printer.Print(response)
 }
 
-func get(cmd *cobra.Command, ref string, typ string) {
-	// return a global policy from the Pace database.
+func get(cmd *cobra.Command, ref string) {
+	flags := cmd.Flags()
+	typ := GetStringAndErr(flags, policyTypeFlag)
 	req := &GetGlobalTransformRequest{
-		RefAndType: &v1alpha.GlobalTransform_RefAndType{
-			Ref:  ref,
-			Type: typ,
-		},
+		RefAndType: refAndType(typ, ref),
 	}
 	response, err := client.GetGlobalTransform(apiContext, req)
 	CliExit(err)
 	printer.Print(response)
 }
 
-func delete(cmd *cobra.Command, ref string, typ string) {
-	// return a data policy from the Pace database.
-	refAndType := []*v1alpha.GlobalTransform_RefAndType{
-		&v1alpha.GlobalTransform_RefAndType{
-			Ref:  ref,
-			Type: typ,
-		},
-	}
+func delete(cmd *cobra.Command, ref string) {
+	flags := cmd.Flags()
+	typ := GetStringAndErr(flags, policyTypeFlag)
 	req := &DeleteGlobalTransformRequest{
-		RefAndTypes: refAndType,
+		RefAndTypes: []*GlobalTransform_RefAndType{
+			refAndType(typ, ref),
+		},
 	}
 	response, err := client.DeleteGlobalTransform(apiContext, req)
 	CliExit(err)
@@ -64,15 +60,14 @@ func delete(cmd *cobra.Command, ref string, typ string) {
 }
 
 func list(_ *cobra.Command) {
-	req := &ListGlobalTransformsRequest{}
-	response, err := client.ListGlobalTransforms(apiContext, req)
+	response, err := client.ListGlobalTransforms(apiContext, &ListGlobalTransformsRequest{})
 	CliExit(err)
 	printer.Print(response)
 }
 
 // readGlobalTransform
 // read a json or yaml encoded policy from the filesystem.
-func readGlobalTransform(filename string) *v1alpha.GlobalTransform {
+func readGlobalTransform(filename string) *GlobalTransform {
 	file, err := os.ReadFile(filename)
 	CliExit(err)
 
@@ -81,8 +76,26 @@ func readGlobalTransform(filename string) *v1alpha.GlobalTransform {
 		file, err = yaml.YAMLToJSON(file)
 		CliExit(err)
 	}
-	transform := &v1alpha.GlobalTransform{}
+	transform := &GlobalTransform{}
 	err = protojson.Unmarshal(file, transform)
 	CliExit(err)
 	return transform
+}
+
+func refAndType(typ string, ref string) *GlobalTransform_RefAndType {
+	return &GlobalTransform_RefAndType{
+		Ref:  ref,
+		Type: typ,
+	}
+}
+func refCompletionFunction(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	response, err := client.ListGlobalTransforms(apiContext, &ListGlobalTransformsRequest{})
+	CliExit(err)
+	refs := lo.Map(response.GlobalTransforms, func(t *GlobalTransform, _ int) string {
+		return t.Ref
+	})
+	return refs, cobra.ShellCompDirectiveNoFileComp
 }

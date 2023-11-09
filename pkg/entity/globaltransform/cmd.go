@@ -2,8 +2,17 @@ package globaltransform
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
+	"strings"
 )
+
+const (
+	policyTypeFlag      = "type"
+	policyTypeFlagShort = "t"
+)
+
+var transformTypes = []string{"TAG_TRANSFORM"}
 
 func UpsertCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -28,7 +37,7 @@ func UpsertCmd() *cobra.Command {
 
 func GetCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "global-transform  (ref) (type)",
+		Use:               "global-transform (ref)",
 		Short:             "Get a global transform",
 		Long:              getLongDoc,
 		Example:           getExample,
@@ -37,26 +46,30 @@ func GetCmd() *cobra.Command {
 			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			get(cmd, args[0], args[1])
+			get(cmd, args[0])
 		},
-		Args: cobra.ExactArgs(2), // ref and type
+		Args:              cobra.ExactArgs(1), // ref
+		ValidArgsFunction: refCompletionFunction,
 	}
+	_ = setupFlags(cmd)
 	return cmd
 }
 
 func DeleteCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "global-transform  (ref) (type)",
+		Use:               "global-transform (ref)",
 		Short:             "delete a global transform",
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			delete(cmd, args[0], args[1])
+			delete(cmd, args[0])
 		},
-		Args: cobra.ExactArgs(2), // ref and type
+		Args:              cobra.ExactArgs(1), // ref and type
+		ValidArgsFunction: refCompletionFunction,
 	}
+	_ = setupFlags(cmd)
 	return cmd
 }
 
@@ -75,4 +88,18 @@ func ListCmd() *cobra.Command {
 		},
 	}
 	return cmd
+}
+
+func typeCompletionFunction(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	return transformTypes, cobra.ShellCompDirectiveNoFileComp
+}
+
+func setupFlags(cmd *cobra.Command) *pflag.FlagSet {
+	flags := cmd.Flags()
+	_ = flags.StringP(policyTypeFlag, policyTypeFlagShort, transformTypes[0], "type of global transform: "+strings.Join(transformTypes, ","))
+	_ = cmd.RegisterFlagCompletionFunc(policyTypeFlag, typeCompletionFunction)
+	return flags
 }
