@@ -32,7 +32,7 @@ func upsert(_ *cobra.Command, filename *string) {
 	}
 	response, err := client.UpsertGlobalTransform(apiContext, req)
 	CliExit(err)
-	printer.Print(response)
+	printer.Print(response.Transform)
 }
 
 func get(cmd *cobra.Command, ref string) {
@@ -43,7 +43,7 @@ func get(cmd *cobra.Command, ref string) {
 	}
 	response, err := client.GetGlobalTransform(apiContext, req)
 	CliExit(err)
-	printer.Print(response)
+	printer.Print(response.Transform)
 }
 
 func delete(cmd *cobra.Command, ref string) {

@@ -59,6 +59,7 @@ func DeleteCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "global-transform (ref)",
 		Short:             "delete a global transform",
+		Example:           deleteExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)

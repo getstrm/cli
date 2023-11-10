@@ -36,6 +36,14 @@ func LongDocs(s string) string {
 		strings.Replace(s, "!pace", RootCommandName, -1), "°", "`", -1)))
 }
 
+/*
+Example
+example first lines should start with a tab to make a nice help layout.
+*/
+func Example(s string) string {
+	return "    " + LongDocs(s)
+}
+
 func IsoFormat(tz gostradamus.Timezone, t *timestamppb.Timestamp) string {
 	return gostradamus.DateTimeFromTime(time.Unix(t.Seconds, int64(t.Nanos))).InTimezone(tz).IsoFormatTZ()
 }
