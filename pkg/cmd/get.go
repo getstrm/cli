@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/datapolicy"
+	"pace/pace/pkg/entity/globaltransform"
 )
 
 var GetCmd = &cobra.Command{
@@ -14,4 +15,5 @@ var GetCmd = &cobra.Command{
 
 func init() {
 	GetCmd.AddCommand(datapolicy.GetCmd())
+	GetCmd.AddCommand(globaltransform.GetCmd())
 }

@@ -22,6 +22,7 @@ var DefaultConfigFileContents = []byte(`# The following configuration options ar
 const GetCommandName = "get"
 const ListCommandName = "list"
 const UpsertCommandName = "upsert"
+const DeleteCommandName = "delete"
 const ProcessingPlatformFlag = "processing-platform"
 const ProcessingPlatformFlagShort = "p"
 const ProcessingPlatformFlagUsage = `id of processing platform`
