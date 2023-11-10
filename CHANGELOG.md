@@ -1,3 +1,21 @@
+# [1.8.0](https://github.com/getstrm/cli/compare/v1.7.0...v1.8.0) (2023-11-10)
+
+
+### Bug Fixes
+
+* **global-policies:** merged with main ([ab043f5](https://github.com/getstrm/cli/commit/ab043f55ee6b056c28870e79e312856c886b6c28))
+* **global-policies:** merged with main ([140f6c7](https://github.com/getstrm/cli/commit/140f6c7143f52d32b128aa0cadcf2cffcd823617))
+
+
+### Features
+
+* **global-policies:** add yml to autocomplete for upsert commands ([fd5986c](https://github.com/getstrm/cli/commit/fd5986c6b2b417c0c0b6a03f895bd8bc3ef76ae2))
+* **global-policies:** added global transform interaction ([38c65a3](https://github.com/getstrm/cli/commit/38c65a3b5fb8cfb8bd78259485c5979dc0fe3e14))
+* **global-policies:** added global transform interaction ([ced780a](https://github.com/getstrm/cli/commit/ced780a1e3a83a89d74b3949a367f95112b9aee7))
+* **global-policies:** more functionality global-transforms ([18e590d](https://github.com/getstrm/cli/commit/18e590d6f5628d1cec405b481c4bc9200de5d2f3))
+* **global-policies:** upgrade to latest buf release ([0c080a3](https://github.com/getstrm/cli/commit/0c080a33a84ecdee4960342060f81b0f65f72f93))
+* **main:** trigger ci ([0b468a4](https://github.com/getstrm/cli/commit/0b468a489d526a8fcd64cd54d84ba5801c7ff1c3))
+
 # [1.7.0](https://github.com/getstrm/cli/compare/v1.6.0...v1.7.0) (2023-11-09)
 
 
