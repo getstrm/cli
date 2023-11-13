@@ -37,7 +37,7 @@ data_policy:
 var getLongDoc = LongDocs(`
 retrieves a DataPolicy from Pace.
 
-A bare policy is a policy without a rule set that can be retrieved from a data catalog or a
+A blueprint policy is a policy without a rule set that can be retrieved from a data catalog or a
 processing platform. This means we use the table information in the platform to
 build the °source° part of a data policy. We must either provide a platform or a catalog
 id to make the call succeed.
@@ -47,7 +47,7 @@ database and retrieve succesfully applied data policies.
 `)
 
 var getExample = LongDocs(`
-# get a bare policy without rulesets from Catalog Collibra
+# get a blueprint policy without rulesets from Catalog Collibra
 !pace get data-policy --catalog COLLIBRA-testdrive \
 	--database 99379294-6e87-4e26-9f09-21c6bf86d415 \
 	--schema 342f676c-341e-4229-b3c2-3e71f9ed0fcd \
@@ -66,7 +66,7 @@ data_policy:
         type: varchar
 	...
 
-# get a bare policy without rulesets from Processing Platform BigQuery
+# get a blueprint policy without rulesets from Processing Platform BigQuery
 !pace get data-policy \
 	--processing-platform bigquery-dev \
 	stream-machine-development.dynamic_view_poc.gddemo
