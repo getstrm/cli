@@ -51,3 +51,19 @@ jobs:
           git push
           git tag -a "${tag_name}" -m "Release brew formula for Pace CLI ${tag_name}"
           git push --tags
+      - name: Update CLI docs
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+          BOT_USERNAME: ${{secrets.BOT_USERNAME}}
+          BOT_EMAIL: ${{secrets.BOT_EMAIL}}
+        run: |
+          make docs
+          git config --global user.email "${BOT_EMAIL}"
+          git config --global user.name "${BOT_USERNAME}"
+          git clone "https://git:${GITHUB_TOKEN}@github.com/getstrm/pace.git"
+          python ./scripts/update_summary.py
+          cp -r ./generated_docs/pace* pace/docs/cli-docs
+          cd pace
+          git add ./docs 
+          git commit -m "docs: update docs for Pace CLI ${tag_name}"
+          git push
