@@ -61,9 +61,12 @@ jobs:
           git config --global user.email "${BOT_EMAIL}"
           git config --global user.name "${BOT_USERNAME}"
           git clone "https://git:${GITHUB_TOKEN}@github.com/getstrm/pace.git"
+          cd pace
+          git checkout alpha
+          cd ..
           python ./scripts/update_summary.py
           cp -r ./generated_docs/pace* pace/docs/cli-docs
           cd pace
           git add ./docs 
           git commit -m "docs: update docs for Pace CLI ${tag_name}"
-          git push
+          git push origin -u $(git branch --show-current)
