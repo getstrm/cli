@@ -89,7 +89,7 @@ func getBlueprintPolicyFromProcessingPlatform(platformId string, tableId *string
 	response, err := pClient.GetBlueprintPolicy(apiContext, req)
 	CliExit(err)
 	printer.Print(response.DataPolicy)
-	if response.Violation.Description != "" {
+	if response.Violation != nil && response.Violation.Description != "" {
 		fmt.Fprintf(os.Stderr, "Bare policy violation: %s\n", response.Violation.Description)
 		os.Exit(10)
 	}
