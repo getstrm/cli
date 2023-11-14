@@ -9,6 +9,7 @@ import (
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	ppentities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"context"
+	"fmt"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -47,13 +48,13 @@ func upsert(_ *cobra.Command, filename *string) {
 
 func get(cmd *cobra.Command, tableId *string) {
 	flags := cmd.Flags()
-	platformId, _, bare := isBare(flags)
+	platformId, _, bare := isBlueprint(flags)
 	if bare {
 		// a bare policy only exists on processing platforms or catalogs
 		if platformId != "" {
-			getBarePolicyFromProcessingPlatform(platformId, tableId)
+			getBlueprintPolicyFromProcessingPlatform(platformId, tableId)
 		} else {
-			getBarePolicyFromCatalog(flags, tableId)
+			getBlueprintPolicyFromCatalog(flags, tableId)
 		}
 	} else {
 		// return a data policy from the Pace database.
@@ -67,27 +68,31 @@ func get(cmd *cobra.Command, tableId *string) {
 	}
 }
 
-func getBarePolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
+func getBlueprintPolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
 	catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
-	req := &catalogentities.GetBarePolicyRequest{
+	req := &catalogentities.GetBlueprintPolicyRequest{
 		CatalogId:  catalogId,
 		DatabaseId: &databaseId,
 		SchemaId:   &schemaId,
 		TableId:    *tableId,
 	}
-	response, err := catClient.GetBarePolicy(apiContext, req)
+	response, err := catClient.GetBlueprintPolicy(apiContext, req)
 	CliExit(err)
 	printer.Print(response.DataPolicy)
 }
 
-func getBarePolicyFromProcessingPlatform(platformId string, tableId *string) {
-	req := &ppentities.GetBarePolicyRequest{
+func getBlueprintPolicyFromProcessingPlatform(platformId string, tableId *string) {
+	req := &ppentities.GetBlueprintPolicyRequest{
 		PlatformId: platformId,
 		TableId:    *tableId,
 	}
-	response, err := pClient.GetBarePolicy(apiContext, req)
+	response, err := pClient.GetBlueprintPolicy(apiContext, req)
 	CliExit(err)
 	printer.Print(response.DataPolicy)
+	if response.Violation.Description != "" {
+		fmt.Fprintf(os.Stderr, "Bare policy violation: %s\n", response.Violation.Description)
+		os.Exit(10)
+	}
 }
 
 func list(_ *cobra.Command) {
@@ -122,7 +127,7 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 
 	flags := cmd.Flags()
 
-	platformId, catalogId, bare := isBare(flags)
+	platformId, catalogId, bare := isBlueprint(flags)
 	// talking to the Pace database
 	if !bare {
 		response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
@@ -169,12 +174,12 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 }
 
 /*
-	isBare
+	isBlueprint
 
 Reads catalog and platform flags and determines if this is
 a call for a bare data policy.
 */
-func isBare(flags *pflag.FlagSet) (string, string, bool) {
+func isBlueprint(flags *pflag.FlagSet) (string, string, bool) {
 	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
 	catalogId := GetStringAndErr(flags, common.CatalogFlag)
 	return platformId, catalogId, platformId != "" || catalogId != ""
