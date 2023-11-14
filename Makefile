@@ -37,3 +37,8 @@ dist/pace: ${source_files} Makefile
 
 docs: dist/pace
 	dist/pace generate-docs
+
+update-pace-protos-version:
+	buf beta registry tag list buf.build/getstrm/pace --reverse --page-size 1 --format json | jq -r '.results[0].name' \
+	| xargs -I% buf alpha sdk go-version --module=buf.build/getstrm/pace:% --plugin=buf.build/grpc/go:v1.3.0 \
+	| xargs -I% go get buf.build/gen/go/getstrm/pace/grpc/go@%
