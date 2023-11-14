@@ -48,9 +48,9 @@ func upsert(_ *cobra.Command, filename *string) {
 
 func get(cmd *cobra.Command, tableId *string) {
 	flags := cmd.Flags()
-	platformId, _, bare := isBlueprint(flags)
-	if bare {
-		// a bare policy only exists on processing platforms or catalogs
+	platformId, _, blueprint := isBlueprint(flags)
+	if blueprint {
+		// a blueprint policy only exists on processing platforms or catalogs
 		if platformId != "" {
 			getBlueprintPolicyFromProcessingPlatform(platformId, tableId)
 		} else {
@@ -127,9 +127,9 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 
 	flags := cmd.Flags()
 
-	platformId, catalogId, bare := isBlueprint(flags)
+	platformId, catalogId, blueprint := isBlueprint(flags)
 	// talking to the Pace database
-	if !bare {
+	if !blueprint {
 		response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
 		CliExit(err)
 		return lo.Map(response.DataPolicies, func(table *DataPolicy, _ int) string {
@@ -177,7 +177,7 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 	isBlueprint
 
 Reads catalog and platform flags and determines if this is
-a call for a bare data policy.
+a call for a blueprint data policy.
 */
 func isBlueprint(flags *pflag.FlagSet) (string, string, bool) {
 	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)

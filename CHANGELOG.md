@@ -1,3 +1,13 @@
+## [1.8.1](https://github.com/getstrm/cli/compare/v1.8.0...v1.8.1) (2023-11-14)
+
+
+### Bug Fixes
+
+* add a go mod tidy to the pace protos version update make ([6708921](https://github.com/getstrm/cli/commit/6708921b340da35863e6cf563ccadbaa8622dd97))
+* refandtype to ref and type ([a36a464](https://github.com/getstrm/cli/commit/a36a46473128fe443529b16935de027527686cde))
+* remove duplicate openapi spec ([e527daa](https://github.com/getstrm/cli/commit/e527daad2b04f2963a4c54937fea8304ff472d9e))
+* update pace protos version; add update script to makefile ([e72559f](https://github.com/getstrm/cli/commit/e72559fdf45e93e685cc59e1bb3ca271ef4552a6))
+
 # [1.8.0](https://github.com/getstrm/cli/compare/v1.7.0...v1.8.0) (2023-11-10)
 
 
@@ -66,4 +76,3 @@
 ### Bug Fixes
 
 * **main:** removed call to publish_docs script ([f34c68c](https://github.com/getstrm/cli/commit/f34c68c3c55a2e9a51ebaa045bbc7d19a32bdcf1))
->>>>>>> 06c51d6082ce2ac99cd866120d24f3bdc004e0f0

@@ -39,7 +39,8 @@ func get(cmd *cobra.Command, ref string) {
 	flags := cmd.Flags()
 	typ := GetStringAndErr(flags, policyTypeFlag)
 	req := &GetGlobalTransformRequest{
-		Ref: ref, Type: typ,
+		Ref:  ref,
+		Type: typ,
 	}
 	response, err := client.GetGlobalTransform(apiContext, req)
 	CliExit(err)
