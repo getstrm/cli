@@ -68,5 +68,5 @@ jobs:
           cp -r ./generated_docs/pace* pace/docs/cli-docs
           cd pace
           git add ./docs 
-          git commit -m "docs: update docs for Pace CLI ${tag_name}"
+          git commit -m "docs: update docs for Pace CLI ${tag_name}" --allow-empty
           git push origin -u $(git branch --show-current)
