@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/getstrm/cli/compare/v1.8.1...v1.9.0) (2023-11-15)
+
+
+### Features
+
+* **main:** update to pace api v1.0.0-alpha.19 ([0e05743](https://github.com/getstrm/cli/commit/0e05743f13a7f0abbabc79b9b58ad2a956481fee))
+
 ## [1.8.1](https://github.com/getstrm/cli/compare/v1.8.0...v1.8.1) (2023-11-14)
 
 
