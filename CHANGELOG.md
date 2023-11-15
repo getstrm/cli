@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/getstrm/cli/compare/v1.9.0...v1.10.0) (2023-11-15)
+
+
+### Features
+
+* **feature/pace-31:** ref and type removal ([#15](https://github.com/getstrm/cli/issues/15)) ([c154847](https://github.com/getstrm/cli/commit/c1548478bfe7157b36a709cbf63a23918093aa30))
+
 # [1.9.0](https://github.com/getstrm/cli/compare/v1.8.1...v1.9.0) (2023-11-15)
 
 
