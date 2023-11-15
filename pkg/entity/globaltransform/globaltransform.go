@@ -51,9 +51,8 @@ func del(cmd *cobra.Command, ref string) {
 	flags := cmd.Flags()
 	typ := GetStringAndErr(flags, policyTypeFlag)
 	req := &DeleteGlobalTransformRequest{
-		RefAndTypes: []*GlobalTransform_RefAndType{
-			refAndType(typ, ref),
-		},
+		Ref:  ref,
+		Type: typ,
 	}
 	response, err := client.DeleteGlobalTransform(apiContext, req)
 	CliExit(err)
@@ -83,20 +82,15 @@ func readGlobalTransform(filename string) *GlobalTransform {
 	return transform
 }
 
-func refAndType(typ string, ref string) *GlobalTransform_RefAndType {
-	return &GlobalTransform_RefAndType{
-		Ref:  ref,
-		Type: typ,
-	}
-}
-func refCompletionFunction(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+func refCompletionFunction(_ *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
 	if len(args) != 0 {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 	response, err := client.ListGlobalTransforms(apiContext, &ListGlobalTransformsRequest{})
 	CliExit(err)
+	// TODO handle other types of transforms. Currently only one type though
 	refs := lo.Map(response.GlobalTransforms, func(t *GlobalTransform, _ int) string {
-		return t.Ref
+		return t.GetTagTransform().TagContent
 	})
 	return refs, cobra.ShellCompDirectiveNoFileComp
 }

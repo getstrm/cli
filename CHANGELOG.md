@@ -1,3 +1,17 @@
+# [1.10.0](https://github.com/getstrm/cli/compare/v1.9.0...v1.10.0) (2023-11-15)
+
+
+### Features
+
+* **feature/pace-31:** ref and type removal ([#15](https://github.com/getstrm/cli/issues/15)) ([c154847](https://github.com/getstrm/cli/commit/c1548478bfe7157b36a709cbf63a23918093aa30))
+
+# [1.9.0](https://github.com/getstrm/cli/compare/v1.8.1...v1.9.0) (2023-11-15)
+
+
+### Features
+
+* **main:** update to pace api v1.0.0-alpha.19 ([0e05743](https://github.com/getstrm/cli/commit/0e05743f13a7f0abbabc79b9b58ad2a956481fee))
+
 ## [1.8.1](https://github.com/getstrm/cli/compare/v1.8.0...v1.8.1) (2023-11-14)
 
 
