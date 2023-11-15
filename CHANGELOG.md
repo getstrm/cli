@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/getstrm/cli/compare/v1.10.0...v1.10.1) (2023-11-15)
+
+
+### Bug Fixes
+
+* update pace api definitions ([57f3186](https://github.com/getstrm/cli/commit/57f318602de881f991ebf2733b76c80f3e4a6eff))
+
 # [1.10.0](https://github.com/getstrm/cli/compare/v1.9.0...v1.10.0) (2023-11-15)
 
 
