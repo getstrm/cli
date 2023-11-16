@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/getstrm/cli/compare/v1.10.1...v1.11.0) (2023-11-16)
+
+
+### Features
+
+* **feature/pace-32:** renamed to blueprint, handles bare policy violations ([#14](https://github.com/getstrm/cli/issues/14)) ([8e79aa0](https://github.com/getstrm/cli/commit/8e79aa0d31ce7ef16e6e60c68e81383bbc83f389))
+
 ## [1.10.1](https://github.com/getstrm/cli/compare/v1.10.0...v1.10.1) (2023-11-15)
 
 
