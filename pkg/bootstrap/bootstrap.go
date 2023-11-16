@@ -36,7 +36,7 @@ const (
 	these are the top level commands, i.e. the verbs.
 
 Each verb sits in its own package, and will have subcommands for all the entity types
-in Pace.
+in PACE.
 */
 func SetupVerbs(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(cmd.ListCmd)

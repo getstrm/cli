@@ -47,7 +47,7 @@ func get(cmd *cobra.Command, ref string) {
 	printer.Print(response.Transform)
 }
 
-func delete(cmd *cobra.Command, ref string) {
+func del(cmd *cobra.Command, ref string) {
 	flags := cmd.Flags()
 	typ := GetStringAndErr(flags, policyTypeFlag)
 	req := &DeleteGlobalTransformRequest{

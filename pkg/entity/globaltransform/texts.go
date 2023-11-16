@@ -25,7 +25,7 @@ var upsertExample = Example(`
 `)
 
 var getLongDoc = LongDocs(`
-Returns a global transform from Pace, by transform reference and transform type.
+Returns a global transform from PACE, by transform reference and transform type.
 `)
 
 var getExample = Example(`
@@ -45,7 +45,7 @@ var getExample = Example(`
 `)
 
 var listLongDoc = LongDocs(`
-Lists all the global transforms stored in Pace.
+Lists all the global transforms stored in PACE.
 `)
 
 var listExample = Example(`

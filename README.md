@@ -1,14 +1,14 @@
-# Pace Command Line Interface
+# PACE Command Line Interface
 
 [![GitHub Actions](https://github.com/getstrm/cli/workflows/Build/badge.svg)](https://github.com/getstrm/cli/actions)
 [![Latest Release](https://img.shields.io/github/v/release/getstrm/cli)](https://github.com/getstrm/cli/releases/latest)
 
-This package contains a command line interface (CLI) for interacting with [Pace](https://pace.getstrm.com).
+This package contains a command line interface (CLI) for interacting with [PACE](https://pace.getstrm.com).
 
 ## Installation
 
 ### Builds
-The Pace CLI is available for major OS platforms: Linux, Mac and Windows. Please note Windows builds are not tested by us, but should work properly.
+The PACE CLI is available for major OS platforms: Linux, Mac and Windows. Please note Windows builds are not tested by us, but should work properly.
 
 ### Manually
 
@@ -48,12 +48,12 @@ More package managers will be added in the future, so stay tuned.
 ## Configuration
 
 The `pace` CLI can be configured using either the flags as specified by the help (as command line arguments), with
-environment variables, or with a configuration file, named `config.yaml`, located in the Pace configuration directory
+environment variables, or with a configuration file, named `config.yaml`, located in the PACE configuration directory
 `~/.config/pace`
 
 ### Configuration directory
 
-The Pace CLI stores it's information in a configuration directory, by default located in:
+The PACE CLI stores it's information in a configuration directory, by default located in:
 `$HOME/.config/pace/`. In this directory, the CLI looks for a file named: `config.yaml`, which is used for
 setting global flags.
 
@@ -61,7 +61,7 @@ setting global flags.
 
 If you encounter an error, or you'd like a new feature, please create an
 issue [here](https://github.com/getstrm/pace/cli/issues/new). Please be thorough in your description, as it helps us
-to help you more quickly. At least include the version of the CLI, your OS. terminal and any custom Pace flags
+to help you more quickly. At least include the version of the CLI, your OS. terminal and any custom PACE flags
 that are present in your config or environment.
 
 ## More resources

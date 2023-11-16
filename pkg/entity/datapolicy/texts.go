@@ -3,7 +3,7 @@ package datapolicy
 import . "pace/pace/pkg/util"
 
 var upsertLongDocs = LongDocs(`
-Upserts (inserts or updates) a data policy into Pace AND
+Upserts (inserts or updates) a data policy into PACE AND
 applies it to the target platform.
 
 The file to upsert is checked for validity, a transformation is generated
@@ -35,14 +35,14 @@ data_policy:
 `)
 
 var getLongDoc = LongDocs(`
-retrieves a DataPolicy from Pace.
+retrieves a DataPolicy from PACE.
 
 A blueprint policy is a policy that can be retrieved from a data catalog or a
 processing platform with 0 or more rule sets. This means we use the table information in the platform to
 build the °source° part of a data policy. We must either provide a platform or a catalog
 id to make the call succeed.
 
-Without a °--processing-platform° or a °--catalog° it just means we interact with the Pace
+Without a °--processing-platform° or a °--catalog° it just means we interact with the PACE
 database and retrieve succesfully applied data policies.
 `)
 
@@ -89,7 +89,7 @@ dataPolicy:
       type: INTEGER
 
 
-# get a complete datapolicy from the Pace database
+# get a complete datapolicy from the PACE database
 !pace get data-policy --processing-platform bigquery-dev \
 	stream-machine-development.dynamic_views.cdc_diabetes
 

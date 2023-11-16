@@ -9,6 +9,7 @@ import (
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	ppentities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"context"
+	"fmt"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -56,7 +57,7 @@ func get(cmd *cobra.Command, tableId *string) {
 			getBlueprintPolicyFromCatalog(flags, tableId)
 		}
 	} else {
-		// return a data policy from the Pace database.
+		// return a data policy from the PACE database.
 		req := &GetDataPolicyRequest{
 			DataPolicyId: *tableId,
 			PlatformId:   platformId,
@@ -88,6 +89,10 @@ func getBlueprintPolicyFromProcessingPlatform(platformId string, tableId *string
 	response, err := pClient.GetBlueprintPolicy(apiContext, req)
 	CliExit(err)
 	printer.Print(response.DataPolicy)
+	if response.Violation != nil && response.Violation.Description != "" {
+		fmt.Fprintf(os.Stderr, "Bare policy violation: %s\n", response.Violation.Description)
+		os.Exit(10)
+	}
 }
 
 func list(_ *cobra.Command) {
@@ -123,7 +128,7 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 	flags := cmd.Flags()
 
 	platformId, catalogId, blueprint := isBlueprint(flags)
-	// talking to the Pace database
+	// talking to the PACE database
 	if !blueprint {
 		response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
 		CliExit(err)

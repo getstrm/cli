@@ -97,4 +97,3 @@
 ### Bug Fixes
 
 * **main:** removed call to publish_docs script ([f34c68c](https://github.com/getstrm/cli/commit/f34c68c3c55a2e9a51ebaa045bbc7d19a32bdcf1))
->>>>>>> 06c51d6082ce2ac99cd866120d24f3bdc004e0f0

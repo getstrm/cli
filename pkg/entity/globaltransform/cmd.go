@@ -65,7 +65,7 @@ func DeleteCmd() *cobra.Command {
 			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			delete(cmd, args[0])
+			del(cmd, args[0])
 		},
 		Args:              cobra.ExactArgs(1), // ref and type
 		ValidArgsFunction: refCompletionFunction,
