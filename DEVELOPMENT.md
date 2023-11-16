@@ -1,4 +1,4 @@
-# Developing the Pace Command Line Interface
+# Developing the PACE Command Line Interface
 
 ## Development
 
