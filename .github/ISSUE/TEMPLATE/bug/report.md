@@ -26,8 +26,8 @@ If applicable, add screenshots to help explain your problem.
 
 - OS: [e.g. MacOS 11.2.3]
 - Terminal type [i.e. Bash, or Zsh]
-- Pace CLI version [e.g. 1.0.0]
-- Pace flags (either from the config file, or environment variables).
+- PACE CLI version [e.g. 1.0.0]
+- PACE flags (either from the config file, or environment variables).
 
 **Additional context**
 Add any other context about the problem here.

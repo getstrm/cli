@@ -57,7 +57,7 @@ func get(cmd *cobra.Command, tableId *string) {
 			getBlueprintPolicyFromCatalog(flags, tableId)
 		}
 	} else {
-		// return a data policy from the Pace database.
+		// return a data policy from the PACE database.
 		req := &GetDataPolicyRequest{
 			DataPolicyId: *tableId,
 			PlatformId:   platformId,
@@ -128,7 +128,7 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 	flags := cmd.Flags()
 
 	platformId, catalogId, blueprint := isBlueprint(flags)
-	// talking to the Pace database
+	// talking to the PACE database
 	if !blueprint {
 		response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
 		CliExit(err)

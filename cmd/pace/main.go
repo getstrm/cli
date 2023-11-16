@@ -34,7 +34,7 @@ func main() {
 
 var RootCmd = &cobra.Command{
 	Use:               RootCommandName,
-	Short:             fmt.Sprintf("Pace CLI %s", common.Version),
+	Short:             fmt.Sprintf("PACE CLI %s", common.Version),
 	PersistentPreRunE: rootCmdPreRun,
 	DisableAutoGenTag: true,
 }
