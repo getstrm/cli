@@ -6,6 +6,7 @@ import (
 	"github.com/lithammer/dedent"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
@@ -65,8 +66,17 @@ func CliExit(err error) {
 		st, ok := status.FromError(err)
 
 		if ok {
+			details := st.Details()[0]
+			var additionalDetails string
+			switch details.(type) {
+			case *errdetails.BadRequest:
+				additionalDetails = "it's a bad request"
+			default:
+				additionalDetails = "it's some other error"
+			}
 			_, _ = fmt.Fprintln(os.Stderr, fmt.Sprintf(`Error code = %s
-Details = %s`, (*st).Code(), (*st).Message()))
+		Details = %s
+		%s`, (*st).Code(), (*st).Message(), additionalDetails))
 		} else {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 		}
