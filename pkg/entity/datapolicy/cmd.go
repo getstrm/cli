@@ -77,6 +77,7 @@ func GetCmd() *cobra.Command {
 	catalog.AddSchemaFlag(cmd, flags)
 	flags.BoolP(common.BlueprintFlag, common.BlueprintFlagShort, false, common.BlueprintFlagUsage)
 	cmd.MarkFlagsMutuallyExclusive(common.CatalogFlag, common.ProcessingPlatformFlag)
+	cmd.MarkFlagsOneRequired(common.CatalogFlag, common.ProcessingPlatformFlag)
 	return cmd
 }
 

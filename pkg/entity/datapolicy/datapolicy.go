@@ -11,6 +11,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/samber/lo"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -144,20 +145,18 @@ func readPolicy(filename string) *DataPolicy {
 }
 
 func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	if len(args) != 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
 	flags := cmd.Flags()
 
-	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
-	catalogId := GetStringAndErr(flags, common.CatalogFlag)
 	blueprint := GetBoolAndErr(flags, common.BlueprintFlag)
+	log.Debugln(fmt.Sprintf("TableOrDataPolicyIdsCompletion blueprint: %v", blueprint))
 
 	// talking to the PACE database
 	if !blueprint {
-		IdsCompletion(cmd, args, toComplete)
+		return IdsCompletion(cmd, args, toComplete)
 	}
+
+	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	catalogId := GetStringAndErr(flags, common.CatalogFlag)
 
 	// talking to a processing platform
 	if platformId != "" {
@@ -195,14 +194,28 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 	return names, cobra.ShellCompDirectiveNoFileComp
 }
 
-func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-	if len(args) != 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
+func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
 	CliExit(err)
-	return lo.Map(response.DataPolicies, func(dataPolicy *DataPolicy, _ int) string {
+	var policies = response.DataPolicies
+
+	platformId := GetStringAndErr(cmd.Flags(), common.ProcessingPlatformFlag)
+
+	// If the platform id is provided, make sure we only suggest policies for that platform
+	if platformId != "" {
+		policies = lo.Filter(policies, func(policy *DataPolicy, _ int) bool {
+			return policy.Platform.Id == platformId
+		})
+	}
+
+	// If an argument is already supplied, then ensure that we don't suggest it again
+	if len(args) != 0 {
+		policies = lo.Filter(policies, func(policy *DataPolicy, _ int) bool {
+			return policy.Id != args[0]
+		})
+	}
+
+	return lo.Map(policies, func(dataPolicy *DataPolicy, _ int) string {
 		return dataPolicy.Id
 	}), cobra.ShellCompDirectiveNoFileComp
 }
