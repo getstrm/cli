@@ -50,6 +50,7 @@ func ApplyCmd() *cobra.Command {
 
 	flags := cmd.Flags()
 	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
 
 	return cmd
 }

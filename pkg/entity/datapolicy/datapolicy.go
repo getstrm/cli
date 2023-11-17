@@ -195,6 +195,10 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 }
 
 func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
 	response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
 	CliExit(err)
 	var policies = response.DataPolicies
@@ -205,13 +209,6 @@ func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra
 	if platformId != "" {
 		policies = lo.Filter(policies, func(policy *DataPolicy, _ int) bool {
 			return policy.Platform.Id == platformId
-		})
-	}
-
-	// If an argument is already supplied, then ensure that we don't suggest it again
-	if len(args) != 0 {
-		policies = lo.Filter(policies, func(policy *DataPolicy, _ int) bool {
-			return policy.Id != args[0]
 		})
 	}
 
