@@ -4,7 +4,7 @@ import . "pace/pace/pkg/util"
 
 var upsertLongDocs = LongDocs(`
 Upserts (inserts or updates) a data policy into PACE AND
-applies it to the target platform.
+optionally applies it to the target platform (default false).
 
 The file to upsert is checked for validity, a transformation is generated
 for the processing platform, and then applied on it.
@@ -17,6 +17,31 @@ var upsertExample = LongDocs(`
 !pace upsert data-policy examples/sample_data/bigquery-cdc.json
 data_policy:
   id: fb76958d-63a9-4b5e-bf36-fdc4d7ab807f
+  metadata:
+    title: stream-machine-development.dynamic_views.cdc_diabetes
+  platform:
+    id: bigquery-dev
+    platform_type: BIGQUERY
+  rule_sets:
+  - field_transforms:
+    - attribute:
+        path_components:
+        - HighChol
+        type: integer
+      transforms:
+      - fixed:
+          value: "****"
+...
+`)
+
+var applyLongDocs = LongDocs(`
+Applies an existing data policy to the target platform.
+`)
+
+var applyExample = LongDocs(`
+!pace apply data-policy public.demo
+data_policy:
+  id: public.demo
   metadata:
     title: stream-machine-development.dynamic_views.cdc_diabetes
   platform:

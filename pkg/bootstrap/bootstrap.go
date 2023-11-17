@@ -42,6 +42,7 @@ func SetupVerbs(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(cmd.ListCmd)
 	rootCmd.AddCommand(cmd.GetCmd)
 	rootCmd.AddCommand(cmd.UpsertCmd)
+	rootCmd.AddCommand(cmd.ApplyCmd)
 	rootCmd.AddCommand(cmd.DeleteCmd)
 	rootCmd.AddCommand(cmd.VersionCmd)
 }
