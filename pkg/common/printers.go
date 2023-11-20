@@ -62,7 +62,7 @@ func ConfigurePrinter(command *cobra.Command, printers orderedmap.OrderedMap[str
 
 // ConfigureExtraPrinters
 // this function is called after construction of the Cobra command in case a method wants to provide more than the StandardPrinters
-// entities that only need the standard u	niversal printers don't need to call this.
+// entities that only need the standard universal printers don't need to call this.
 func ConfigureExtraPrinters(cmd *cobra.Command, flags *pflag.FlagSet, printers orderedmap.OrderedMap[string, Printer]) {
 	formats := printers.Keys()
 	flags.StringP(OutputFormatFlag, OutputFormatFlagShort, formats[0],
@@ -75,35 +75,31 @@ func ConfigureExtraPrinters(cmd *cobra.Command, flags *pflag.FlagSet, printers o
 
 func (p ProtoMessageJsonRawPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
-	protoMessageEmpty(protoContent, func() string {
-		rawJson := util.ProtoMessageToRawJson(protoContent)
-		return string(rawJson.Bytes())
-	})
+	rawJson := util.ProtoMessageToRawJson(protoContent)
+	fmt.Println(string(rawJson.Bytes()))
+	printIfProtoMessageIsEmpty(protoContent)
 }
 
 func (p ProtoMessageJsonPrettyPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
-	protoMessageEmpty(protoContent, func() string {
-		prettyJson := util.ProtoMessageToPrettyJson(protoContent)
-		return string(prettyJson.Bytes())
-	})
+	prettyJson := util.ProtoMessageToPrettyJson(protoContent)
+	fmt.Println(string(prettyJson.Bytes()))
+	printIfProtoMessageIsEmpty(protoContent)
 }
 
 func (p ProtoMessageYamlPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
-	protoMessageEmpty(protoContent, func() string {
-		yaml := util.ProtoMessageToYaml(protoContent)
-		return string(yaml.Bytes())
-	})
+	yaml := util.ProtoMessageToYaml(protoContent)
+	fmt.Println(string(yaml.Bytes()))
+	printIfProtoMessageIsEmpty(protoContent)
 }
 
-func protoMessageEmpty(protoContent proto.Message, toPrint func() string) {
+func printIfProtoMessageIsEmpty(protoContent proto.Message) {
 	// An alternative to this approach is to use proto.Size(protoContent) == 0, though this way we ensure that we do a
 	// deep comparison.
 	cloned := proto.Clone(protoContent)
 	proto.Reset(cloned)
 
-	fmt.Println(toPrint())
 	if proto.Equal(cloned, protoContent) {
 		// To ensure that stdout always contains valid json / yaml, we print to stderr if the message is empty
 		fmt.Fprintln(os.Stderr, "No entities of this resource type exist.")
