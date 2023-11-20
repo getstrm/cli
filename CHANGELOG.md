@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/getstrm/cli/compare/v1.11.0...v1.12.0) (2023-11-20)
+
+
+### Features
+
+* **pace-10:** add apply cmd for data policy and don't apply upon ups… ([#17](https://github.com/getstrm/cli/issues/17)) ([b697308](https://github.com/getstrm/cli/commit/b6973087b4010f989f0f14d62b2a62541d387903))
+
 # [1.11.0](https://github.com/getstrm/cli/compare/v1.10.1...v1.11.0) (2023-11-16)
 
 

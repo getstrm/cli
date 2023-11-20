@@ -78,7 +78,7 @@ func CliExit(err error) {
 						Details = %s
 
 						%s`), (*st).Code(), (*st).Message(), additionalDetails)
-			
+
 			_, _ = fmt.Fprintln(os.Stderr, formattedMessage)
 		} else {
 			_, _ = fmt.Fprintln(os.Stderr, err)
