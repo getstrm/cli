@@ -5,9 +5,7 @@ import (
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"context"
-	"fmt"
 	"github.com/samber/lo"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
@@ -41,7 +39,6 @@ func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.Shel
 	names := lo.Map(response.ProcessingPlatforms, func(p *DataPolicy_ProcessingPlatform, _ int) string {
 		return p.Id
 	})
-	log.Debugln(fmt.Sprintf("IdsCompletion names: %v", names))
 
 	return names, cobra.ShellCompDirectiveNoFileComp
 }

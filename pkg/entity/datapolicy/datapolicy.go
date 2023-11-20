@@ -11,7 +11,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/samber/lo"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -148,7 +147,6 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 	flags := cmd.Flags()
 
 	blueprint := GetBoolAndErr(flags, common.BlueprintFlag)
-	log.Debugln(fmt.Sprintf("TableOrDataPolicyIdsCompletion blueprint: %v", blueprint))
 
 	// talking to the PACE database
 	if !blueprint {
