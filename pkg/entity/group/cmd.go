@@ -24,5 +24,7 @@ func ListCmd() *cobra.Command {
 	flags := cmd.Flags()
 	common.ConfigureExtraPrinters(cmd, flags, listPrinters())
 	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+
+	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
 	return cmd
 }

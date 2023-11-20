@@ -3,6 +3,8 @@
 
 SHELL := /bin/bash
 
+git_branch := $(shell git rev-parse --abbrev-ref HEAD)
+
 build:
 	goreleaser --snapshot --skip-publish --clean
 
@@ -38,7 +40,11 @@ dist/pace: ${source_files} Makefile
 docs: dist/pace
 	dist/pace generate-docs
 
-update-pace-protos-version:
+update-pace-protos-to-latest-tag:
 	buf beta registry tag list buf.build/getstrm/pace --reverse --page-size 1 --format json | jq -r '.results[0].name' \
 	| xargs -I% buf alpha sdk go-version --module=buf.build/getstrm/pace:% --plugin=buf.build/grpc/go:v1.3.0 \
+	| xargs -I% go get buf.build/gen/go/getstrm/pace/grpc/go@% && go mod tidy
+
+update-pace-protos-to-current-git-branch:
+	buf alpha sdk go-version --module=buf.build/getstrm/pace:${git_branch} --plugin=buf.build/grpc/go:v1.3.0 \
 	| xargs -I% go get buf.build/gen/go/getstrm/pace/grpc/go@% && go mod tidy

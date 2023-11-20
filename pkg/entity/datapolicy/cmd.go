@@ -22,9 +22,36 @@ func UpsertCmd() *cobra.Command {
 		},
 		Args: cobra.ExactArgs(1), // the policy file (yaml or json),
 		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return []string{"yml", "yaml", "json"}, cobra.ShellCompDirectiveFilterFileExt
+			return common.DefaultFileTypesCompletion, cobra.ShellCompDirectiveFilterFileExt
 		},
 	}
+
+	flags := cmd.Flags()
+	flags.BoolP(common.ApplyFlag, common.ApplyFlagShort, false, common.ApplyFlagUsage)
+	return cmd
+}
+
+func ApplyCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "data-policy (policy-id)",
+		Short:             "Apply an existing data policy",
+		Long:              applyLongDocs,
+		Example:           applyExample,
+		DisableAutoGenTag: true,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			apply(cmd, &args[0])
+		},
+		Args:              cobra.ExactArgs(1), // the policy id
+		ValidArgsFunction: IdsCompletion,
+	}
+
+	flags := cmd.Flags()
+	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
+
 	return cmd
 }
 
@@ -42,21 +69,23 @@ func GetCmd() *cobra.Command {
 			get(cmd, &args[0])
 		},
 		Args:              cobra.ExactArgs(1), // the policy or table id
-		ValidArgsFunction: TableIdsCompletion,
+		ValidArgsFunction: TableOrDataPolicyIdsCompletion,
 	}
 	flags := cmd.Flags()
 	processingplatform.AddProcessingPlatformFlag(cmd, flags)
 	catalog.AddCatalogFlag(cmd, flags)
 	catalog.AddDatabaseFlag(cmd, flags)
 	catalog.AddSchemaFlag(cmd, flags)
+	flags.BoolP(common.BlueprintFlag, common.BlueprintFlagShort, false, common.BlueprintFlagUsage)
 	cmd.MarkFlagsMutuallyExclusive(common.CatalogFlag, common.ProcessingPlatformFlag)
+	cmd.MarkFlagsOneRequired(common.CatalogFlag, common.ProcessingPlatformFlag)
 	return cmd
 }
 
 func ListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policies",
-		Short:             "List Datapolicies",
+		Short:             "List Data Policies",
 		Example:           listExample,
 		Long:              listLongDoc,
 		DisableAutoGenTag: true,

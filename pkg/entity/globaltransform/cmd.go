@@ -29,7 +29,7 @@ func UpsertCmd() *cobra.Command {
 		},
 		Args: cobra.ExactArgs(1), // the policy file (yaml or json),
 		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return []string{"yml", "yaml", "json"}, cobra.ShellCompDirectiveFilterFileExt
+			return common.DefaultFileTypesCompletion, cobra.ShellCompDirectiveFilterFileExt
 		},
 	}
 	return cmd

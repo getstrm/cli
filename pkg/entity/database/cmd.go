@@ -24,5 +24,7 @@ func ListCmd() *cobra.Command {
 	flags := cmd.Flags()
 	common.ConfigureExtraPrinters(cmd, flags, listPrinters())
 	catalog.AddCatalogFlag(cmd, flags)
+	cmd.MarkFlagRequired(common.CatalogFlag)
+
 	return cmd
 }

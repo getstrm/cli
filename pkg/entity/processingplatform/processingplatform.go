@@ -29,11 +29,7 @@ func list(_ *cobra.Command) {
 	printer.Print(response)
 }
 
-func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-	if len(args) != 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
+func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	req := &ListProcessingPlatformsRequest{}
 	response, err := client.ListProcessingPlatforms(apiContext, req)
 	if err != nil {
@@ -43,6 +39,7 @@ func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.S
 	names := lo.Map(response.ProcessingPlatforms, func(p *DataPolicy_ProcessingPlatform, _ int) string {
 		return p.Id
 	})
+
 	return names, cobra.ShellCompDirectiveNoFileComp
 }
 

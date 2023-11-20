@@ -19,9 +19,12 @@ var DefaultConfigFileContents = []byte(`# The following configuration options ar
 # output: yaml
 `)
 
+var DefaultFileTypesCompletion = []string{"yml", "yaml", "json"}
+
 const GetCommandName = "get"
 const ListCommandName = "list"
 const UpsertCommandName = "upsert"
+const ApplyCommandName = "apply"
 const DeleteCommandName = "delete"
 const ProcessingPlatformFlag = "processing-platform"
 const ProcessingPlatformFlagShort = "p"
@@ -38,3 +41,11 @@ const DatabaseFlagUsage = "database in the catalog"
 const SchemaFlag = "schema"
 const SchemaFlagShort = "s"
 const SchemaFlagUsage = "schema in database on catalog"
+
+const BlueprintFlag = "blueprint"
+const BlueprintFlagShort = "b"
+const BlueprintFlagUsage = "fetch a blueprint data policy from a catalog or a processing platform"
+
+const ApplyFlag = "apply"
+const ApplyFlagShort = "a"
+const ApplyFlagUsage = "apply a data policy to the target processing platform when upserting"

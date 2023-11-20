@@ -1,19 +1,15 @@
 package common
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"os"
 	"pace/pace/pkg/util"
-	"sigs.k8s.io/yaml"
 	"strings"
 )
 
@@ -66,7 +62,7 @@ func ConfigurePrinter(command *cobra.Command, printers orderedmap.OrderedMap[str
 
 // ConfigureExtraPrinters
 // this function is called after construction of the Cobra command in case a method wants to provide more than the StandardPrinters
-// entities that only need the standard niversal printers don't need to call this.
+// entities that only need the standard universal printers don't need to call this.
 func ConfigureExtraPrinters(cmd *cobra.Command, flags *pflag.FlagSet, printers orderedmap.OrderedMap[string, Printer]) {
 	formats := printers.Keys()
 	flags.StringP(OutputFormatFlag, OutputFormatFlagShort, formats[0],
@@ -79,32 +75,35 @@ func ConfigureExtraPrinters(cmd *cobra.Command, flags *pflag.FlagSet, printers o
 
 func (p ProtoMessageJsonRawPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
-	rawJson := protoMessageToRawJson(protoContent)
+	rawJson := util.ProtoMessageToRawJson(protoContent)
 	fmt.Println(string(rawJson.Bytes()))
+	printIfProtoMessageIsEmpty(protoContent)
 }
 
 func (p ProtoMessageJsonPrettyPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
-	prettyJson := protoMessageToPrettyJson(protoContent)
+	prettyJson := util.ProtoMessageToPrettyJson(protoContent)
 	fmt.Println(string(prettyJson.Bytes()))
+	printIfProtoMessageIsEmpty(protoContent)
 }
 
 func (p ProtoMessageYamlPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
-	jsonBytes := protoMessageToRawJson(protoContent)
-	m, _ := yaml.JSONToYAML(jsonBytes.Bytes())
-	fmt.Println(string(m))
+	yaml := util.ProtoMessageToYaml(protoContent)
+	fmt.Println(string(yaml.Bytes()))
+	printIfProtoMessageIsEmpty(protoContent)
 }
 
-func protoMessageToRawJson(proto proto.Message) bytes.Buffer {
-	// As protojson.Marshal adds random spaces, we use json.Compact to omit the random spaces in the output.
-	// Linked issue in google/protobuf: https://github.com/golang/protobuf/issues/1082
-	marshal, _ := protojson.MarshalOptions{
-		UseProtoNames: true,
-	}.Marshal(proto)
-	buffer := bytes.Buffer{}
-	_ = json.Compact(&buffer, marshal)
-	return buffer
+func printIfProtoMessageIsEmpty(protoContent proto.Message) {
+	// An alternative to this approach is to use proto.Size(protoContent) == 0, though this way we ensure that we do a
+	// deep comparison.
+	cloned := proto.Clone(protoContent)
+	proto.Reset(cloned)
+
+	if proto.Equal(cloned, protoContent) {
+		// To ensure that stdout always contains valid json / yaml, we print to stderr if the message is empty
+		fmt.Fprintln(os.Stderr, "No entities of this resource type exist.")
+	}
 }
 
 func RenderTable(headers table.Row, rows []table.Row) {
@@ -119,13 +118,6 @@ func RenderTable(headers table.Row, rows []table.Row) {
 		t.SetStyle(noBordersStyle)
 		t.Render()
 	}
-}
-
-func protoMessageToPrettyJson(proto proto.Message) bytes.Buffer {
-	prettyJson := bytes.Buffer{}
-	rawJson := protoMessageToRawJson(proto)
-	_ = json.Indent(&prettyJson, rawJson.Bytes(), "", "    ")
-	return prettyJson
 }
 
 var noBordersStyle = table.Style{

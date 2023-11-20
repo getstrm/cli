@@ -36,36 +36,59 @@ func SetupClient(policiesServiceClient datapolicies.DataPoliciesServiceClient, c
 	pClient = ppClient
 }
 
-func upsert(_ *cobra.Command, filename *string) {
+func upsert(cmd *cobra.Command, filename *string) {
 	policy := readPolicy(*filename)
+	apply := GetBoolAndErr(cmd.Flags(), common.ApplyFlag)
 	req := &UpsertDataPolicyRequest{
 		DataPolicy: policy,
+		Apply:      apply,
 	}
 	response, err := polClient.UpsertDataPolicy(apiContext, req)
 	CliExit(err)
 	printer.Print(response)
 }
 
-func get(cmd *cobra.Command, tableId *string) {
+func get(cmd *cobra.Command, dataPolicyOrTableId *string) {
 	flags := cmd.Flags()
-	platformId, _, blueprint := isBlueprint(flags)
+
+	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	blueprint := GetBoolAndErr(flags, common.BlueprintFlag)
 	if blueprint {
 		// a blueprint policy only exists on processing platforms or catalogs
 		if platformId != "" {
-			getBlueprintPolicyFromProcessingPlatform(platformId, tableId)
+			getBlueprintPolicyFromProcessingPlatform(platformId, dataPolicyOrTableId)
 		} else {
-			getBlueprintPolicyFromCatalog(flags, tableId)
+			getBlueprintPolicyFromCatalog(flags, dataPolicyOrTableId)
 		}
 	} else {
 		// return a data policy from the PACE database.
-		req := &GetDataPolicyRequest{
-			DataPolicyId: *tableId,
-			PlatformId:   platformId,
-		}
-		response, err := polClient.GetDataPolicy(apiContext, req)
-		CliExit(err)
+		response := getDataPolicy(dataPolicyOrTableId, platformId)
 		printer.Print(response.DataPolicy)
 	}
+}
+
+func apply(cmd *cobra.Command, dataPolicyId *string) *ApplyDataPolicyResponse {
+	processingPlatform := GetStringAndErr(cmd.Flags(), common.ProcessingPlatformFlag)
+
+	req := &ApplyDataPolicyRequest{
+		DataPolicyId: *dataPolicyId,
+		PlatformId:   processingPlatform,
+	}
+	response, err := polClient.ApplyDataPolicy(apiContext, req)
+	CliExit(err)
+
+	return response
+}
+
+func getDataPolicy(dataPolicyOrTableId *string, platformId string) *GetDataPolicyResponse {
+	// return a data policy from the PACE database.
+	req := &GetDataPolicyRequest{
+		DataPolicyId: *dataPolicyOrTableId,
+		PlatformId:   platformId,
+	}
+	response, err := polClient.GetDataPolicy(apiContext, req)
+	CliExit(err)
+	return response
 }
 
 func getBlueprintPolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
@@ -120,22 +143,18 @@ func readPolicy(filename string) *DataPolicy {
 	return dataPolicy
 }
 
-func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-	if len(args) != 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
+func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	flags := cmd.Flags()
 
-	platformId, catalogId, blueprint := isBlueprint(flags)
+	blueprint := GetBoolAndErr(flags, common.BlueprintFlag)
+
 	// talking to the PACE database
 	if !blueprint {
-		response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
-		CliExit(err)
-		return lo.Map(response.DataPolicies, func(table *DataPolicy, _ int) string {
-			return table.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+		return IdsCompletion(cmd, args, toComplete)
 	}
+
+	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	catalogId := GetStringAndErr(flags, common.CatalogFlag)
 
 	// talking to a processing platform
 	if platformId != "" {
@@ -173,14 +192,25 @@ func TableIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, 
 	return names, cobra.ShellCompDirectiveNoFileComp
 }
 
-/*
-	isBlueprint
+func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
 
-Reads catalog and platform flags and determines if this is
-a call for a blueprint data policy.
-*/
-func isBlueprint(flags *pflag.FlagSet) (string, string, bool) {
-	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
-	catalogId := GetStringAndErr(flags, common.CatalogFlag)
-	return platformId, catalogId, platformId != "" || catalogId != ""
+	response, err := polClient.ListDataPolicies(apiContext, &ListDataPoliciesRequest{})
+	CliExit(err)
+	var policies = response.DataPolicies
+
+	platformId := GetStringAndErr(cmd.Flags(), common.ProcessingPlatformFlag)
+
+	// If the platform id is provided, make sure we only suggest policies for that platform
+	if platformId != "" {
+		policies = lo.Filter(policies, func(policy *DataPolicy, _ int) bool {
+			return policy.Platform.Id == platformId
+		})
+	}
+
+	return lo.Map(policies, func(dataPolicy *DataPolicy, _ int) string {
+		return dataPolicy.Id
+	}), cobra.ShellCompDirectiveNoFileComp
 }
