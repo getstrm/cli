@@ -85,7 +85,7 @@ func GetCmd() *cobra.Command {
 func ListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policies",
-		Short:             "List Datapolicies",
+		Short:             "List Data Policies",
 		Example:           listExample,
 		Long:              listLongDoc,
 		DisableAutoGenTag: true,
