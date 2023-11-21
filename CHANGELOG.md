@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/getstrm/cli/compare/v1.12.0...v1.12.1) (2023-11-21)
+
+
+### Bug Fixes
+
+* update protos version to include synapse as a platform type ([39ea632](https://github.com/getstrm/cli/commit/39ea632941297f88f80c468402d4e63aaf48ad15))
+
 # [1.12.0](https://github.com/getstrm/cli/compare/v1.11.0...v1.12.0) (2023-11-20)
 
 
