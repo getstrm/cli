@@ -10,6 +10,7 @@
       matchPackagePrefixes: [
         "buf.build/gen/go"
       ],
+      digest: false,
       versioning: "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*)\\.(?<build>\\d+)$"
     }
   ]
