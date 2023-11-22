@@ -2,70 +2,15 @@
   "extends": [
     "github>getstrm/renovate-config//base-renovate-config.json5"
   ],
-  "customManagers": [
-    {
-      // Renovate cannot update build.buf.gen dependencies through the regular Go datasource manager,
-      // therefore, a custom regex manager is needed.
-      "customType": "regex",
-      "fileMatch": [
-        "go.mod$"
-      ],
-      // Via named capturing groups, we extract the buf.build generated dependency name and the current version
-      "matchStrings": [
-        "^(?<depName>buf\\.build\\/gen\\/go\\/getstrm\\/pace.*?)\\sv(?<currentValue>.*?)$"
-      ],
-      "datasourceTemplate": "go",
-      // Version extracted from Go Module Registry
-      "extractVersionTemplate": "^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-.*\\.(?<compatibility>\\d+)$",
-      // Version extracted from go.mod
-      "versioningTemplate": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-.*\\.(?<compatibility>\\d+)$"
-    }
-  ],
-  "customEnvVariables": {
-    "GOPRIVATE": "buf.build/gen/go",
-    "GONOSUMDB": "buf.build/gen/go",
-    "GOPROXY": "https://buf.build/gen/go,direct"
-  },
   packageRules: [
     {
       matchManagers: [
-        "regex"
+        "gomod"
       ],
       matchPackagePrefixes: [
         "build.buf.gen"
       ],
-      matchUpdateTypes: [
-        "major"
-      ],
-      groupName: "grpc-protobuf major dependencies",
-      groupSlug: "grpc-protobuf",
-      automerge: false,
-      addLabels: [
-        "major",
-        "grpc-protobuf",
-        "go"
-      ]
-    },
-    {
-      matchManagers: [
-        "regex"
-      ],
-      matchPackagePrefixes: [
-        "build.buf.gen"
-      ],
-      matchUpdateTypes: [
-        "minor",
-        "patch"
-      ],
-      groupName: "grpc-protobuf non-major dependencies",
-      groupSlug: "non-major-grpc-protobuf",
-      automerge: true,
-      platformAutomerge: true,
-      addLabels: [
-        "minor-patch",
-        "grpc-protobuf",
-        "go"
-      ]
+      versioning: "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*)\\.(?<revision>\\d+)$"
     }
   ]
 }
