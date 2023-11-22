@@ -1,7 +1,7 @@
 {
-//  "extends": [
-//    "github>getstrm/renovate-config//base-renovate-config.json5"
-//  ],
+  "extends": [
+    "github>getstrm/renovate-config//base-renovate-config.json5"
+  ],
   packageRules: [
     {
       matchManagers: [
