@@ -14,8 +14,7 @@
       "matchStrings": [
         "^(?<depName>buf\\.build\\/gen\\/go\\/getstrm\\/pace.*?)\\sv(?<currentValue>.*?)$"
       ],
-      // Do not use GOPROXY but go directly to the specified go module registry
-      "datasourceTemplate": "go-direct",
+      "datasourceTemplate": "go",
       // Version extracted from Go Module Registry
       "extractVersionTemplate": "^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-.*\\.(?<revision>\\d+)$",
       // Version extracted from go.mod
