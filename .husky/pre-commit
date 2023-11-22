@@ -1,4 +1,3 @@
 #!/bin/sh
 gofmt -w .
 git add -u
-git commit --amend --no-edit
