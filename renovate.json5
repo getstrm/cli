@@ -22,6 +22,8 @@
     }
   ],
   "customEnvVariables": {
+    "GOPRIVATE": "buf.build/gen/go",
+    "GONOSUMDB": "buf.build/gen/go",
     "GOPROXY": "https://buf.build/gen/go,direct"
   },
   packageRules: [
