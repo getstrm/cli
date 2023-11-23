@@ -8,7 +8,10 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
 	"pace/pace/pkg/common"
+	"pace/pace/pkg/util"
 	"strings"
+
+	"encoding/csv"
 )
 
 var printer common.Printer
@@ -22,8 +25,21 @@ func listPrinters() orderedmap.OrderedMap[string, common.Printer] {
 	return *printers
 }
 
+func evaluatePrinters() orderedmap.OrderedMap[string, common.Printer] {
+	// We want to use the table printer by default for the evaluate command,
+	// so put it first in the map, then add the standard printers.
+	printers := orderedmap.NewOrderedMap[string, common.Printer]()
+	printers.Set(common.OutputFormatTable, evaluateTablePrinter{})
+	lo.ForEach(common.StandardPrinters.Keys(), func(key string, _ int) {
+		printer, _ := common.StandardPrinters.Get(key)
+		printers.Set(key, printer)
+	})
+	return *printers
+}
+
 type listTablePrinter struct{}
 type listPlainPrinter struct{}
+type evaluateTablePrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*api.ListDataPoliciesResponse)
@@ -49,4 +65,35 @@ func (p listPlainPrinter) Print(data interface{}) {
 			strings.Join(policy.Metadata.Tags, ","),
 		)
 	}
+}
+
+func (p evaluateTablePrinter) Print(data interface{}) {
+	evaluateResponse, _ := (data).(*api.EvaluateDataPolicyResponse)
+	lo.ForEach(evaluateResponse.Results, func(result *api.EvaluateDataPolicyResponse_PrincipalEvaluationResult, _ int) {
+		principal := result.Principal
+		if principal == nil {
+			fmt.Print("All other principals\n\n")
+		} else {
+			common.ProtoMessageYamlPrinter{}.Print(principal)
+		}
+		printCsvAsTable(result.Csv)
+		fmt.Println()
+	})
+}
+
+func printCsvAsTable(csvString string) {
+	csvRows, err := csv.NewReader(strings.NewReader(csvString)).ReadAll()
+	util.CliExit(err)
+	headers := csvRows[0]
+	common.RenderTable(sliceToRow(headers), lo.Map(csvRows[1:], func(row []string, _ int) table.Row {
+		return sliceToRow(row)
+	}))
+}
+
+func sliceToRow(slice []string) table.Row {
+	row := make(table.Row, len(slice))
+	for i, colname := range slice {
+		row[i] = colname
+	}
+	return row
 }

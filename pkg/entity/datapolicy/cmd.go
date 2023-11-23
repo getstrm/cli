@@ -55,6 +55,34 @@ func ApplyCmd() *cobra.Command {
 	return cmd
 }
 
+func EvaluateCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "data-policy (policy-id)",
+		Short:             "Evaluate an existing data policy by applying it to sample data provided in a csv file",
+		Long:              evaluateLongDocs,
+		Example:           evaluateExample,
+		DisableAutoGenTag: true,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			printer = common.ConfigurePrinter(cmd, evaluatePrinters())
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			evaluate(cmd, &args[0])
+		},
+		Args:              cobra.ExactArgs(1), // the policy id
+		ValidArgsFunction: IdsCompletion,
+	}
+
+	flags := cmd.Flags()
+	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
+	addSampleDataFlag(cmd, flags)
+	cmd.MarkFlagRequired(common.SampleDataFlag)
+
+	common.ConfigureExtraPrinters(cmd, cmd.Flags(), evaluatePrinters())
+
+	return cmd
+}
+
 func GetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policy (table-id|policy-id)",

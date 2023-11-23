@@ -3,8 +3,12 @@ buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.28.1-2023101718302
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.28.1-20231017183020-0de7443d03cf.4/go.mod h1:mS9XvSH4W2c4pyTYRkCwrIuwoYpigZwLrYhzHaIT0Vo=
 buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231121141154-e945a7aece2d.2 h1:PfN21asuKr8EgDgaNrNkG6AK3t/FKmuxtFfCEsa/OrA=
 buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231121141154-e945a7aece2d.2/go.mod h1:l3mj2lGccuURft3PtuxV1PEa4u8nJq+8QdF+rioQ2Qw=
+buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231122150633-2d7e63f278de.2 h1:yqTK+ewC2dNft/Tjzt3tZlVEjTYsYpucIFDVkU0GF9s=
+buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231122150633-2d7e63f278de.2/go.mod h1:UsW6CBUEQcagAFD+TW97tZNrTVhPtfy4KotvW+AvaF4=
 buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231121141154-e945a7aece2d.4 h1:kIH8vb6pDKaSKcTVSkC1LPdWqnRJiKUsxNXD9jkFPgA=
 buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231121141154-e945a7aece2d.4/go.mod h1:37Q7EQZ1h4QpZTuFiE8OZ64xWeL9fJODE2bWoeKRSl0=
+buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231122150633-2d7e63f278de.4 h1:2AuYLiRX0RnPuUlCLh08e/pqjsmyV3QheBC9N1JGfwQ=
+buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231122150633-2d7e63f278de.4/go.mod h1:37Q7EQZ1h4QpZTuFiE8OZ64xWeL9fJODE2bWoeKRSl0=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.38.0/go.mod h1:990N+gfupTy94rShfmMCWGDn0LpTmnzTp2qbd1dvSRU=

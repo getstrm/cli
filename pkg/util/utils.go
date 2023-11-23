@@ -70,9 +70,14 @@ func CliExit(err error) {
 		st, ok := status.FromError(err)
 
 		if ok {
-			details := st.Details()[0]
-			yamlBytes := ProtoMessageToYaml(details.(proto.Message))
-			additionalDetails := string(yamlBytes.Bytes())
+			var additionalDetails string
+			if len(st.Details()) > 0 {
+				details := st.Details()[0]
+				yamlBytes := ProtoMessageToYaml(details.(proto.Message))
+				additionalDetails = string(yamlBytes.Bytes())
+			} else {
+				additionalDetails = ""
+			}
 			formattedMessage := fmt.Sprintf(dedentAndTrimMultiline(`
 						Error code = %s
 						Details = %s

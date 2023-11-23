@@ -80,6 +80,23 @@ func apply(cmd *cobra.Command, dataPolicyId *string) *ApplyDataPolicyResponse {
 	return response
 }
 
+func evaluate(cmd *cobra.Command, dataPolicyId *string) {
+	processingPlatform := GetStringAndErr(cmd.Flags(), common.ProcessingPlatformFlag)
+	sampleDataFileName := GetStringAndErr(cmd.Flags(), common.SampleDataFlag)
+	sampleDataFile, err := os.ReadFile(sampleDataFileName)
+	CliExit(err)
+	sampleData := string(sampleDataFile)
+
+	req := &EvaluateDataPolicyRequest{
+		DataPolicyId: *dataPolicyId,
+		PlatformId:   processingPlatform,
+		SampleData:   &EvaluateDataPolicyRequest_Csv{Csv: sampleData},
+	}
+	response, err := polClient.EvaluateDataPolicy(apiContext, req)
+	CliExit(err)
+	printer.Print(response)
+}
+
 func getDataPolicy(dataPolicyOrTableId *string, platformId string) *GetDataPolicyResponse {
 	// return a data policy from the PACE database.
 	req := &GetDataPolicyRequest{
@@ -141,6 +158,16 @@ func readPolicy(filename string) *DataPolicy {
 	err = protojson.Unmarshal(file, dataPolicy)
 	CliExit(err)
 	return dataPolicy
+}
+
+func addSampleDataFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
+	flags.String(common.SampleDataFlag, "", common.SampleDataUsage)
+	CliExit(
+		cmd.RegisterFlagCompletionFunc(common.SampleDataFlag,
+			func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				return []string{"csv,txt"}, cobra.ShellCompDirectiveFilterFileExt
+			}),
+	)
 }
 
 func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
