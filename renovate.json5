@@ -13,13 +13,13 @@
       // Via named capturing groups, we extract the buf.build generated dependency name and the current version
       "matchStrings": [
         // e.g. currentValue = v1.3.0-20231121141154-e945a7aece2d.2
-        "^(?<depName>buf\\.build\\/gen\\/go\\/getstrm\\/pace.*?)\\s(?<currentValue>v.*?)$"
+        "^(?<depName>buf\\.build\\/gen\\/go\\/getstrm\\/pace.*?)\\sv(?<currentValue>.*?)$"
       ],
       "datasourceTemplate": "go",
       // Version extracted from Go Module Registry
-      "extractVersionTemplate": "^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-.*\\.(?<compatibility>\\d+)$",
+      "extractVersionTemplate": "(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-.*\\.(?<compatibility>\\d+)$",
       // Version extracted from go.mod
-      "versioningTemplate": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-.*\\.(?<compatibility>\\d+)$"
+      "versioningTemplate": "regex:(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-.*\\.(?<compatibility>\\d+)$"
     }
   ],
   packageRules: [
