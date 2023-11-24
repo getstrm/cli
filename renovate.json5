@@ -17,9 +17,9 @@
       ],
       "datasourceTemplate": "go",
       // Version extracted from Go Module Registry
-      "extractVersionTemplate": "(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-.*\\.(?<compatibility>\\d+)$",
+      "extractVersionTemplate": "(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*\\.)(?<build>\\d+)$",
       // Version extracted from go.mod
-      "versioningTemplate": "regex:(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-.*\\.(?<compatibility>\\d+)$"
+      "versioningTemplate": "regex:(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*\\.)(?<build>\\d+)$"
     }
   ],
   packageRules: [
