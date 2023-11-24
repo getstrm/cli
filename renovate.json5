@@ -2,11 +2,6 @@
   "extends": [
     "github>getstrm/renovate-config//base-renovate-config.json5"
   ],
-  "customEnvVariables": {
-    "GOPRIVATE": "buf.build/gen/go",
-    "GONOSUMDB": "buf.build/gen/go",
-    "GOPROXY": "https://buf.build/gen/go,direct"
-  },
   packageRules: [
     {
       matchManagers: [
@@ -15,7 +10,7 @@
       matchPackagePrefixes: [
         "buf.build/gen/go"
       ],
-      versioning: "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*)\\.(?<build>\\d+)$"
+      versioning: "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*)(?<digest>\\.)(?<build>\\d+)$"
     }
   ]
 }
