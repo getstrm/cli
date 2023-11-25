@@ -80,6 +80,27 @@ func apply(cmd *cobra.Command, dataPolicyId *string) *ApplyDataPolicyResponse {
 	return response
 }
 
+func evaluate(cmd *cobra.Command, dataPolicyId *string) {
+	processingPlatform := GetStringAndErr(cmd.Flags(), common.ProcessingPlatformFlag)
+	sampleDataFileName := GetStringAndErr(cmd.Flags(), common.SampleDataFlag)
+	sampleDataFile, err := os.ReadFile(sampleDataFileName)
+	CliExit(err)
+	sampleData := string(sampleDataFile)
+
+	req := &EvaluateDataPolicyRequest{
+		DataPolicyId: *dataPolicyId,
+		PlatformId:   processingPlatform,
+		Evaluation: &EvaluateDataPolicyRequest_FullEvaluation_{
+			FullEvaluation: &EvaluateDataPolicyRequest_FullEvaluation{
+				SampleCsv: sampleData,
+			},
+		},
+	}
+	response, err := polClient.EvaluateDataPolicy(apiContext, req)
+	CliExit(err)
+	printer.Print(response)
+}
+
 func getDataPolicy(dataPolicyOrTableId *string, platformId string) *GetDataPolicyResponse {
 	// return a data policy from the PACE database.
 	req := &GetDataPolicyRequest{

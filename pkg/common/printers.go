@@ -120,6 +120,14 @@ func RenderTable(headers table.Row, rows []table.Row) {
 	}
 }
 
+func SliceToRow(slice []string) table.Row {
+	row := make(table.Row, len(slice))
+	for i, value := range slice {
+		row[i] = value
+	}
+	return row
+}
+
 var noBordersStyle = table.Style{
 	Name:    "StyleNoBorders",
 	Options: table.OptionsNoBorders,
