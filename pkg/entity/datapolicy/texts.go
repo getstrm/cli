@@ -61,7 +61,7 @@ data_policy:
 
 var evaluateLongDocs = LongDocs(`
 Evaluates an existing data policy by applying it to sample data provided in a csv file.
-You can use this to verify the correctness of your field transforms and filters.
+You can use this to test the correctness of your field transforms and filters.
 The csv file should contain a header row with the column names, matching the fields in the data policy.
 A comma should be used as the delimiter.
 Currently, only standard SQL data types are supported. For platform-specific transforms, test on the platform itself.
@@ -69,6 +69,7 @@ Currently, only standard SQL data types are supported. For platform-specific tra
 
 var evaluateExample = LongDocs(`
 !pace evaluate data-policy public.demo --processing-platform example-platform --sample-data sample.csv
+Results for rule set with target: public.demo_view
 group: administrator
 
  TRANSACTIONID   USERID   EMAIL                      AGE   BRAND    TRANSACTIONAMOUNT 

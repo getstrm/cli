@@ -2,9 +2,11 @@ package datapolicy
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/processingplatform"
+	. "pace/pace/pkg/util"
 )
 
 func UpsertCmd() *cobra.Command {
@@ -127,4 +129,14 @@ func ListCmd() *cobra.Command {
 	}
 	common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
 	return cmd
+}
+
+func addSampleDataFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
+	flags.String(common.SampleDataFlag, "", common.SampleDataUsage)
+	CliExit(
+		cmd.RegisterFlagCompletionFunc(common.SampleDataFlag,
+			func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				return []string{"csv"}, cobra.ShellCompDirectiveFilterFileExt
+			}),
+	)
 }

@@ -69,7 +69,14 @@ func (p listPlainPrinter) Print(data interface{}) {
 
 func (p evaluateTablePrinter) Print(data interface{}) {
 	evaluateResponse, _ := (data).(*api.EvaluateDataPolicyResponse)
-	lo.ForEach(evaluateResponse.Results, func(result *api.EvaluateDataPolicyResponse_PrincipalEvaluationResult, _ int) {
+	lo.ForEach(evaluateResponse.GetFullEvaluationResult().RuleSetResults, func(result *api.EvaluateDataPolicyResponse_FullEvaluationResult_RuleSetResult, _ int) {
+		printRuleSetResult(result)
+	})
+}
+
+func printRuleSetResult(ruleSetResult *api.EvaluateDataPolicyResponse_FullEvaluationResult_RuleSetResult) {
+	fmt.Printf("Results for rule set with target: %s\n", ruleSetResult.Target.Fullname)
+	lo.ForEach(ruleSetResult.PrincipalEvaluationResults, func(result *api.EvaluateDataPolicyResponse_FullEvaluationResult_RuleSetResult_PrincipalEvaluationResult, _ int) {
 		principal := result.Principal
 		if principal == nil {
 			fmt.Print("All other principals\n\n")
@@ -79,21 +86,14 @@ func (p evaluateTablePrinter) Print(data interface{}) {
 		printCsvAsTable(result.Csv)
 		fmt.Println()
 	})
+	fmt.Println()
 }
 
 func printCsvAsTable(csvString string) {
 	csvRows, err := csv.NewReader(strings.NewReader(csvString)).ReadAll()
 	util.CliExit(err)
 	headers := csvRows[0]
-	common.RenderTable(sliceToRow(headers), lo.Map(csvRows[1:], func(row []string, _ int) table.Row {
-		return sliceToRow(row)
+	common.RenderTable(common.SliceToRow(headers), lo.Map(csvRows[1:], func(row []string, _ int) table.Row {
+		return common.SliceToRow(row)
 	}))
-}
-
-func sliceToRow(slice []string) table.Row {
-	row := make(table.Row, len(slice))
-	for i, colname := range slice {
-		row[i] = colname
-	}
-	return row
 }

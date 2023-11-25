@@ -90,7 +90,11 @@ func evaluate(cmd *cobra.Command, dataPolicyId *string) {
 	req := &EvaluateDataPolicyRequest{
 		DataPolicyId: *dataPolicyId,
 		PlatformId:   processingPlatform,
-		SampleData:   &EvaluateDataPolicyRequest_Csv{Csv: sampleData},
+		Evaluation: &EvaluateDataPolicyRequest_FullEvaluation_{
+			FullEvaluation: &EvaluateDataPolicyRequest_FullEvaluation{
+				SampleCsv: sampleData,
+			},
+		},
 	}
 	response, err := polClient.EvaluateDataPolicy(apiContext, req)
 	CliExit(err)
@@ -158,16 +162,6 @@ func readPolicy(filename string) *DataPolicy {
 	err = protojson.Unmarshal(file, dataPolicy)
 	CliExit(err)
 	return dataPolicy
-}
-
-func addSampleDataFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
-	flags.String(common.SampleDataFlag, "", common.SampleDataUsage)
-	CliExit(
-		cmd.RegisterFlagCompletionFunc(common.SampleDataFlag,
-			func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-				return []string{"csv,txt"}, cobra.ShellCompDirectiveFilterFileExt
-			}),
-	)
 }
 
 func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
