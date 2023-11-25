@@ -1,3 +1,15 @@
+# [1.13.0](https://github.com/getstrm/cli/compare/v1.12.1...v1.13.0) (2023-11-25)
+
+
+### Bug Fixes
+
+* upgrade node version used for semantic-release ([b8b5c03](https://github.com/getstrm/cli/commit/b8b5c0327c521ed3a06660eb2dcc038c0ae4c1f4))
+
+
+### Features
+
+* **pace-52:** add evaluate command to apply a policy to sample csv data ([#19](https://github.com/getstrm/cli/issues/19)) ([7de254c](https://github.com/getstrm/cli/commit/7de254ce880eab73a7c48b61535849fb59c996ec))
+
 ## [1.12.1](https://github.com/getstrm/cli/compare/v1.12.0...v1.12.1) (2023-11-21)
 
 
