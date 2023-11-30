@@ -3,8 +3,8 @@ module pace/pace
 go 1.20
 
 require (
-	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231125110721-2763d7d1e4a3.2
-	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231125110721-2763d7d1e4a3.4
+	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231129203942-af8b483a4f63.2
+	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231129203942-af8b483a4f63.4
 	github.com/bykof/gostradamus v1.0.4
 	github.com/elliotchance/orderedmap/v2 v2.2.0
 	github.com/jedib0t/go-pretty/v6 v6.4.0
@@ -21,7 +21,8 @@ require (
 )
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.28.1-20231017183020-0de7443d03cf.4 // indirect
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.28.1-20231115204500-e097f827e652.4 // indirect
+	buf.build/gen/go/robstar/jsonschema-options/protocolbuffers/go v1.28.1-20221003011024-984cd8ca9be7.4 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

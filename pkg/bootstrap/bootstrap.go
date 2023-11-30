@@ -4,6 +4,7 @@ import (
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_catalogs/v1alpha/data_catalogsv1alphagrpc"
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_policies/v1alpha/data_policiesv1alphagrpc"
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/global_transforms/v1alpha/global_transformsv1alphagrpc"
+	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/plugins/v1alpha/pluginsv1alphagrpc"
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/processing_platforms/v1alpha/processing_platformsv1alphagrpc"
 	"context"
 	"fmt"
@@ -21,6 +22,7 @@ import (
 	"pace/pace/pkg/entity/datapolicy"
 	"pace/pace/pkg/entity/globaltransform"
 	"pace/pace/pkg/entity/group"
+	"pace/pace/pkg/entity/plugin"
 	"pace/pace/pkg/entity/processingplatform"
 	"pace/pace/pkg/entity/schema"
 	"pace/pace/pkg/entity/table"
@@ -46,22 +48,25 @@ func SetupVerbs(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(cmd.DeleteCmd)
 	rootCmd.AddCommand(cmd.VersionCmd)
 	rootCmd.AddCommand(cmd.EvaluateCmd)
+	rootCmd.AddCommand(cmd.InvokeCmd)
 }
 
 func SetupServiceClients() {
 	connection, ctx := SetupGrpc(common.ApiHost)
-	datapoliciesClient := NewDataPoliciesServiceClient(connection)
+	dataPoliciesClient := NewDataPoliciesServiceClient(connection)
 	catalogsClient := NewDataCatalogsServiceClient(connection)
-	ppClient := NewProcessingPlatformsServiceClient(connection)
-	gtClient := NewGlobalTransformsServiceClient(connection)
-	processingplatform.SetupClient(ppClient, ctx)
+	processingPlatformsClient := NewProcessingPlatformsServiceClient(connection)
+	globalTransformsClient := NewGlobalTransformsServiceClient(connection)
+	pluginsClient := NewPluginsServiceClient(connection)
+	processingplatform.SetupClient(processingPlatformsClient, ctx)
 	catalog.SetupClient(catalogsClient, ctx)
-	table.SetupClient(ppClient, catalogsClient, ctx)
-	group.SetupClient(ppClient, ctx)
+	table.SetupClient(processingPlatformsClient, catalogsClient, ctx)
+	group.SetupClient(processingPlatformsClient, ctx)
 	schema.SetupClient(catalogsClient, ctx)
 	database.SetupClient(catalogsClient, ctx)
-	datapolicy.SetupClient(datapoliciesClient, catalogsClient, ppClient, ctx)
-	globaltransform.SetupClient(gtClient, ctx)
+	datapolicy.SetupClient(dataPoliciesClient, catalogsClient, processingPlatformsClient, ctx)
+	globaltransform.SetupClient(globalTransformsClient, ctx)
+	plugin.SetupClient(pluginsClient, ctx)
 }
 
 func InitializeConfig(cmd *cobra.Command) error {
