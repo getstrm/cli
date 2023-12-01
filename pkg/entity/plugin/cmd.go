@@ -11,8 +11,8 @@ func InvokeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "plugin (plugin-id) --payload (payload-file)",
 		Short:             "Invoke a plugin with the provided payload (JSON or YAML)",
-		Long:              "tbd", // Todo - add long docs
-		Example:           "tbd", // Todo - add example
+		Long:              invokeLongDocs,
+		Example:           invokeExample,
 		DisableAutoGenTag: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)

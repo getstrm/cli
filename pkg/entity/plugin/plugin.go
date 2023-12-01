@@ -65,13 +65,13 @@ func invokePlugin(cmd *cobra.Command, pluginId *string) {
 }
 
 func invokeDataPolicyGenerator(plugin *Plugin, payload *string) {
-	//req := &InvokeDataPolicyGeneratorRequest{
-	//	PluginId: &plugin.Id,
-	//	Payload: *payload,
-	//}
-	//response, err := client.InvokeDataPolicyGenerator(apiContext, req)
-	//CliExit(err)
-	//printer.Print(response.DataPolicy)
+	req := &InvokeDataPolicyGeneratorRequest{
+		PluginId: &plugin.Id,
+		Payload:  *payload,
+	}
+	response, err := client.InvokeDataPolicyGenerator(apiContext, req)
+	CliExit(err)
+	printer.Print(response.DataPolicy)
 }
 
 func readPayload(cmd *cobra.Command, pluginId *string) *string {
