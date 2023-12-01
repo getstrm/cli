@@ -3,15 +3,13 @@ package plugin
 import (
 	plugins "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/plugins/v1alpha/pluginsv1alphagrpc"
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/plugins/v1alpha"
-	data_policy_generatorsv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/plugins/data_policy_generators/v1alpha"
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/anypb"
+	"github.com/xeipuuv/gojsonschema"
 	"os"
 	"pace/pace/pkg/common"
 	. "pace/pace/pkg/util"
@@ -57,26 +55,26 @@ func getPluginById(pluginId *string) *Plugin {
 
 func invokePlugin(cmd *cobra.Command, pluginId *string) {
 	plugin := getPluginById(pluginId)
+	base64EncodedJsonPayload := readPayload(cmd, pluginId)
 	switch plugin.PluginType {
 	case PluginType_DATA_POLICY_GENERATOR:
-		payload := unmarshalPayload(cmd, &data_policy_generatorsv1alpha.OpenAIDataPolicyGeneratorPayload{})
-		invokeDataPolicyGenerator(plugin, payload)
+		invokeDataPolicyGenerator(plugin, base64EncodedJsonPayload)
 	default:
 		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", plugin.PluginType)))
 	}
 }
 
-func invokeDataPolicyGenerator(plugin *Plugin, payload *anypb.Any) {
-	req := &InvokeDataPolicyGeneratorRequest{
-		PluginId: &plugin.Id,
-		Payload:  payload,
-	}
-	response, err := client.InvokeDataPolicyGenerator(apiContext, req)
-	CliExit(err)
-	printer.Print(response.DataPolicy)
+func invokeDataPolicyGenerator(plugin *Plugin, payload *string) {
+	//req := &InvokeDataPolicyGeneratorRequest{
+	//	PluginId: &plugin.Id,
+	//	Payload: *payload,
+	//}
+	//response, err := client.InvokeDataPolicyGenerator(apiContext, req)
+	//CliExit(err)
+	//printer.Print(response.DataPolicy)
 }
 
-func unmarshalPayload(cmd *cobra.Command, payload proto.Message) *anypb.Any {
+func readPayload(cmd *cobra.Command, pluginId *string) *string {
 	fileName := GetStringAndErr(cmd.Flags(), common.PluginPayloadFlag)
 	file, err := os.ReadFile(fileName)
 	if strings.HasSuffix(fileName, ".yaml") || strings.HasSuffix(fileName, ".yml") {
@@ -84,8 +82,25 @@ func unmarshalPayload(cmd *cobra.Command, payload proto.Message) *anypb.Any {
 		CliExit(err)
 	}
 	CliExit(err)
-	// Todo: actually unmarshal from yaml/json based on descriptor
-	err = protojson.Unmarshal(file, payload)
-	payloadAny, err := anypb.New(payload)
-	return payloadAny
+	validatePayload(pluginId, file)
+	byte64EncodedJson := base64.StdEncoding.EncodeToString(file)
+	return &byte64EncodedJson
+}
+
+func validatePayload(pluginId *string, payload []byte) {
+	req := &GetPayloadJSONSchemaRequest{PluginId: *pluginId}
+	jsonSchema, err := client.GetPayloadJSONSchema(apiContext, req)
+	CliExit(err)
+	schemaLoader := gojsonschema.NewStringLoader(jsonSchema.Schema)
+	documentLoader := gojsonschema.NewBytesLoader(payload)
+	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+	CliExit(err)
+	if !result.Valid() {
+		var errMsg = strings.Builder{}
+		errMsg.WriteString(fmt.Sprintf("payload validation failed for plugin %s:\n", *pluginId))
+		for _, err := range result.Errors() {
+			errMsg.WriteString(fmt.Sprintf("- %s\n", err))
+		}
+		CliExit(errors.New(errMsg.String()))
+	}
 }
