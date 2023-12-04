@@ -55,23 +55,28 @@ func getPluginById(pluginId *string) *Plugin {
 
 func invokePlugin(cmd *cobra.Command, pluginId *string) {
 	plugin := getPluginById(pluginId)
-	base64EncodedJsonPayload := readPayload(cmd, pluginId)
+
+	request := &InvokePluginRequest{PluginId: nil}
+	addPluginRequestParameters(cmd, plugin, request)
+
+	response, err := client.InvokePlugin(apiContext, request)
+	CliExit(err)
+	printResult(plugin, response)
+}
+
+// addPluginRequestParameters adds the correct parameters to the request based on the plugin type
+// unfortunately, this is necessary, as the interface that the request Parameters implement, is not exported
+func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, request *InvokePluginRequest) {
 	switch plugin.PluginType {
 	case PluginType_DATA_POLICY_GENERATOR:
-		invokeDataPolicyGenerator(plugin, base64EncodedJsonPayload)
+		request.Parameters = &InvokePluginRequest_DataPolicyGeneratorParameters{
+			DataPolicyGeneratorParameters: &DataPolicyGeneratorParameters{
+				Payload: *readPayload(cmd, &plugin.Id),
+			},
+		}
 	default:
 		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", plugin.PluginType)))
 	}
-}
-
-func invokeDataPolicyGenerator(plugin *Plugin, payload *string) {
-	req := &InvokeDataPolicyGeneratorRequest{
-		PluginId: &plugin.Id,
-		Payload:  *payload,
-	}
-	response, err := client.InvokeDataPolicyGenerator(apiContext, req)
-	CliExit(err)
-	printer.Print(response.DataPolicy)
 }
 
 func readPayload(cmd *cobra.Command, pluginId *string) *string {
@@ -102,5 +107,16 @@ func validatePayload(pluginId *string, payload []byte) {
 			errMsg.WriteString(fmt.Sprintf("- %s\n", err))
 		}
 		CliExit(errors.New(errMsg.String()))
+	}
+}
+
+// printResult ensures that the correct element of the result is extracted and then printed
+func printResult(plugin *Plugin, response *InvokePluginResponse) {
+	switch plugin.PluginType {
+	case PluginType_DATA_POLICY_GENERATOR:
+		dataPolicy := response.GetResult().(*InvokePluginResponse_DataPolicyGeneratorResult).DataPolicyGeneratorResult.DataPolicy
+		printer.Print(dataPolicy)
+	default:
+		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", plugin.PluginType)))
 	}
 }
