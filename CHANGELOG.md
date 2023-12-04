@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/getstrm/cli/compare/v1.13.0...v1.14.0) (2023-12-04)
+
+
+### Features
+
+* **pace-69:** add invoke plugin command ([#20](https://github.com/getstrm/cli/issues/20)) ([816d7bc](https://github.com/getstrm/cli/commit/816d7bc886f01bf9b0ec22e97d0f2af01677605b))
+
 # [1.13.0](https://github.com/getstrm/cli/compare/v1.12.1...v1.13.0) (2023-11-25)
 
 
