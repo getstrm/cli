@@ -26,6 +26,7 @@ const ListCommandName = "list"
 const UpsertCommandName = "upsert"
 const ApplyCommandName = "apply"
 const EvaluateCommandName = "evaluate"
+const InvokeCommandName = "invoke"
 const DeleteCommandName = "delete"
 const ProcessingPlatformFlag = "processing-platform"
 const ProcessingPlatformFlagShort = "p"
@@ -50,6 +51,9 @@ const BlueprintFlagUsage = "fetch a blueprint data policy from a catalog or a pr
 const ApplyFlag = "apply"
 const ApplyFlagShort = "a"
 const ApplyFlagUsage = "apply a data policy to the target processing platform when upserting"
+
+const PluginPayloadFlag = "payload"
+const PluginPayloadFlagUsage = "path to a json or yaml file containing the payload to invoke a plugin with"
 
 const SampleDataFlag = "sample-data"
 const SampleDataUsage = "path to a csv file containing sample data to evaluate a data policy"
