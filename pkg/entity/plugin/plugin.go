@@ -53,11 +53,18 @@ func getPluginById(pluginId *string) *Plugin {
 	return plugin
 }
 
-func invokePlugin(cmd *cobra.Command, pluginId *string) {
-	plugin := getPluginById(pluginId)
+func invokePlugin(cmd *cobra.Command, args []string) {
+	plugin := getPluginById(&args[0])
+	actionType := Action_Type(Action_Type_value[args[1]])
 
-	request := &InvokePluginRequest{PluginId: nil}
-	addPluginRequestParameters(cmd, plugin, request)
+	request := &InvokePluginRequest{
+		PluginId: plugin.Id,
+		Action: &Action{
+			Type: actionType,
+		},
+		Parameters: nil,
+	}
+	addPluginRequestParameters(cmd, plugin, actionType, request)
 
 	response, err := client.InvokePlugin(apiContext, request)
 	CliExit(err)
@@ -66,16 +73,23 @@ func invokePlugin(cmd *cobra.Command, pluginId *string) {
 
 // addPluginRequestParameters adds the correct parameters to the request based on the plugin type
 // unfortunately, this is necessary, as the interface that the request Parameters implement, is not exported
-func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, request *InvokePluginRequest) {
-	switch plugin.PluginType {
-	case PluginType_DATA_POLICY_GENERATOR:
+func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, actionType Action_Type, request *InvokePluginRequest) {
+	switch actionType {
+	case Action_GENERATE_SAMPLE_DATA:
+		request.Parameters = &InvokePluginRequest_SampleDataGeneratorParameters{
+			SampleDataGeneratorParameters: &SampleDataGenerator_Parameters{
+				Payload: *readPayload(cmd, &plugin.Id),
+			},
+		}
+
+	case Action_GENERATE_DATA_POLICY:
 		request.Parameters = &InvokePluginRequest_DataPolicyGeneratorParameters{
-			DataPolicyGeneratorParameters: &DataPolicyGeneratorParameters{
+			DataPolicyGeneratorParameters: &DataPolicyGenerator_Parameters{
 				Payload: *readPayload(cmd, &plugin.Id),
 			},
 		}
 	default:
-		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", plugin.PluginType)))
+		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", actionType)))
 	}
 }
 
@@ -112,11 +126,12 @@ func validatePayload(pluginId *string, payload []byte) {
 
 // printResult ensures that the correct element of the result is extracted and then printed
 func printResult(plugin *Plugin, response *InvokePluginResponse) {
-	switch plugin.PluginType {
-	case PluginType_DATA_POLICY_GENERATOR:
+	switch response.Result.(type) {
+	case *InvokePluginResponse_DataPolicyGeneratorResult:
 		dataPolicy := response.GetResult().(*InvokePluginResponse_DataPolicyGeneratorResult).DataPolicyGeneratorResult.DataPolicy
 		printer.Print(dataPolicy)
-	default:
-		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", plugin.PluginType)))
+	case *InvokePluginResponse_SampleDataGeneratorResult:
+		csv := response.GetResult().(*InvokePluginResponse_SampleDataGeneratorResult).SampleDataGeneratorResult.Data
+		fmt.Println(csv)
 	}
 }

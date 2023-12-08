@@ -9,7 +9,7 @@ import (
 
 func InvokeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "plugin (plugin-id) --payload (payload-file)",
+		Use:               "plugin (plugin-id) (action) --payload (payload-file)",
 		Short:             "Invoke a plugin with the provided payload (JSON or YAML)",
 		Long:              invokeLongDocs,
 		Example:           invokeExample,
@@ -18,15 +18,15 @@ func InvokeCmd() *cobra.Command {
 			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			invokePlugin(cmd, &args[0])
+			invokePlugin(cmd, args)
 		},
-		Args:              cobra.ExactArgs(1), // the policy id
+		Args:              cobra.RangeArgs(1, 2), // the plugin id and optional action
 		ValidArgsFunction: IdsCompletion,
 	}
 
 	flags := cmd.Flags()
 	addPayloadFlag(cmd, flags)
-	cmd.MarkFlagRequired(common.PluginPayloadFlag)
+	_ = cmd.MarkFlagRequired(common.PluginPayloadFlag)
 
 	return cmd
 }
