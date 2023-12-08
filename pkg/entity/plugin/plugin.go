@@ -78,14 +78,14 @@ func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, actionType A
 	case Action_GENERATE_SAMPLE_DATA:
 		request.Parameters = &InvokePluginRequest_SampleDataGeneratorParameters{
 			SampleDataGeneratorParameters: &SampleDataGenerator_Parameters{
-				Payload: *readPayload(cmd, &plugin.Id),
+				Payload: *readPayload(cmd, &plugin.Id, actionType),
 			},
 		}
 
 	case Action_GENERATE_DATA_POLICY:
 		request.Parameters = &InvokePluginRequest_DataPolicyGeneratorParameters{
 			DataPolicyGeneratorParameters: &DataPolicyGenerator_Parameters{
-				Payload: *readPayload(cmd, &plugin.Id),
+				Payload: *readPayload(cmd, &plugin.Id, actionType),
 			},
 		}
 	default:
@@ -93,21 +93,27 @@ func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, actionType A
 	}
 }
 
-func readPayload(cmd *cobra.Command, pluginId *string) *string {
+func readPayload(cmd *cobra.Command, pluginId *string, actionType Action_Type) *string {
 	fileName := GetStringAndErr(cmd.Flags(), common.PluginPayloadFlag)
 	file, err := os.ReadFile(fileName)
+	CliExit(err)
 	if strings.HasSuffix(fileName, ".yaml") || strings.HasSuffix(fileName, ".yml") {
 		file, err = yaml.YAMLToJSON(file)
 		CliExit(err)
 	}
 	CliExit(err)
-	validatePayload(pluginId, file)
+	validatePayload(pluginId, actionType, file)
 	byte64EncodedJson := base64.StdEncoding.EncodeToString(file)
 	return &byte64EncodedJson
 }
 
-func validatePayload(pluginId *string, payload []byte) {
-	req := &GetPayloadJSONSchemaRequest{PluginId: *pluginId}
+func validatePayload(pluginId *string, actionType Action_Type, payload []byte) {
+	req := &GetPayloadJSONSchemaRequest{
+		PluginId: *pluginId,
+		Action: &Action{
+			Type: actionType,
+		},
+	}
 	jsonSchema, err := client.GetPayloadJSONSchema(apiContext, req)
 	CliExit(err)
 	schemaLoader := gojsonschema.NewStringLoader(jsonSchema.Schema)
