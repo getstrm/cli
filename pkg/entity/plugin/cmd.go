@@ -1,16 +1,19 @@
 package plugin
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
 	. "pace/pace/pkg/util"
 )
 
+const pluginCommand = "plugin"
+
 func InvokeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "plugin (plugin-id) (action) --payload (payload-file)",
-		Short:             "Invoke a plugin with the provided payload (JSON or YAML)",
+		Use:               fmt.Sprintf("%s (plugin-id) (action) --payload (payload-file)", pluginCommand),
+		Short:             "Invoke an action for a plugin with the provided payload (JSON or YAML)",
 		Long:              invokeLongDocs,
 		Example:           invokeExample,
 		DisableAutoGenTag: true,

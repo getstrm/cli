@@ -26,18 +26,38 @@ func SetupClient(clientConnection plugins.PluginsServiceClient, ctx context.Cont
 	client = clientConnection
 }
 
-func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	req := &ListPluginsRequest{}
 	response, err := client.ListPlugins(apiContext, req)
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
 
-	names := lo.Map(response.Plugins, func(p *Plugin, _ int) string {
-		return p.Id
-	})
+	emptyResult := make([]string, 0)
 
-	return names, cobra.ShellCompDirectiveNoFileComp
+	if len(args) == 1 && cmd.Name() == pluginCommand {
+		plugin := lo.Filter(response.Plugins, func(p *Plugin, _ int) bool {
+			return p.Id == args[0]
+		})
+
+		if len(plugin) == 1 {
+			actions := lo.Map(response.Plugins[0].Actions, func(action *Action, _ int) string {
+				return action.Type.String()
+			})
+
+			return actions, cobra.ShellCompDirectiveNoFileComp
+		} else {
+			return emptyResult, cobra.ShellCompDirectiveNoFileComp
+		}
+	} else if len(args) == 0 && cmd.Name() == pluginCommand {
+		names := lo.Map(response.Plugins, func(p *Plugin, _ int) string {
+			return p.Id
+		})
+
+		return names, cobra.ShellCompDirectiveNoFileComp
+	} else {
+		return emptyResult, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
 func getPluginById(pluginId *string) *Plugin {
@@ -68,7 +88,7 @@ func invokePlugin(cmd *cobra.Command, args []string) {
 
 	response, err := client.InvokePlugin(apiContext, request)
 	CliExit(err)
-	printResult(plugin, response)
+	printResult(response)
 }
 
 // addPluginRequestParameters adds the correct parameters to the request based on the plugin type
@@ -131,7 +151,7 @@ func validatePayload(pluginId *string, actionType Action_Type, payload []byte) {
 }
 
 // printResult ensures that the correct element of the result is extracted and then printed
-func printResult(plugin *Plugin, response *InvokePluginResponse) {
+func printResult(response *InvokePluginResponse) {
 	switch response.Result.(type) {
 	case *InvokePluginResponse_DataPolicyGeneratorResult:
 		dataPolicy := response.GetResult().(*InvokePluginResponse_DataPolicyGeneratorResult).DataPolicyGeneratorResult.DataPolicy
