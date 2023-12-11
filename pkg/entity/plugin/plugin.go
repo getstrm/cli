@@ -26,18 +26,50 @@ func SetupClient(clientConnection plugins.PluginsServiceClient, ctx context.Cont
 	client = clientConnection
 }
 
-func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-	req := &ListPluginsRequest{}
-	response, err := client.ListPlugins(apiContext, req)
+func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	response, err := list()
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
 
-	names := lo.Map(response.Plugins, func(p *Plugin, _ int) string {
-		return p.Id
-	})
+	emptyResult := make([]string, 0)
 
-	return names, cobra.ShellCompDirectiveNoFileComp
+	if len(args) == 1 && cmd.Name() == pluginCommand {
+		plugin := lo.Filter(response.Plugins, func(p *Plugin, _ int) bool {
+			return p.Id == args[0]
+		})
+
+		if len(plugin) == 1 {
+			actions := lo.Map(response.Plugins[0].Actions, func(action *Action, _ int) string {
+				return action.Type.String()
+			})
+
+			return actions, cobra.ShellCompDirectiveNoFileComp
+		} else {
+			return emptyResult, cobra.ShellCompDirectiveNoFileComp
+		}
+	} else if len(args) == 0 && cmd.Name() == pluginCommand {
+		names := lo.Map(response.Plugins, func(p *Plugin, _ int) string {
+			return p.Id
+		})
+
+		return names, cobra.ShellCompDirectiveNoFileComp
+	} else {
+		return emptyResult, cobra.ShellCompDirectiveNoFileComp
+	}
+}
+
+func listPlugins() {
+	response, err := list()
+	CliExit(err)
+	printer.Print(response)
+}
+
+func list() (*ListPluginsResponse, error) {
+	req := &ListPluginsRequest{}
+	response, err := client.ListPlugins(apiContext, req)
+
+	return response, err
 }
 
 func getPluginById(pluginId *string) *Plugin {
@@ -53,47 +85,67 @@ func getPluginById(pluginId *string) *Plugin {
 	return plugin
 }
 
-func invokePlugin(cmd *cobra.Command, pluginId *string) {
-	plugin := getPluginById(pluginId)
+func invokePlugin(cmd *cobra.Command, args []string) {
+	plugin := getPluginById(&args[0])
+	actionType := Action_Type(Action_Type_value[args[1]])
 
-	request := &InvokePluginRequest{PluginId: nil}
-	addPluginRequestParameters(cmd, plugin, request)
+	request := &InvokePluginRequest{
+		PluginId: plugin.Id,
+		Action: &Action{
+			Type: actionType,
+		},
+		Parameters: nil,
+	}
+	addPluginRequestParameters(cmd, plugin, actionType, request)
 
 	response, err := client.InvokePlugin(apiContext, request)
 	CliExit(err)
-	printResult(plugin, response)
+	printResult(response)
 }
 
 // addPluginRequestParameters adds the correct parameters to the request based on the plugin type
 // unfortunately, this is necessary, as the interface that the request Parameters implement, is not exported
-func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, request *InvokePluginRequest) {
-	switch plugin.PluginType {
-	case PluginType_DATA_POLICY_GENERATOR:
+func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, actionType Action_Type, request *InvokePluginRequest) {
+	switch actionType {
+	case Action_GENERATE_SAMPLE_DATA:
+		request.Parameters = &InvokePluginRequest_SampleDataGeneratorParameters{
+			SampleDataGeneratorParameters: &SampleDataGenerator_Parameters{
+				Payload: *readPayload(cmd, &plugin.Id, actionType),
+			},
+		}
+
+	case Action_GENERATE_DATA_POLICY:
 		request.Parameters = &InvokePluginRequest_DataPolicyGeneratorParameters{
-			DataPolicyGeneratorParameters: &DataPolicyGeneratorParameters{
-				Payload: *readPayload(cmd, &plugin.Id),
+			DataPolicyGeneratorParameters: &DataPolicyGenerator_Parameters{
+				Payload: *readPayload(cmd, &plugin.Id, actionType),
 			},
 		}
 	default:
-		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", plugin.PluginType)))
+		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", actionType)))
 	}
 }
 
-func readPayload(cmd *cobra.Command, pluginId *string) *string {
+func readPayload(cmd *cobra.Command, pluginId *string, actionType Action_Type) *string {
 	fileName := GetStringAndErr(cmd.Flags(), common.PluginPayloadFlag)
 	file, err := os.ReadFile(fileName)
+	CliExit(err)
 	if strings.HasSuffix(fileName, ".yaml") || strings.HasSuffix(fileName, ".yml") {
 		file, err = yaml.YAMLToJSON(file)
 		CliExit(err)
 	}
 	CliExit(err)
-	validatePayload(pluginId, file)
+	validatePayload(pluginId, actionType, file)
 	byte64EncodedJson := base64.StdEncoding.EncodeToString(file)
 	return &byte64EncodedJson
 }
 
-func validatePayload(pluginId *string, payload []byte) {
-	req := &GetPayloadJSONSchemaRequest{PluginId: *pluginId}
+func validatePayload(pluginId *string, actionType Action_Type, payload []byte) {
+	req := &GetPayloadJSONSchemaRequest{
+		PluginId: *pluginId,
+		Action: &Action{
+			Type: actionType,
+		},
+	}
 	jsonSchema, err := client.GetPayloadJSONSchema(apiContext, req)
 	CliExit(err)
 	schemaLoader := gojsonschema.NewStringLoader(jsonSchema.Schema)
@@ -111,12 +163,13 @@ func validatePayload(pluginId *string, payload []byte) {
 }
 
 // printResult ensures that the correct element of the result is extracted and then printed
-func printResult(plugin *Plugin, response *InvokePluginResponse) {
-	switch plugin.PluginType {
-	case PluginType_DATA_POLICY_GENERATOR:
+func printResult(response *InvokePluginResponse) {
+	switch response.Result.(type) {
+	case *InvokePluginResponse_DataPolicyGeneratorResult:
 		dataPolicy := response.GetResult().(*InvokePluginResponse_DataPolicyGeneratorResult).DataPolicyGeneratorResult.DataPolicy
 		printer.Print(dataPolicy)
-	default:
-		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", plugin.PluginType)))
+	case *InvokePluginResponse_SampleDataGeneratorResult:
+		csv := response.GetResult().(*InvokePluginResponse_SampleDataGeneratorResult).SampleDataGeneratorResult.Data
+		fmt.Println(csv)
 	}
 }
