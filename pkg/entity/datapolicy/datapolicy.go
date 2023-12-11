@@ -7,6 +7,7 @@ import (
 	catalogentities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_policies/v1alpha"
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
+	pagingv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/paging/v1alpha"
 	ppentities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"context"
 	"fmt"
@@ -139,8 +140,16 @@ func getBlueprintPolicyFromProcessingPlatform(platformId string, tableId *string
 	}
 }
 
-func list(_ *cobra.Command) {
-	req := &ListDataPoliciesRequest{}
+func list(cmd *cobra.Command) {
+	flags := cmd.Flags()
+	skip, _ := flags.GetUint32(common.PageSkipFlag)
+	size, _ := flags.GetUint32(common.PageSizeFlag)
+	req := &ListDataPoliciesRequest{
+		PageParameters: &pagingv1alpha.PageParameters{
+			Skip:     skip,
+			PageSize: size,
+		},
+	}
 	response, err := polClient.ListDataPolicies(apiContext, req)
 	CliExit(err)
 	printer.Print(response)

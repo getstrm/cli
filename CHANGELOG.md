@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/getstrm/cli/compare/v1.14.0...v1.15.0) (2023-12-11)
+
+
+### Features
+
+* **pace-75:** restructure invoke plugin ([#21](https://github.com/getstrm/cli/issues/21)) ([a62bb1b](https://github.com/getstrm/cli/commit/a62bb1bc6a1dff04d8d2ea639b4c4dfac9597802))
+
 # [1.14.0](https://github.com/getstrm/cli/compare/v1.13.0...v1.14.0) (2023-12-04)
 
 
