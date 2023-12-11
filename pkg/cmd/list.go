@@ -8,6 +8,7 @@ import (
 	"pace/pace/pkg/entity/datapolicy"
 	"pace/pace/pkg/entity/globaltransform"
 	"pace/pace/pkg/entity/group"
+	"pace/pace/pkg/entity/plugin"
 	"pace/pace/pkg/entity/processingplatform"
 	"pace/pace/pkg/entity/schema"
 	"pace/pace/pkg/entity/table"
@@ -29,4 +30,5 @@ func init() {
 	ListCmd.AddCommand(database.ListCmd())
 	ListCmd.AddCommand(datapolicy.ListCmd())
 	ListCmd.AddCommand(globaltransform.ListCmd())
+	ListCmd.AddCommand(plugin.ListCmd())
 }

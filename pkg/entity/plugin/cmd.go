@@ -34,6 +34,25 @@ func InvokeCmd() *cobra.Command {
 	return cmd
 }
 
+func ListCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               fmt.Sprintf("%ss", pluginCommand),
+		Short:             "List plugins",
+		Long:              listLongDocs,
+		Example:           listExample,
+		DisableAutoGenTag: true,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			printer = common.ConfigurePrinter(cmd, listPrinters())
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			listPlugins()
+		},
+		ValidArgsFunction: common.NoFilesEmptyCompletion,
+	}
+	common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
+	return cmd
+}
+
 func addPayloadFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
 	flags.String(common.PluginPayloadFlag, "", common.PluginPayloadFlagUsage)
 	CliExit(

@@ -27,8 +27,7 @@ func SetupClient(clientConnection plugins.PluginsServiceClient, ctx context.Cont
 }
 
 func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-	req := &ListPluginsRequest{}
-	response, err := client.ListPlugins(apiContext, req)
+	response, err := list()
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
@@ -58,6 +57,19 @@ func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra
 	} else {
 		return emptyResult, cobra.ShellCompDirectiveNoFileComp
 	}
+}
+
+func listPlugins() {
+	response, err := list()
+	CliExit(err)
+	printer.Print(response)
+}
+
+func list() (*ListPluginsResponse, error) {
+	req := &ListPluginsRequest{}
+	response, err := client.ListPlugins(apiContext, req)
+
+	return response, err
 }
 
 func getPluginById(pluginId *string) *Plugin {
