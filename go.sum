@@ -9,6 +9,8 @@ buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231214085859-d3762110c336.2 h1:Ka
 buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231214085859-d3762110c336.2/go.mod h1:ecp7CZmi28Z7VelGv2yw+ZB2qu5XIQNrt0ulcsJGEGI=
 buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231214121536-19f5e471da64.2 h1:2vN8cG4cj/7pV71WLw4NFa6brH2S4yxbyD2AABHeoWQ=
 buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231214121536-19f5e471da64.2/go.mod h1:2ZPB3BLbiQC1HbuXolWAb88+j/7xoxv9LpPYKEFZa14=
+buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231215103342-c46eb729f8cf.2 h1:qRZzk7IVTRlRyk9D4GqtU0HvikawYmsKtEhuvmkqi4w=
+buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231215103342-c46eb729f8cf.2/go.mod h1:l2jf+9lAxg9YzUvt4muJubuiLwKkHaRF3j1oFCFUXCU=
 buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231211142742-1a664b705658.4 h1:yaPBmxvv+w4wfRf/QFAVnfGa0Yiu/bxfzyl/5ZoT+Ng=
 buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231211142742-1a664b705658.4/go.mod h1:fxhAUx4o0aO0tzgYqEQYnJsG/F1A9uBcfTcMbr/+czw=
 buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231213154022-7cd4e89e6beb.4 h1:L18jPa1cdRiGDSHU1S61T+GxqPogE+FPJHkEg1oNAF8=
@@ -17,6 +19,8 @@ buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231214085859-d3762110
 buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231214085859-d3762110c336.4/go.mod h1:fxhAUx4o0aO0tzgYqEQYnJsG/F1A9uBcfTcMbr/+czw=
 buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231214121536-19f5e471da64.4 h1:G1agMEXE1oIp3nvgfDTq+dz9pSXdsoTasNIDzBElTuQ=
 buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231214121536-19f5e471da64.4/go.mod h1:fxhAUx4o0aO0tzgYqEQYnJsG/F1A9uBcfTcMbr/+czw=
+buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231215103342-c46eb729f8cf.4 h1:51ZTa60ja+XAINicWojkzDKgmILy5J5UxYOhZI/kwzc=
+buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231215103342-c46eb729f8cf.4/go.mod h1:fxhAUx4o0aO0tzgYqEQYnJsG/F1A9uBcfTcMbr/+czw=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.38.0/go.mod h1:990N+gfupTy94rShfmMCWGDn0LpTmnzTp2qbd1dvSRU=
