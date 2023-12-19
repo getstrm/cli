@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/getstrm/cli/compare/v1.15.0...v1.15.1) (2023-12-15)
+
+
+### Bug Fixes
+
+* update pace apis version to having aggregations ([833b314](https://github.com/getstrm/cli/commit/833b314302cf13538d8c66bb1fe5d23b812a99ca))
+
 # [1.15.0](https://github.com/getstrm/cli/compare/v1.14.0...v1.15.0) (2023-12-11)
 
 
