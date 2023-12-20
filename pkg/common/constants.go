@@ -14,6 +14,8 @@ const EnvPrefix = "PACE"
 const DefaultConfigFilename = "config"
 const DefaultConfigFileSuffix = ".yaml"
 
+const DefaultLastSeenFilename = "pace-cli-last-seen"
+
 var DefaultConfigFileContents = []byte(`# The following configuration options are reflected in the CLI's flags
 # api-host: localhost:50051
 # output: yaml
