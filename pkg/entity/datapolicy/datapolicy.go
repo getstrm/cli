@@ -173,7 +173,7 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 
 	// talking to the PACE database
 	if !blueprint {
-		return IdsCompletion(cmd, args, toComplete)
+		return idsCompletion(cmd, args, toComplete)
 	}
 
 	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
@@ -219,7 +219,12 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 	return names, cobra.ShellCompDirectiveNoFileComp
 }
 
-func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+/*
+idsCompletion.
+
+returns data policy ids optionally limited to a certain platform.
+*/
+func idsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	if len(args) != 0 {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}

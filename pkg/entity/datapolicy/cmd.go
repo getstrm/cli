@@ -4,8 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/entity/catalog"
-	"pace/pace/pkg/entity/processingplatform"
+	"pace/pace/pkg/completion"
 	. "pace/pace/pkg/util"
 )
 
@@ -47,11 +46,11 @@ func ApplyCmd() *cobra.Command {
 			apply(cmd, &args[0])
 		},
 		Args:              cobra.ExactArgs(1), // the policy id
-		ValidArgsFunction: IdsCompletion,
+		ValidArgsFunction: idsCompletion,
 	}
 
 	flags := cmd.Flags()
-	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	completion.AddProcessingPlatformFlag(cmd, flags)
 	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
 
 	return cmd
@@ -71,11 +70,11 @@ func EvaluateCmd() *cobra.Command {
 			evaluate(cmd, &args[0])
 		},
 		Args:              cobra.ExactArgs(1), // the policy id
-		ValidArgsFunction: IdsCompletion,
+		ValidArgsFunction: idsCompletion,
 	}
 
 	flags := cmd.Flags()
-	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	completion.AddProcessingPlatformFlag(cmd, flags)
 	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
 	addSampleDataFlag(cmd, flags)
 	cmd.MarkFlagRequired(common.SampleDataFlag)
@@ -102,10 +101,10 @@ func GetCmd() *cobra.Command {
 		ValidArgsFunction: TableOrDataPolicyIdsCompletion,
 	}
 	flags := cmd.Flags()
-	processingplatform.AddProcessingPlatformFlag(cmd, flags)
-	catalog.AddCatalogFlag(cmd, flags)
-	catalog.AddDatabaseFlag(cmd, flags)
-	catalog.AddSchemaFlag(cmd, flags)
+	completion.AddProcessingPlatformFlag(cmd, flags)
+	completion.AddCatalogFlag(cmd, flags)
+	completion.AddDatabaseFlag(cmd, flags)
+	completion.AddSchemaFlag(cmd, flags)
 	flags.BoolP(common.BlueprintFlag, common.BlueprintFlagShort, false, common.BlueprintFlagUsage)
 	cmd.MarkFlagsMutuallyExclusive(common.CatalogFlag, common.ProcessingPlatformFlag)
 	cmd.MarkFlagsOneRequired(common.CatalogFlag, common.ProcessingPlatformFlag)
