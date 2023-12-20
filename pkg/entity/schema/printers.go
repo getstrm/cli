@@ -26,7 +26,7 @@ type listPlainPrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*ListSchemasResponse)
-	rows := lo.Map(listResponse.Schemas, func(schema *DataCatalog_Schema, _ int) table.Row {
+	rows := lo.Map(listResponse.Schemas, func(schema *Schema, _ int) table.Row {
 		return table.Row{
 			schema.Id,
 			schema.Name,

@@ -209,7 +209,7 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
-	names := lo.Map(response.Tables, func(table *DataCatalog_Table, _ int) string {
+	names := lo.Map(response.Tables, func(table *Table, _ int) string {
 		return table.Id
 	})
 	return names, cobra.ShellCompDirectiveNoFileComp

@@ -36,7 +36,7 @@ func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.Shel
 		return common.GrpcRequestCompletionError(err)
 	}
 
-	names := lo.Map(response.ProcessingPlatforms, func(p *DataPolicy_ProcessingPlatform, _ int) string {
+	names := lo.Map(response.ProcessingPlatforms, func(p *ProcessingPlatform, _ int) string {
 		return p.Id
 	})
 

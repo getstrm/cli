@@ -26,7 +26,7 @@ type listPlainPrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*ListProcessingPlatformsResponse)
-	rows := lo.Map(listResponse.ProcessingPlatforms, func(platform *DataPolicy_ProcessingPlatform, _ int) table.Row {
+	rows := lo.Map(listResponse.ProcessingPlatforms, func(platform *ProcessingPlatform, _ int) table.Row {
 		return table.Row{
 			platform.Id,
 			platform.PlatformType,

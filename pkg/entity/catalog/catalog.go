@@ -57,7 +57,7 @@ func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]strin
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
-	names := lo.Map(response.Databases, func(catalog *DataCatalog_Database, _ int) string {
+	names := lo.Map(response.Databases, func(catalog *Database, _ int) string {
 		return catalog.Id
 	})
 	return names, cobra.ShellCompDirectiveNoFileComp
@@ -84,7 +84,7 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
-	names := lo.Map(response.Schemas, func(catalog *DataCatalog_Schema, _ int) string {
+	names := lo.Map(response.Schemas, func(catalog *Schema, _ int) string {
 		return catalog.Id
 	})
 	return names, cobra.ShellCompDirectiveNoFileComp

@@ -27,7 +27,7 @@ func listPrinters() orderedmap.OrderedMap[string, common.Printer] {
 
 func (p listTablePrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*api.ListTablesResponse)
-	rows := lo.Map(listResponse.Tables, func(catalogTable *entities.DataCatalog_Table, _ int) table.Row {
+	rows := lo.Map(listResponse.Tables, func(catalogTable *entities.Table, _ int) table.Row {
 		return table.Row{
 			catalogTable.Id,
 			catalogTable.Name,

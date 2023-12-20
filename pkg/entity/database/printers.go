@@ -28,7 +28,7 @@ func (p listTablePrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*ListDatabasesResponse)
 	common.RenderTable(table.Row{
 		"ID", "Name", "Type",
-	}, lo.Map(listResponse.Databases, func(database *DataCatalog_Database, _ int) table.Row {
+	}, lo.Map(listResponse.Databases, func(database *Database, _ int) table.Row {
 		return table.Row{
 			database.Id,
 			database.DisplayName,
