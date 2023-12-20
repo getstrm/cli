@@ -24,8 +24,9 @@ func list(cmd *cobra.Command) {
 	catalogId := GetStringAndErr(flags, common.CatalogFlag)
 	databaseId := GetStringAndErr(flags, common.DatabaseFlag)
 	req := &ListSchemasRequest{
-		CatalogId:  catalogId,
-		DatabaseId: &databaseId,
+		CatalogId:      catalogId,
+		DatabaseId:     &databaseId,
+		PageParameters: common.PageParameters(cmd),
 	}
 	response, err := client.ListSchemas(apiContext, req)
 	CliExit(err)

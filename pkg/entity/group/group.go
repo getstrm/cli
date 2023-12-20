@@ -23,7 +23,8 @@ func SetupClient(clientConnection processingplatforms.ProcessingPlatformsService
 func list(cmd *cobra.Command) {
 	platformId := GetStringAndErr(cmd.Flags(), common.ProcessingPlatformFlag)
 	response, err := client.ListGroups(apiContext, &ListGroupsRequest{
-		PlatformId: platformId,
+		PlatformId:     platformId,
+		PageParameters: common.PageParameters(cmd),
 	})
 	CliExit(err)
 	printer.Print(response)

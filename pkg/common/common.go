@@ -1,6 +1,7 @@
 package common
 
 import (
+	pagingv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/paging/v1alpha"
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -80,4 +81,13 @@ func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string) {
 	schemaId, err := flags.GetString(SchemaFlag)
 	CliExit(err)
 	return catalogId, databaseId, schemaId
+}
+func PageParameters(cmd *cobra.Command) *pagingv1alpha.PageParameters {
+	flags := cmd.Flags()
+	skip, _ := flags.GetUint32(PageSkipFlag)
+	size, _ := flags.GetUint32(PageSizeFlag)
+	return &pagingv1alpha.PageParameters{
+		Skip:     skip,
+		PageSize: size,
+	}
 }

@@ -27,7 +27,8 @@ func list(cmd *cobra.Command) {
 	platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
 	if platformId != "" {
 		req := &processing_platformsv1alpha.ListTablesRequest{
-			PlatformId: platformId,
+			PlatformId:     platformId,
+			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := ppclient.ListTables(apiContext, req)
 		util.CliExit(err)
@@ -35,9 +36,10 @@ func list(cmd *cobra.Command) {
 	} else {
 		catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
 		req := &data_catalogsv1alpha.ListTablesRequest{
-			CatalogId:  catalogId,
-			DatabaseId: &databaseId,
-			SchemaId:   &schemaId,
+			CatalogId:      catalogId,
+			DatabaseId:     &databaseId,
+			SchemaId:       &schemaId,
+			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := catclient.ListTables(apiContext, req)
 		util.CliExit(err)

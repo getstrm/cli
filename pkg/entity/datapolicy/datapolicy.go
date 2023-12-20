@@ -139,8 +139,10 @@ func getBlueprintPolicyFromProcessingPlatform(platformId string, tableId *string
 	}
 }
 
-func list(_ *cobra.Command) {
-	req := &ListDataPoliciesRequest{}
+func list(cmd *cobra.Command) {
+	req := &ListDataPoliciesRequest{
+		PageParameters: common.PageParameters(cmd),
+	}
 	response, err := polClient.ListDataPolicies(apiContext, req)
 	CliExit(err)
 	printer.Print(response)

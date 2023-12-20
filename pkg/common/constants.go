@@ -57,3 +57,6 @@ const PluginPayloadFlagUsage = "path to a json or yaml file containing the paylo
 
 const SampleDataFlag = "sample-data"
 const SampleDataUsage = "path to a csv file containing sample data to evaluate a data policy"
+
+const PageSizeFlag = "page_size"
+const PageSkipFlag = "skip"

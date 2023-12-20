@@ -31,4 +31,8 @@ func init() {
 	ListCmd.AddCommand(datapolicy.ListCmd())
 	ListCmd.AddCommand(globaltransform.ListCmd())
 	ListCmd.AddCommand(plugin.ListCmd())
+
+	flags := ListCmd.PersistentFlags()
+	flags.Uint32P(common.PageSizeFlag, "P", 10, "the maximum number of records per page")
+	flags.Uint32P(common.PageSkipFlag, "S", 0, "the number of records that need to be skipped")
 }
