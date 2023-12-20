@@ -33,6 +33,6 @@ func init() {
 	ListCmd.AddCommand(plugin.ListCmd())
 
 	flags := ListCmd.PersistentFlags()
-	flags.Uint32P(common.PageSizeFlag, "P", 30, "how many records you would like to receive")
-	flags.Uint32P(common.PageSkipFlag, "S", 0, "how many records you would like skip")
+	flags.Uint32P(common.PageSizeFlag, "P", 10, "the maximum number of records per page")
+	flags.Uint32P(common.PageSkipFlag, "S", 0, "the number of records that need to be skipped")
 }
