@@ -29,7 +29,8 @@ func ListCmd() *cobra.Command {
 	catalog.AddDatabaseFlag(cmd, flags)
 	catalog.AddSchemaFlag(cmd, flags)
 
-	cmd.MarkFlagsRequiredTogether(common.CatalogFlag, common.DatabaseFlag, common.SchemaFlag)
+	cmd.MarkFlagRequired(common.DatabaseFlag)
+	cmd.MarkFlagRequired(common.SchemaFlag)
 	cmd.MarkFlagsOneRequired(common.ProcessingPlatformFlag, common.CatalogFlag)
 	return cmd
 }

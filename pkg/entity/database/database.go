@@ -1,8 +1,10 @@
 package database
 
 import (
-	catalogs "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_catalogs/v1alpha/data_catalogsv1alphagrpc"
-	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
+	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_catalogs/v1alpha/data_catalogsv1alphagrpc"
+	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/processing_platforms/v1alpha/processing_platformsv1alphagrpc"
+	data_catalogsv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
+	processing_platformsv1alpha "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"context"
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
@@ -11,19 +13,34 @@ import (
 
 var apiContext context.Context
 
-var client catalogs.DataCatalogsServiceClient
+var ppclient processing_platformsv1alphagrpc.ProcessingPlatformsServiceClient
+var catclient data_catalogsv1alphagrpc.DataCatalogsServiceClient
 
-func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx context.Context) {
+func SetupClient(ppclient_ processing_platformsv1alphagrpc.ProcessingPlatformsServiceClient, catclient_ data_catalogsv1alphagrpc.DataCatalogsServiceClient, ctx context.Context) {
 	apiContext = ctx
-	client = clientConnection
+	ppclient = ppclient_
+	catclient = catclient_
 }
 
 func list(cmd *cobra.Command) {
-	catalogId := util.GetStringAndErr(cmd.Flags(), common.CatalogFlag)
-	response, err := client.ListDatabases(apiContext, &ListDatabasesRequest{
-		CatalogId:      catalogId,
-		PageParameters: common.PageParameters(cmd),
-	})
-	util.CliExit(err)
-	printer.Print(response)
+	flags := cmd.Flags()
+	platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	if platformId != "" {
+		response, err := ppclient.ListDatabases(apiContext, &processing_platformsv1alpha.ListDatabasesRequest{
+			PlatformId:     platformId,
+			PageParameters: common.PageParameters(cmd),
+		})
+		util.CliExit(err)
+		printer.Print(response)
+
+	} else {
+		catalogId := util.GetStringAndErr(flags, common.CatalogFlag)
+		response, err := catclient.ListDatabases(apiContext, &data_catalogsv1alpha.ListDatabasesRequest{
+			CatalogId:      catalogId,
+			PageParameters: common.PageParameters(cmd),
+		})
+		util.CliExit(err)
+		printer.Print(response)
+
+	}
 }

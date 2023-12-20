@@ -185,7 +185,11 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 			PlatformId: platformId,
 		})
 		CliExit(err)
-		return response.Tables, cobra.ShellCompDirectiveNoFileComp
+
+		return lo.Map(response.Tables, func(dataPolicy *Table, _ int) string {
+			return dataPolicy.Id
+
+		}), cobra.ShellCompDirectiveNoFileComp
 	}
 
 	// talking to a catalog!

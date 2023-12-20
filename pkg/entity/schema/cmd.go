@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
+	"pace/pace/pkg/entity/processingplatform"
 )
 
 func ListCmd() *cobra.Command {
@@ -24,10 +25,11 @@ func ListCmd() *cobra.Command {
 	flags := cmd.Flags()
 	common.ConfigureExtraPrinters(cmd, flags, listPrinters())
 	catalog.AddCatalogFlag(cmd, flags)
+	processingplatform.AddProcessingPlatformFlag(cmd, flags)
 	catalog.AddDatabaseFlag(cmd, flags)
 
-	cmd.MarkFlagRequired(common.CatalogFlag)
 	cmd.MarkFlagRequired(common.DatabaseFlag)
+	cmd.MarkFlagsOneRequired(common.ProcessingPlatformFlag, common.CatalogFlag)
 
 	return cmd
 }
