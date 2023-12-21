@@ -56,7 +56,7 @@ func get(cmd *cobra.Command, dataPolicyOrTableId *string) {
 	if blueprint {
 		// a blueprint policy only exists on processing platforms or catalogs
 		if platformId != "" {
-			getBlueprintPolicyFromProcessingPlatform(platformId, dataPolicyOrTableId)
+			getBlueprintPolicyFromProcessingPlatform(flags, platformId, dataPolicyOrTableId)
 		} else {
 			getBlueprintPolicyFromCatalog(flags, dataPolicyOrTableId)
 		}
@@ -125,10 +125,19 @@ func getBlueprintPolicyFromCatalog(flags *pflag.FlagSet, tableId *string) {
 	printer.Print(response.DataPolicy)
 }
 
-func getBlueprintPolicyFromProcessingPlatform(platformId string, tableId *string) {
+func getBlueprintPolicyFromProcessingPlatform(flags *pflag.FlagSet, platformId string, tableId *string) {
+	_, databaseId, schemaId := common.GetCatalogCoordinates(flags)
 	req := &ppentities.GetBlueprintPolicyRequest{
 		PlatformId: platformId,
-		TableId:    *tableId,
+		Table: &Table{
+			Id: *tableId,
+			Schema: &Schema{
+				Id: schemaId,
+				Database: &Database{
+					Id: databaseId,
+				},
+			},
+		},
 	}
 	response, err := pClient.GetBlueprintPolicy(apiContext, req)
 	CliExit(err)
