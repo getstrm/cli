@@ -43,7 +43,7 @@ var RootCmd = &cobra.Command{
 
 func rootCmdPreRun(cmd *cobra.Command, _ []string) error {
 	CreateConfigDirAndFileIfNotExists()
-	CreateLastSeenCommand()
+	SetLastSeenTimestamp()
 	err := bootstrap.InitializeConfig(cmd)
 	log.Infoln(fmt.Sprintf("Executing command: %v", cmd.CommandPath()))
 	cmd.Flags().Visit(func(flag *pflag.Flag) {
@@ -81,7 +81,7 @@ func CreateConfigDirAndFileIfNotExists() {
 	}
 }
 
-func CreateLastSeenCommand() {
+func SetLastSeenTimestamp() {
 	lastSeenCommandFilepath := path.Join(common.ConfigPath(), common.DefaultLastSeenFilename)
 	now := time.Now()
 	if content, err := os.ReadFile(lastSeenCommandFilepath); err != nil {

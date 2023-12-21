@@ -30,6 +30,7 @@ const ApplyCommandName = "apply"
 const EvaluateCommandName = "evaluate"
 const InvokeCommandName = "invoke"
 const DeleteCommandName = "delete"
+const DisableCommandName = "disable"
 const ProcessingPlatformFlag = "processing-platform"
 const ProcessingPlatformFlagShort = "p"
 const ProcessingPlatformFlagUsage = `id of processing platform`
