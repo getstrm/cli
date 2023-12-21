@@ -24,17 +24,19 @@ func SetupClient(ppclient_ processing_platformsv1alphagrpc.ProcessingPlatformsSe
 
 func list(cmd *cobra.Command) {
 	flags := cmd.Flags()
+	catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
 	platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
 	if platformId != "" {
 		req := &processing_platformsv1alpha.ListTablesRequest{
 			PlatformId:     platformId,
+			DatabaseId:     &databaseId,
+			SchemaId:       &schemaId,
 			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := ppclient.ListTables(apiContext, req)
 		util.CliExit(err)
 		printer.Print(response)
 	} else {
-		catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
 		req := &data_catalogsv1alpha.ListTablesRequest{
 			CatalogId:      catalogId,
 			DatabaseId:     &databaseId,
