@@ -87,7 +87,11 @@ func CreateLastSeenCommand() {
 	if content, err := os.ReadFile(lastSeenCommandFilepath); err != nil {
 		updateLastSeen(lastSeenCommandFilepath, now)
 	} else {
-		ts, _ := strconv.ParseInt(strings.Trim(string(content), "\n"), 10, 64)
+		ts, err := strconv.ParseInt(strings.Trim(string(content), "\n"), 10, 64)
+		if err != nil {
+			os.Remove(lastSeenCommandFilepath)
+			updateLastSeen(lastSeenCommandFilepath, now)
+		}
 		lastSeen := time.Unix(ts, 0)
 		if lastSeen.Unix() < now.Add(-24*time.Hour).Unix() {
 			updateLastSeen(lastSeenCommandFilepath, now)
