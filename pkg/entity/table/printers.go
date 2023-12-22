@@ -1,13 +1,16 @@
 package table
 
 import (
-	api "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
+	catalogApi "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
 	entities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
+	platformApi "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
+	"errors"
 	"fmt"
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
 	"pace/pace/pkg/common"
+	"pace/pace/pkg/util"
 	"strings"
 )
 
@@ -26,8 +29,7 @@ func listPrinters() orderedmap.OrderedMap[string, common.Printer] {
 }
 
 func (p listTablePrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*api.ListTablesResponse)
-	rows := lo.Map(listResponse.Tables, func(catalogTable *entities.Table, _ int) table.Row {
+	rows := lo.Map(toTables(data), func(catalogTable *entities.Table, _ int) table.Row {
 		return table.Row{
 			catalogTable.Id,
 			catalogTable.Name,
@@ -41,8 +43,19 @@ func (p listTablePrinter) Print(data interface{}) {
 }
 
 func (p listPlainPrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*api.ListTablesResponse)
-	for _, t := range listResponse.Tables {
+	for _, t := range toTables(data) {
 		fmt.Println(t.Id, t.Name, strings.Join(t.Tags, ","))
 	}
+}
+
+func toTables(data interface{}) []*entities.Table {
+	var tables []*entities.Table
+	if listResponse, ok := (data).(*catalogApi.ListTablesResponse); ok {
+		tables = listResponse.Tables
+	} else if listResponse, ok := (data).(*platformApi.ListTablesResponse); ok {
+		tables = listResponse.Tables
+	} else {
+		util.CliExit(errors.New("could not handle server response"))
+	}
+	return tables
 }
