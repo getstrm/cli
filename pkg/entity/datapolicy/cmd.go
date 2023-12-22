@@ -86,7 +86,7 @@ func EvaluateCmd() *cobra.Command {
 
 func GetCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "data-policy (table-id|policy-id)",
+		Use:               "data-policy (table-name|policy-id)",
 		Short:             "Get a data policy",
 		Long:              getLongDoc,
 		Example:           getExample,
