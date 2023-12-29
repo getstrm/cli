@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/getstrm/cli/compare/v1.15.1...v1.16.0) (2023-12-29)
+
+
+### Features
+
+* **main:** force build with paging flags ([00949ee](https://github.com/getstrm/cli/commit/00949eef26a1654dffcb5c387be858a66d227cec))
+
 ## [1.15.1](https://github.com/getstrm/cli/compare/v1.15.0...v1.15.1) (2023-12-15)
 
 
