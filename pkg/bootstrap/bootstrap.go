@@ -49,6 +49,7 @@ func SetupVerbs(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(cmd.VersionCmd)
 	rootCmd.AddCommand(cmd.EvaluateCmd)
 	rootCmd.AddCommand(cmd.InvokeCmd)
+	rootCmd.AddCommand(cmd.DisableCmd)
 }
 
 func SetupServiceClients() {

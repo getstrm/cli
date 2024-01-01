@@ -12,7 +12,9 @@ import (
 	. "pace/pace/pkg/util"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -41,6 +43,7 @@ var RootCmd = &cobra.Command{
 
 func rootCmdPreRun(cmd *cobra.Command, _ []string) error {
 	CreateConfigDirAndFileIfNotExists()
+	SetLastSeenTimestamp()
 	err := bootstrap.InitializeConfig(cmd)
 	log.Infoln(fmt.Sprintf("Executing command: %v", cmd.CommandPath()))
 	cmd.Flags().Visit(func(flag *pflag.Flag) {
@@ -76,4 +79,47 @@ func CreateConfigDirAndFileIfNotExists() {
 			0644,
 		))
 	}
+}
+
+func SetLastSeenTimestamp() {
+	lastSeenCommandFilepath := path.Join(common.ConfigPath(), common.DefaultLastSeenFilename)
+	now := time.Now()
+	if content, err := os.ReadFile(lastSeenCommandFilepath); err != nil {
+		updateLastSeen(lastSeenCommandFilepath, now)
+	} else {
+		ts, err := strconv.ParseInt(strings.Trim(string(content), "\n"), 10, 64)
+		if err != nil {
+			os.Remove(lastSeenCommandFilepath)
+			updateLastSeen(lastSeenCommandFilepath, now)
+		}
+		lastSeen := time.Unix(ts, 0)
+		if lastSeen.Unix() < now.Add(-24*time.Hour).Unix() {
+			updateLastSeen(lastSeenCommandFilepath, now)
+		}
+	}
+}
+
+func updateLastSeen(lastSeenCommandFilepath string, now time.Time) {
+	CliExit(os.WriteFile(
+		lastSeenCommandFilepath,
+		[]byte(fmt.Sprintf("%d", now.Unix())),
+		0644,
+	))
+	printWelcomeMessage()
+}
+
+func printWelcomeMessage() {
+	asciiArt := `
+---------------------------------------------------------------------
+                        ____   _    ____ _____                         
+                       |  _ \ / \  / ___| ____|
+                       | |_) / _ \| |   |  _|  
+                       |  __/ ___ \ |___| |___ 
+                       |_| /_/   \_\____|_____|
+---------------------------------------------------------------------
+Hey there, cool you're using PACE!
+We'd love to learn what your use case is or if you have any feedback.
+Join our Slack: https://getstrm.com/slack
+---------------------------------------------------------------------`
+	fmt.Println(asciiArt)
 }
