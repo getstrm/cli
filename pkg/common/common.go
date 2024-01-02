@@ -82,6 +82,7 @@ func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string) {
 	CliExit(err)
 	return catalogId, databaseId, schemaId
 }
+
 func PageParameters(cmd *cobra.Command) *pagingv1alpha.PageParameters {
 	flags := cmd.Flags()
 	skip, _ := flags.GetUint32(PageSkipFlag)

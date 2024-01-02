@@ -186,32 +186,23 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 	}
 
 	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
-	catalogId := GetStringAndErr(flags, common.CatalogFlag)
-
-	// talking to a processing platform
+	catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
+	if databaseId == "" || schemaId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
 	if platformId != "" {
 		response, err := pClient.ListTables(apiContext, &ppentities.ListTablesRequest{
 			PlatformId: platformId,
+			DatabaseId: &databaseId,
+			SchemaId:   &schemaId,
 		})
-		CliExit(err)
-
-		return lo.Map(response.Tables, func(dataPolicy *Table, _ int) string {
-			return dataPolicy.Id
+		if err != nil {
+			return common.GrpcRequestCompletionError(err)
+		}
+		return lo.Map(response.Tables, func(table *Table, _ int) string {
+			return table.Id
 
 		}), cobra.ShellCompDirectiveNoFileComp
-	}
-
-	// talking to a catalog!
-	if catalogId == "" {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-	databaseId, _ := flags.GetString(common.DatabaseFlag)
-	if databaseId == "" {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-	schemaId, _ := flags.GetString(common.SchemaFlag)
-	if schemaId == "" {
-		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
 	response, err := catClient.ListTables(apiContext, &catalogentities.ListTablesRequest{
@@ -222,10 +213,9 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
-	names := lo.Map(response.Tables, func(table *Table, _ int) string {
+	return lo.Map(response.Tables, func(table *Table, _ int) string {
 		return table.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 /*
