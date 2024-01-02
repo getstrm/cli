@@ -13,7 +13,7 @@ When updating an existing policy, the latest existing version should be set
 in the metadata. When creating a new policy, no version needs to be specified.
 `)
 
-var upsertExample = LongDocs(`
+var upsertExample = PlainExample(`
 !pace upsert data-policy examples/sample_data/bigquery-cdc.json
 data_policy:
   id: fb76958d-63a9-4b5e-bf36-fdc4d7ab807f
@@ -38,7 +38,7 @@ var applyLongDocs = LongDocs(`
 Applies an existing data policy to the target platform.
 `)
 
-var applyExample = LongDocs(`
+var applyExample = PlainExample(`
 !pace apply data-policy public.demo --processing-platform bigquery-dev
 data_policy:
   id: public.demo
@@ -67,7 +67,7 @@ A comma should be used as the delimiter.
 Currently, only standard SQL data types are supported. For platform-specific transforms, test on the platform itself.
 `)
 
-var evaluateExample = LongDocs(`
+var evaluateExample = PlainExample(`
 !pace evaluate data-policy public.demo --processing-platform example-platform --sample-data sample.csv
 Results for rule set with target: public.demo_view
 group: administrator
@@ -112,7 +112,7 @@ Without a °--processing-platform° or a °--catalog° it just means we interact
 database and retrieve successfully applied data policies.
 `)
 
-var getExample = LongDocs(`
+var getExample = PlainExample(`
 # get a blueprint policy without rule sets from Catalog Collibra
 !pace get data-policy --catalog COLLIBRA-testdrive \
 	--blueprint \
@@ -159,7 +159,7 @@ dataPolicy:
       type: INTEGER
 
 
-# get a complete datapolicy from the PACE database
+# get a complete datapolicy (with rulesets) from the PACE database
 !pace get data-policy --processing-platform bigquery-dev \
 	stream-machine-development.dynamic_views.cdc_diabetes
 
@@ -181,11 +181,11 @@ rule_sets:
       type: integer
     transforms:
     - fixed:
-        value: blabla
+        value: redacted
   target:
 `)
 
-var listExample = LongDocs(`
+var listExample = PlainExample(`
 !pace list data-policies --output table
  PLATFORM       SOURCE                                                  TAGS
 
