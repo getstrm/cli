@@ -34,10 +34,9 @@ func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.S
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
-	names := lo.Map(response.Catalogs, func(catalog *DataCatalog, _ int) string {
+	return lo.Map(response.Catalogs, func(catalog *DataCatalog, _ int) string {
 		return catalog.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -56,10 +55,9 @@ func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]strin
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
-	names := lo.Map(response.Databases, func(catalog *Database, _ int) string {
-		return catalog.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	return lo.Map(response.Databases, func(database *Database, _ int) string {
+		return database.Id
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -83,8 +81,7 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 	if err != nil {
 		return common.GrpcRequestCompletionError(err)
 	}
-	names := lo.Map(response.Schemas, func(catalog *Schema, _ int) string {
-		return catalog.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	return lo.Map(response.Schemas, func(schema *Schema, _ int) string {
+		return schema.Id
+	}), cobra.ShellCompDirectiveNoFileComp
 }
