@@ -1,9 +1,12 @@
 package metrics
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"gopkg.in/yaml.v3"
+	"net/http"
 	"os"
 	"pace/pace/pkg/common"
 	"path"
@@ -15,20 +18,37 @@ import (
 // The metrics are collected in a way that does not identify the user, nor anything the CLI interacts with.
 // TODO add opt out mechanism.
 type Telemetry struct {
-	MetricPoints map[string]map[uint32]Metric `yaml:"metric_points"`
-	CliVersion   string                       `yaml:"cli_version"`
-	OsVersion    string                       `yaml:"operation_version"`
-	Id           string                       `yaml:"id"`
+	MetricPoints map[string]map[uint32]Metric `json:"metric_points" yaml:"metric_points"`
+	CliVersion   string                       `json:"cli_version" yaml:"cli_version"`
+	OsVersion    string                       `json:"operation_version" yaml:"operation_version"`
+	Id           string                       `json:"id" yaml:"id"`
 }
 
 type Metric struct {
-	CumulativeCount uint32 `yaml:"cumulative_count"`
+	CumulativeCount uint32 `json:"cumulative_count" yaml:"cumulative_count"`
 }
 
 func CollectTelemetry(commandPath string, err error) {
 	telemetry := readTelemetry()
 	updateTelemetry(commandPath, err, telemetry)
 	_ = writeTelemetry(telemetry)
+	sendTelemetry(telemetry)
+}
+
+func sendTelemetry(telemetry Telemetry) {
+	marshalled, err := json.Marshal(telemetry)
+	req, err := http.NewRequest("POST", "https://cli.getstrm.com/telemetry", bytes.NewReader(marshalled))
+	if err != nil {
+		fmt.Println("Error creating telemetry request")
+	}
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	_, err = client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending telemetry")
+	} else {
+		fmt.Println("Telemetry sent")
+	}
 }
 
 func updateTelemetry(commandPath string, err error, telemetry Telemetry) {
