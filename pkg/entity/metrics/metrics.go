@@ -3,6 +3,9 @@ package metrics
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"gopkg.in/yaml.v3"
+	"pace/pace/pkg/common"
+	"runtime"
 )
 
 // Telemetry represents all metrics that are collected about the getSTRM CLI.
@@ -10,10 +13,10 @@ import (
 // The metrics are collected in a way that does not identify the user, nor anything the CLI interacts with.
 // TODO add opt out mechanism.
 type Telemetry struct {
-	metricPoints     []Metric  `yaml:"metric_points"`
-	cliVersion       string    `yaml:"cli_version"`
-	operationVersion string    `yaml:"operation_version"`
-	id               uuid.UUID `yaml:"id"`
+	metricPoints []Metric `yaml:"metric_points"`
+	cliVersion   string   `yaml:"cli_version"`
+	osVersion    string   `yaml:"operation_version"`
+	id           string   `yaml:"id"`
 }
 
 type Metric struct {
@@ -28,4 +31,20 @@ func CollectTelemetry(commandPath string, err error) {
 	if err != nil {
 		fmt.Println(fmt.Sprintf("Command error: %s", err))
 	}
+
+	telemetry := Telemetry{
+		metricPoints: []Metric{},
+		cliVersion:   common.Version,
+		osVersion:    runtime.GOOS,
+		id:           uuid.New().String(),
+	}
+
+	yamlData, err := yaml.Marshal(&telemetry)
+
+	if err != nil {
+		fmt.Printf("Error while Marshaling. %v", err)
+	}
+
+	fmt.Println(" --- YAML ---")
+	fmt.Println(string(yamlData))
 }
