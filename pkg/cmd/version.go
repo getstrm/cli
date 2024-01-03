@@ -10,7 +10,8 @@ var VersionCmd = &cobra.Command{
 	Use:               "version",
 	DisableAutoGenTag: true,
 	Short:             "Get the cli version",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println(common.Version)
+		return nil
 	},
 }

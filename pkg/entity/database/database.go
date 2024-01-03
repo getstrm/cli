@@ -6,7 +6,6 @@ import (
 	"context"
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/util"
 )
 
 var apiContext context.Context
@@ -18,12 +17,19 @@ func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx contex
 	client = clientConnection
 }
 
-func list(cmd *cobra.Command) {
-	catalogId := util.GetStringAndErr(cmd.Flags(), common.CatalogFlag)
+func list(cmd *cobra.Command) error {
+	v, _ := cmd.Flags().GetString(common.CatalogFlag)
+	catalogId := v
 	response, err := client.ListDatabases(apiContext, &ListDatabasesRequest{
 		CatalogId:      catalogId,
 		PageParameters: common.PageParameters(cmd),
 	})
-	util.CliExit(err)
-	printer.Print(response)
+
+	if err != nil {
+		return err
+	}
+
+	return common.Print(printer, err, response)
+	return nil
+
 }

@@ -21,11 +21,13 @@ func UpsertCmd() *cobra.Command {
 		Long:              upsertLongDocs,
 		Example:           upsertExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			upsert(cmd, &args[0])
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return upsert(cmd, &args[0])
 		},
 		Args: cobra.ExactArgs(1), // the policy file (yaml or json),
 		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -42,11 +44,13 @@ func GetCmd() *cobra.Command {
 		Long:              getLongDoc,
 		Example:           getExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			get(cmd, args[0])
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return get(cmd, args[0])
 		},
 		Args:              cobra.ExactArgs(1), // ref
 		ValidArgsFunction: refCompletionFunction,
@@ -61,11 +65,13 @@ func DeleteCmd() *cobra.Command {
 		Short:             "delete a global transform",
 		Example:           deleteExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			del(cmd, args[0])
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return del(cmd, args[0])
 		},
 		Args:              cobra.ExactArgs(1), // ref and type
 		ValidArgsFunction: refCompletionFunction,
@@ -81,11 +87,13 @@ func ListCmd() *cobra.Command {
 		Example:           listExample,
 		Long:              listLongDoc,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			list(cmd)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return list(cmd)
 		},
 	}
 	return cmd

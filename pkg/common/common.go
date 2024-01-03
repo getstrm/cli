@@ -14,15 +14,15 @@ import (
 
 var ApiHost string
 
-func Abort(format string, args ...interface{}) {
+func AbortError(format string, args ...interface{}) error {
 	if len(args) == 0 {
-		CliExit(errors.New(format))
+		return errors.New(format)
 	} else {
-		CliExit(errors.New(fmt.Sprintf(format, args...)))
+		return errors.New(fmt.Sprintf(format, args...))
 	}
 }
 
-func GrpcRequestCompletionError(err error) ([]string, cobra.ShellCompDirective) {
+func CobraCompletionError(err error) ([]string, cobra.ShellCompDirective) {
 	errorMessage := fmt.Sprintf("%v", err)
 	log.Errorln(errorMessage)
 	cobra.CompErrorln(errorMessage)
@@ -33,7 +33,7 @@ func NoFilesEmptyCompletion(cmd *cobra.Command, args []string, complete string) 
 	return nil, cobra.ShellCompDirectiveNoFileComp
 }
 
-func ConfigPath() string {
+func ConfigPath() (string, error) {
 	if configPath == "" {
 		// if we set this environment variable, we work in a completely different configuration directory
 		// Here you will define your flags and configuration settings.
@@ -54,33 +54,43 @@ func ConfigPath() string {
 			configPath, err = ExpandTilde(defaultConfigPath)
 		}
 
-		CliExit(err)
+		if err != nil {
+			return "", err
+		}
 	}
 
-	return configPath
+	return configPath, nil
 }
 
-func LogFileName() string {
+func LogFileName() (string, error) {
 	if logFileName == "" {
-		logFileName = ConfigPath() + "/" + RootCommandName + ".log"
+		configPath, err := ConfigPath()
+
+		if err != nil {
+			return "", err
+		}
+
+		logFileName = configPath + "/" + RootCommandName + ".log"
 		log.SetLevel(log.TraceLevel)
 		log.SetOutput(&lumberjack.Logger{
-			Filename:   LogFileName(),
+			Filename:   logFileName,
 			MaxSize:    1, // MB
 			MaxBackups: 0,
 		})
-		log.Info(fmt.Sprintf("Config path is set to: %v", ConfigPath()))
+		log.Info(fmt.Sprintf("Config path is set to: %v", configPath))
 	}
 
-	return logFileName
+	return logFileName, nil
 }
 
-func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string) {
+func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string, error) {
 	catalogId, err := flags.GetString(CatalogFlag)
 	databaseId, err := flags.GetString(DatabaseFlag)
 	schemaId, err := flags.GetString(SchemaFlag)
-	CliExit(err)
-	return catalogId, databaseId, schemaId
+	if err != nil {
+		return "", "", "", err
+	}
+	return catalogId, databaseId, schemaId, nil
 }
 func PageParameters(cmd *cobra.Command) *pagingv1alpha.PageParameters {
 	flags := cmd.Flags()

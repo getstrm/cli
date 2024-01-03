@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
-	. "pace/pace/pkg/util"
 )
 
 var apiContext context.Context
@@ -20,10 +19,14 @@ func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx contex
 	client = clientConnection
 }
 
-func list() {
+func list() error {
 	response, err := client.ListCatalogs(apiContext, &ListCatalogsRequest{})
-	CliExit(err)
-	printer.Print(response)
+	if err != nil {
+		return err
+	}
+
+	return common.Print(printer, err, response)
+	return nil
 }
 
 func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -33,7 +36,7 @@ func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.S
 
 	response, err := client.ListCatalogs(apiContext, &ListCatalogsRequest{})
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
 	names := lo.Map(response.Catalogs, func(catalog *DataCatalog, _ int) string {
 		return catalog.Id
@@ -55,7 +58,7 @@ func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]strin
 		CatalogId: catalogId,
 	})
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
 	names := lo.Map(response.Databases, func(catalog *DataCatalog_Database, _ int) string {
 		return catalog.Id
@@ -82,7 +85,7 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 		DatabaseId: &databaseId,
 	})
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
 	names := lo.Map(response.Schemas, func(catalog *DataCatalog_Schema, _ int) string {
 		return catalog.Id

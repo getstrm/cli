@@ -8,7 +8,6 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/util"
 	"strings"
 
 	"encoding/csv"
@@ -90,8 +89,7 @@ func printRuleSetResult(ruleSetResult *api.EvaluateDataPolicyResponse_FullEvalua
 }
 
 func printCsvAsTable(csvString string) {
-	csvRows, err := csv.NewReader(strings.NewReader(csvString)).ReadAll()
-	util.CliExit(err)
+	csvRows, _ := csv.NewReader(strings.NewReader(csvString)).ReadAll()
 	headers := csvRows[0]
 	common.RenderTable(common.SliceToRow(headers), lo.Map(csvRows[1:], func(row []string, _ int) table.Row {
 		return common.SliceToRow(row)

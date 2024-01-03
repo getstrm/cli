@@ -13,14 +13,21 @@ func DisableCmd() *cobra.Command {
 		Use:               "welcome",
 		Short:             "Disable welcoming message",
 		DisableAutoGenTag: true,
-		Run: func(cmd *cobra.Command, args []string) {
-			lastSeenCommandFilepath := path.Join(common.ConfigPath(), common.DefaultLastSeenFilename)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			configPath, err := common.ConfigPath()
+			if err != nil {
+				return err
+			}
+
+			lastSeenCommandFilepath := path.Join(configPath, common.DefaultLastSeenFilename)
 			os.WriteFile(
 				lastSeenCommandFilepath,
 				[]byte("9999999999"),
 				0644,
 			)
 			fmt.Println("Welcome message disabled")
+
+			return nil
 		},
 		Args: cobra.ExactArgs(0),
 	}
