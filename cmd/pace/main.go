@@ -55,8 +55,7 @@ func main() {
 		Use:   "generate-docs",
 		Short: "D",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			err := doc.GenMarkdownTree(rootCmd, "./generated_docs")
-			return err
+			return doc.GenMarkdownTree(rootCmd, "./generated_docs")
 		},
 		Hidden: true,
 	})
@@ -75,18 +74,15 @@ func main() {
 func rootCmdPreRun(cmd *cobra.Command, _ []string) error {
 	flags := cmd.Flags()
 	commandPath = cmd.CommandPath()
-	err := createConfigDirAndFileIfNotExists()
-	if err != nil {
+	if err := createConfigDirAndFileIfNotExists(); err != nil {
 		return err
 	}
 
-	err = setLastSeenTimestamp(cmd)
-	if err != nil {
+	if err := setLastSeenTimestamp(cmd); err != nil {
 		return err
 	}
 
-	err = bootstrap.InitializeConfig(cmd)
-	if err != nil {
+	if err := bootstrap.InitializeConfig(cmd); err != nil {
 		return err
 	}
 
@@ -97,11 +93,8 @@ func rootCmdPreRun(cmd *cobra.Command, _ []string) error {
 	flags.Visit(func(flag *pflag.Flag) {
 		log.Infoln(fmt.Sprintf("flag %v=%v", flag.Name, flag.Value))
 	})
-	v, _ := cmd.Flags().GetString(apiHostFlag)
-	common.ApiHost = v
-	err = bootstrap.SetupServiceClients()
-
-	return err
+	common.ApiHost, _ = cmd.Flags().GetString(apiHostFlag)
+	return bootstrap.SetupServiceClients()
 }
 
 func setup(rootCmd *cobra.Command) error {
@@ -124,7 +117,6 @@ func setup(rootCmd *cobra.Command) error {
 		return err
 	}
 	bootstrap.SetupVerbs(rootCmd)
-
 	return nil
 }
 
@@ -133,8 +125,7 @@ func createConfigDirAndFileIfNotExists() error {
 	if err != nil {
 		return err
 	}
-	err = os.MkdirAll(filepath.Dir(configPath), 0700)
-	if err != nil {
+	if err := os.MkdirAll(filepath.Dir(configPath), 0700); err != nil {
 		return err
 	}
 	configFilepath := path.Join(configPath, common.DefaultConfigFilename+common.DefaultConfigFileSuffix)
