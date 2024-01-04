@@ -26,12 +26,5 @@ func list(cmd *cobra.Command) error {
 		PlatformId:     platformId,
 		PageParameters: common.PageParameters(cmd),
 	})
-
-	if err != nil {
-		return err
-	}
-
 	return common.Print(printer, err, response)
-
-	return nil
 }

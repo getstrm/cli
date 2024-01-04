@@ -9,6 +9,7 @@ import (
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	ppentities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
@@ -40,29 +41,22 @@ func upsert(cmd *cobra.Command, filename *string) error {
 	if err != nil {
 		return err
 	}
-
-	v, _ := cmd.Flags().GetBool(common.ApplyFlag)
-	apply := v
+	applyFlag, _ := cmd.Flags().GetBool(common.ApplyFlag)
 	req := &UpsertDataPolicyRequest{
 		DataPolicy: policy,
-		Apply:      apply,
+		Apply:      applyFlag,
 	}
 	response, err := polClient.UpsertDataPolicy(apiContext, req)
 	if err != nil {
 		return err
 	}
-
 	return common.Print(printer, err, response)
-	return nil
 }
 
 func get(cmd *cobra.Command, dataPolicyOrTableId *string) error {
 	flags := cmd.Flags()
-
-	v, _ := flags.GetString(common.ProcessingPlatformFlag)
-	platformId := v
-	v2, _ := flags.GetBool(common.BlueprintFlag)
-	blueprint := v2
+	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
+	blueprint, _ := flags.GetBool(common.BlueprintFlag)
 	if blueprint {
 		// a blueprint policy only exists on processing platforms or catalogs
 		if platformId != "" {
@@ -70,7 +64,6 @@ func get(cmd *cobra.Command, dataPolicyOrTableId *string) error {
 		} else {
 			return getBlueprintPolicyFromCatalog(flags, dataPolicyOrTableId)
 		}
-
 	} else {
 		// return a data policy from the PACE database.
 		response, err := getDataPolicy(dataPolicyOrTableId, platformId)
@@ -79,24 +72,22 @@ func get(cmd *cobra.Command, dataPolicyOrTableId *string) error {
 }
 
 func apply(cmd *cobra.Command, dataPolicyId *string) error {
-	v, _ := cmd.Flags().GetString(common.ProcessingPlatformFlag)
-	processingPlatform := v
-
+	processingPlatform, _ := cmd.Flags().GetString(common.ProcessingPlatformFlag)
 	req := &ApplyDataPolicyRequest{
 		DataPolicyId: *dataPolicyId,
 		PlatformId:   processingPlatform,
 	}
 	response, err := polClient.ApplyDataPolicy(apiContext, req)
+	if err != nil {
+		return err
+	}
 	return common.Print(printer, err, response)
 }
 
 func evaluate(cmd *cobra.Command, dataPolicyId *string) error {
-	v, _ := cmd.Flags().GetString(common.ProcessingPlatformFlag)
-	processingPlatform := v
-	v2, _ := cmd.Flags().GetString(common.SampleDataFlag)
-	sampleDataFileName := v2
+	processingPlatform, _ := cmd.Flags().GetString(common.ProcessingPlatformFlag)
+	sampleDataFileName, _ := cmd.Flags().GetString(common.SampleDataFlag)
 	sampleDataFile, err := os.ReadFile(sampleDataFileName)
-
 	if err != nil {
 		return err
 	}
@@ -113,13 +104,10 @@ func evaluate(cmd *cobra.Command, dataPolicyId *string) error {
 		},
 	}
 	response, err := polClient.EvaluateDataPolicy(apiContext, req)
-
 	if err != nil {
 		return err
 	}
-
 	return common.Print(printer, err, response)
-	return nil
 }
 
 func getDataPolicy(dataPolicyOrTableId *string, platformId string) (*GetDataPolicyResponse, error) {
@@ -132,7 +120,7 @@ func getDataPolicy(dataPolicyOrTableId *string, platformId string) (*GetDataPoli
 }
 
 func getBlueprintPolicyFromCatalog(flags *pflag.FlagSet, tableId *string) error {
-	catalogId, databaseId, schemaId, err := common.GetCatalogCoordinates(flags)
+	catalogId, databaseId, schemaId, _ := common.GetCatalogCoordinates(flags)
 	req := &catalogentities.GetBlueprintPolicyRequest{
 		CatalogId:  catalogId,
 		DatabaseId: &databaseId,
@@ -140,7 +128,9 @@ func getBlueprintPolicyFromCatalog(flags *pflag.FlagSet, tableId *string) error 
 		TableId:    *tableId,
 	}
 	response, err := catClient.GetBlueprintPolicy(apiContext, req)
-
+	if err != nil {
+		return err
+	}
 	return common.Print(printer, err, response.DataPolicy)
 }
 
@@ -150,12 +140,13 @@ func getBlueprintPolicyFromProcessingPlatform(platformId string, tableId *string
 		TableId:    *tableId,
 	}
 	response, err := pClient.GetBlueprintPolicy(apiContext, req)
-
-	if response.Violation != nil && response.Violation.Description != "" {
-		fmt.Fprintf(os.Stderr, "Bare policy violation: %s\n", response.Violation.Description)
-		os.Exit(10)
+	if err != nil {
+		return err
 	}
-
+	if response.Violation != nil && response.Violation.Description != "" {
+		message := fmt.Sprintf("Bare policy violation: %s\n", response.Violation.Description)
+		return errors.New(message)
+	}
 	return common.Print(printer, err, response.DataPolicy)
 }
 
@@ -164,25 +155,19 @@ func list(cmd *cobra.Command) error {
 		PageParameters: common.PageParameters(cmd),
 	}
 	response, err := polClient.ListDataPolicies(apiContext, req)
-
 	if err != nil {
 		return err
 	}
-
 	return common.Print(printer, err, response)
-
-	return nil
 }
 
 // readPolicy
 // read a json or yaml encoded policy from the filesystem.
 func readPolicy(filename string) (*DataPolicy, error) {
 	file, err := os.ReadFile(filename)
-
 	if err != nil {
 		return nil, err
 	}
-
 	// check if the file is yaml and convert it to json
 	if strings.HasSuffix(filename, ".yaml") || strings.HasSuffix(filename, ".yml") {
 		file, err = yaml.YAMLToJSON(file)
@@ -190,7 +175,6 @@ func readPolicy(filename string) (*DataPolicy, error) {
 			return nil, err
 		}
 	}
-
 	dataPolicy := &DataPolicy{}
 	err = protojson.Unmarshal(file, dataPolicy)
 	return dataPolicy, err
@@ -198,19 +182,15 @@ func readPolicy(filename string) (*DataPolicy, error) {
 
 func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	flags := cmd.Flags()
-
-	v3, _ := flags.GetBool(common.BlueprintFlag)
-	blueprint := v3
+	blueprint, _ := flags.GetBool(common.BlueprintFlag)
 
 	// talking to the PACE database
 	if !blueprint {
 		return IdsCompletion(cmd, args, toComplete)
 	}
 
-	v, _ := flags.GetString(common.ProcessingPlatformFlag)
-	platformId := v
-	v2, _ := flags.GetString(common.CatalogFlag)
-	catalogId := v2
+	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
+	catalogId, _ := flags.GetString(common.CatalogFlag)
 
 	// talking to a processing platform
 	if platformId != "" {
@@ -221,7 +201,6 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 		if err != nil {
 			return common.CobraCompletionError(err)
 		}
-
 		return response.Tables, cobra.ShellCompDirectiveNoFileComp
 	}
 
@@ -246,10 +225,9 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 	if err != nil {
 		return common.CobraCompletionError(err)
 	}
-	names := lo.Map(response.Tables, func(table *DataCatalog_Table, _ int) string {
+	return lo.Map(response.Tables, func(table *DataCatalog_Table, _ int) string {
 		return table.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -264,8 +242,7 @@ func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra
 
 	var policies = response.DataPolicies
 
-	v, _ := cmd.Flags().GetString(common.ProcessingPlatformFlag)
-	platformId := v
+	platformId, _ := cmd.Flags().GetString(common.ProcessingPlatformFlag)
 
 	// If the platform id is provided, make sure we only suggest policies for that platform
 	if platformId != "" {

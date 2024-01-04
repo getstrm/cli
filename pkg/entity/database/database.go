@@ -18,18 +18,10 @@ func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx contex
 }
 
 func list(cmd *cobra.Command) error {
-	v, _ := cmd.Flags().GetString(common.CatalogFlag)
-	catalogId := v
+	catalogId, _ := cmd.Flags().GetString(common.CatalogFlag)
 	response, err := client.ListDatabases(apiContext, &ListDatabasesRequest{
 		CatalogId:      catalogId,
 		PageParameters: common.PageParameters(cmd),
 	})
-
-	if err != nil {
-		return err
-	}
-
 	return common.Print(printer, err, response)
-	return nil
-
 }

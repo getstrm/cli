@@ -71,11 +71,7 @@ func ConfigureExtraPrinters(cmd *cobra.Command, flags *pflag.FlagSet, printers o
 	err := cmd.RegisterFlagCompletionFunc(OutputFormatFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return formats, cobra.ShellCompDirectiveNoFileComp
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func Print(printer Printer, err error, data interface{}) error {
@@ -89,21 +85,21 @@ func Print(printer Printer, err error, data interface{}) error {
 func (p ProtoMessageJsonRawPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
 	rawJson := util.ProtoMessageToRawJson(protoContent)
-	fmt.Println(string(rawJson.Bytes()))
+	fmt.Println(rawJson.String())
 	printIfProtoMessageIsEmpty(protoContent)
 }
 
 func (p ProtoMessageJsonPrettyPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
 	prettyJson := util.ProtoMessageToPrettyJson(protoContent)
-	fmt.Println(string(prettyJson.Bytes()))
+	fmt.Println(prettyJson.String())
 	printIfProtoMessageIsEmpty(protoContent)
 }
 
 func (p ProtoMessageYamlPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
 	yaml := util.ProtoMessageToYaml(protoContent)
-	fmt.Println(string(yaml.Bytes()))
+	fmt.Println(yaml.String())
 	printIfProtoMessageIsEmpty(protoContent)
 }
 

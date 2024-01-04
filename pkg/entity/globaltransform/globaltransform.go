@@ -45,25 +45,21 @@ func upsert(_ *cobra.Command, filename *string) error {
 
 func get(cmd *cobra.Command, ref string) error {
 	flags := cmd.Flags()
-	v, _ := flags.GetString(policyTypeFlag)
-	typ := v
+	typ, _ := flags.GetString(policyTypeFlag)
 	req := &GetGlobalTransformRequest{
 		Ref:  ref,
 		Type: typ,
 	}
 	response, err := client.GetGlobalTransform(apiContext, req)
-
 	if err != nil {
 		return err
 	}
-
 	return common.Print(printer, err, response.Transform)
 }
 
 func del(cmd *cobra.Command, ref string) error {
 	flags := cmd.Flags()
-	v, _ := flags.GetString(policyTypeFlag)
-	typ := v
+	typ, _ := flags.GetString(policyTypeFlag)
 	req := &DeleteGlobalTransformRequest{
 		Ref:  ref,
 		Type: typ,
@@ -79,11 +75,9 @@ func del(cmd *cobra.Command, ref string) error {
 
 func list(_ *cobra.Command) error {
 	response, err := client.ListGlobalTransforms(apiContext, &ListGlobalTransformsRequest{})
-
 	if err != nil {
 		return err
 	}
-
 	return common.Print(printer, err, response)
 }
 
@@ -107,7 +101,7 @@ func readGlobalTransform(filename string) (*GlobalTransform, error) {
 	return transform, err
 }
 
-func refCompletionFunction(_ *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+func refCompletionFunction(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	if len(args) != 0 {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}

@@ -39,31 +39,43 @@ func CollectTelemetry(commandPath string, err error) {
 	if commandPath == "" {
 		return
 	}
-	telemetry := readTelemetry()
+	telemetry := readTelemetryFileContents()
 	updateTelemetry(commandPath, err, telemetry)
 	_ = storeTelemetry(telemetry)
 }
 
+/*
+UploadTelemetry possibly uploads telemetry contents to Google Cloud function.
+the interval is defines the number of seconds that have to have passed
+since the last time telemetry was updated. A value of -1 will NOT send
+any data to the cloud function.
+
+`ch` is a channel that wait for true in the main thread to indicate the function
+call has succeeded (or at most 2 seconds).
+*/
 func UploadTelemetry(statsInterval int64, ch chan bool) {
 	if statsInterval < 0 {
 		ch <- true
 		return
 	}
-	telemetry := readTelemetry()
+	telemetry := readTelemetryFileContents()
 	now := time.Now().Unix()
-	if (now - getUploadedTimestamp()) < statsInterval {
+	if (now - getTimestampFileContents()) < statsInterval {
 		ch <- true
 		return
 	}
 	go func() {
-		updateUploadedTimestamp(now)
+		updateFilestampContents(now)
 		sendTelemetry(telemetry)
 		ch <- true
 	}()
 }
 
+/*
+sendTelemetry uploads a Telemetry instance to the public cloud function.
+*/
 func sendTelemetry(telemetry Telemetry) {
-	marshalled, err := json.Marshal(telemetry)
+	marshalled, _ := json.Marshal(telemetry)
 	req, err := http.NewRequest("POST", "https://cli.getstrm.com/telemetry", bytes.NewReader(marshalled))
 	if err != nil {
 		fmt.Println("Error creating telemetry request")
@@ -74,18 +86,20 @@ func sendTelemetry(telemetry Telemetry) {
 	if err != nil || response.StatusCode != 200 {
 		fmt.Println("Error sending telemetry", response.Status)
 		if response.Body != nil {
-			b, _ := io.ReadAll(response.Body)
-			fmt.Println("Cloud function response:\n", string(b))
+			responseBody, _ := io.ReadAll(response.Body)
+			fmt.Printf("Cloud function response:%s\n", responseBody)
 		}
 	} else {
-		b, _ := io.ReadAll(response.Body)
-		if strings.TrimSpace(string(b)) != "OK" {
-			fmt.Println("Telemetry sent, received unexpected '", string(b), "'")
-
+		responseBody, _ := io.ReadAll(response.Body)
+		if strings.TrimSpace(string(responseBody)) != "OK" {
+			fmt.Printf("Telemetry sent, received unexpected '%s'\n", responseBody)
 		}
 	}
 }
 
+/*
+updateTelemetry updates the telemetry argument based on the command path
+*/
 func updateTelemetry(commandPath string, err error, telemetry Telemetry) {
 	exitCode := determineExitCode(err)
 	metricsByExitCode, ok := telemetry.MetricPoints[commandPath]
@@ -110,6 +124,11 @@ func updateTelemetry(commandPath string, err error, telemetry Telemetry) {
 	}
 }
 
+/*
+determineExitCode determines process exit code based on the error.
+
+This will become somewhat smarter in the future :-)
+*/
 func determineExitCode(err error) uint32 {
 	if err != nil {
 		return 1
@@ -117,23 +136,24 @@ func determineExitCode(err error) uint32 {
 	return 0
 }
 
-func getUploadedTimestamp() int64 {
+func getTimestampFileContents() int64 {
 	configPath, _ := common.ConfigPath()
-	lastSeenCommandFilepath := path.Join(configPath, common.TelemetryTimestampFileName)
-	content, err := os.ReadFile(lastSeenCommandFilepath)
+	content, err := os.ReadFile(path.Join(configPath, common.TelemetryTimestampFileName))
 	if err != nil {
 		return 0
 	}
-	ts, _ := strconv.ParseInt(strings.Trim(string(content), "\n"), 10, 64)
+	ts, err := strconv.ParseInt(strings.TrimSpace(string(content)), 10, 64)
+	if err != nil {
+		return 0
+	}
 	return ts
 }
 
-func updateUploadedTimestamp(now int64) {
+func updateFilestampContents(ts int64) {
 	configPath, _ := common.ConfigPath()
-	lastSeenCommandFilepath := path.Join(configPath, common.TelemetryTimestampFileName)
-	os.WriteFile(
-		lastSeenCommandFilepath,
-		[]byte(fmt.Sprintf("%d", now)),
+	_ = os.WriteFile(
+		path.Join(configPath, common.TelemetryTimestampFileName),
+		[]byte(fmt.Sprintf("%d", ts)),
 		0644,
 	)
 }
@@ -153,7 +173,7 @@ func storeTelemetry(telemetry Telemetry) error {
 	return os.WriteFile(telemetryFile, telemetryYaml, 0644)
 }
 
-func readTelemetry() Telemetry {
+func readTelemetryFileContents() Telemetry {
 	configPath, err := common.ConfigPath()
 	defaultTelemetry := Telemetry{
 		CliVersion:   common.Version,

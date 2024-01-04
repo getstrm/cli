@@ -18,7 +18,7 @@ func AbortError(format string, args ...interface{}) error {
 	if len(args) == 0 {
 		return errors.New(format)
 	} else {
-		return errors.New(fmt.Sprintf(format, args...))
+		return fmt.Errorf(format, args...)
 	}
 }
 
@@ -29,7 +29,7 @@ func CobraCompletionError(err error) ([]string, cobra.ShellCompDirective) {
 	return nil, cobra.ShellCompDirectiveNoFileComp
 }
 
-func NoFilesEmptyCompletion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+func NoFilesEmptyCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	return nil, cobra.ShellCompDirectiveNoFileComp
 }
 
@@ -84,14 +84,12 @@ func LogFileName() (string, error) {
 }
 
 func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string, error) {
-	catalogId, err := flags.GetString(CatalogFlag)
-	databaseId, err := flags.GetString(DatabaseFlag)
-	schemaId, err := flags.GetString(SchemaFlag)
-	if err != nil {
-		return "", "", "", err
-	}
+	catalogId, _ := flags.GetString(CatalogFlag)
+	databaseId, _ := flags.GetString(DatabaseFlag)
+	schemaId, _ := flags.GetString(SchemaFlag)
 	return catalogId, databaseId, schemaId, nil
 }
+
 func PageParameters(cmd *cobra.Command) *pagingv1alpha.PageParameters {
 	flags := cmd.Flags()
 	skip, _ := flags.GetUint32(PageSkipFlag)

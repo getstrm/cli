@@ -24,13 +24,10 @@ func SetupClient(clientConnection processingplatforms.ProcessingPlatformsService
 
 func list(_ *cobra.Command) error {
 	response, err := client.ListProcessingPlatforms(apiContext, &ListProcessingPlatformsRequest{})
-
 	if err != nil {
 		return err
 	}
-
 	return common.Print(printer, err, response)
-	return nil
 }
 
 func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -39,12 +36,9 @@ func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.Shel
 	if err != nil {
 		return common.CobraCompletionError(err)
 	}
-
-	names := lo.Map(response.ProcessingPlatforms, func(p *DataPolicy_ProcessingPlatform, _ int) string {
+	return lo.Map(response.ProcessingPlatforms, func(p *DataPolicy_ProcessingPlatform, _ int) string {
 		return p.Id
-	})
-
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func AddProcessingPlatformFlag(cmd *cobra.Command, flags *pflag.FlagSet) error {

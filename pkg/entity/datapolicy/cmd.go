@@ -15,7 +15,7 @@ func UpsertCmd() *cobra.Command {
 		Long:              upsertLongDocs,
 		Example:           upsertExample,
 		DisableAutoGenTag: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			var err error
 			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
 			return err
@@ -41,7 +41,7 @@ func ApplyCmd() *cobra.Command {
 		Long:              applyLongDocs,
 		Example:           applyExample,
 		DisableAutoGenTag: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			var err error
 			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
 			return err
@@ -54,9 +54,8 @@ func ApplyCmd() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	processingplatform.AddProcessingPlatformFlag(cmd, flags)
-	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
-
+	_ = processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	_ = cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
 	return cmd
 }
 
@@ -67,7 +66,7 @@ func EvaluateCmd() *cobra.Command {
 		Long:              evaluateLongDocs,
 		Example:           evaluateExample,
 		DisableAutoGenTag: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			var err error
 			printer, err = common.ConfigurePrinter(cmd, evaluatePrinters())
 			return err
@@ -80,13 +79,11 @@ func EvaluateCmd() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	processingplatform.AddProcessingPlatformFlag(cmd, flags)
-	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
-	addSampleDataFlag(cmd, flags)
-	cmd.MarkFlagRequired(common.SampleDataFlag)
-
-	common.ConfigureExtraPrinters(cmd, cmd.Flags(), evaluatePrinters())
-
+	_ = processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	_ = cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
+	_ = addSampleDataFlag(cmd, flags)
+	_ = cmd.MarkFlagRequired(common.SampleDataFlag)
+	_ = common.ConfigureExtraPrinters(cmd, cmd.Flags(), evaluatePrinters())
 	return cmd
 }
 
@@ -97,7 +94,7 @@ func GetCmd() *cobra.Command {
 		Long:              getLongDoc,
 		Example:           getExample,
 		DisableAutoGenTag: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			var err error
 			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
 			return err
@@ -109,7 +106,7 @@ func GetCmd() *cobra.Command {
 		ValidArgsFunction: TableOrDataPolicyIdsCompletion,
 	}
 	flags := cmd.Flags()
-	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	_ = processingplatform.AddProcessingPlatformFlag(cmd, flags)
 	catalog.AddCatalogFlag(cmd, flags)
 	catalog.AddDatabaseFlag(cmd, flags)
 	catalog.AddSchemaFlag(cmd, flags)
@@ -126,7 +123,7 @@ func ListCmd() *cobra.Command {
 		Example:           listExample,
 		Long:              listLongDoc,
 		DisableAutoGenTag: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			var err error
 			printer, err = common.ConfigurePrinter(cmd, listPrinters())
 			return err
@@ -136,7 +133,7 @@ func ListCmd() *cobra.Command {
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
-	common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
+	_ = common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
 	return cmd
 }
 

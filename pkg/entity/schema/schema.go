@@ -20,20 +20,16 @@ func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx contex
 
 func list(cmd *cobra.Command) error {
 	flags := cmd.Flags()
-	v, _ := flags.GetString(common.CatalogFlag)
-	catalogId := v
-	v2, _ := flags.GetString(common.DatabaseFlag)
-	databaseId := v2
+	catalogId, _ := flags.GetString(common.CatalogFlag)
+	databaseId, _ := flags.GetString(common.DatabaseFlag)
 	req := &ListSchemasRequest{
 		CatalogId:      catalogId,
 		DatabaseId:     &databaseId,
 		PageParameters: common.PageParameters(cmd),
 	}
 	response, err := client.ListSchemas(apiContext, req)
-
 	if err != nil {
 		return err
 	}
-
 	return common.Print(printer, err, response)
 }

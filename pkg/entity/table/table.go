@@ -23,19 +23,16 @@ func SetupClient(ppclient_ ProcessingPlatformsServiceClient, catclient_ DataCata
 
 func list(cmd *cobra.Command) error {
 	flags := cmd.Flags()
-	v, _ := flags.GetString(common.ProcessingPlatformFlag)
-	platformId := v
+	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
 	if platformId != "" {
 		req := &processing_platformsv1alpha.ListTablesRequest{
 			PlatformId:     platformId,
 			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := ppclient.ListTables(apiContext, req)
-
 		if err != nil {
 			return err
 		}
-
 		return common.Print(printer, err, response)
 	} else {
 		catalogId, databaseId, schemaId, err := common.GetCatalogCoordinates(flags)
@@ -49,9 +46,6 @@ func list(cmd *cobra.Command) error {
 			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := catclient.ListTables(apiContext, req)
-		if err != nil {
-			return err
-		}
 		return common.Print(printer, err, response)
 	}
 }

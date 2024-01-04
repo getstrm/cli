@@ -21,27 +21,20 @@ func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx contex
 
 func list() error {
 	response, err := client.ListCatalogs(apiContext, &ListCatalogsRequest{})
-	if err != nil {
-		return err
-	}
-
 	return common.Print(printer, err, response)
-	return nil
 }
 
 func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	if len(args) != 0 {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
-
 	response, err := client.ListCatalogs(apiContext, &ListCatalogsRequest{})
 	if err != nil {
 		return common.CobraCompletionError(err)
 	}
-	names := lo.Map(response.Catalogs, func(catalog *DataCatalog, _ int) string {
+	return lo.Map(response.Catalogs, func(catalog *DataCatalog, _ int) string {
 		return catalog.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -60,10 +53,9 @@ func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]strin
 	if err != nil {
 		return common.CobraCompletionError(err)
 	}
-	names := lo.Map(response.Databases, func(catalog *DataCatalog_Database, _ int) string {
+	return lo.Map(response.Databases, func(catalog *DataCatalog_Database, _ int) string {
 		return catalog.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -87,10 +79,9 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 	if err != nil {
 		return common.CobraCompletionError(err)
 	}
-	names := lo.Map(response.Schemas, func(catalog *DataCatalog_Schema, _ int) string {
+	return lo.Map(response.Schemas, func(catalog *DataCatalog_Schema, _ int) string {
 		return catalog.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func AddCatalogFlag(cmd *cobra.Command, flags *pflag.FlagSet) {

@@ -203,7 +203,7 @@ func cliExit(err error) {
 			if len(st.Details()) > 0 {
 				details := st.Details()[0]
 				yamlBytes := ProtoMessageToYaml(details.(proto.Message))
-				additionalDetails = string(yamlBytes.Bytes())
+				additionalDetails = yamlBytes.String()
 			} else {
 				additionalDetails = ""
 			}

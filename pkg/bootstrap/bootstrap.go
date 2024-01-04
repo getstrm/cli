@@ -135,8 +135,7 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper) {
 }
 
 func SetupGrpc(host string) (*grpc.ClientConn, context.Context, error) {
-	var creds grpc.DialOption
-	creds = grpc.WithTransportCredentials(insecure.NewCredentials())
+	creds := grpc.WithTransportCredentials(insecure.NewCredentials())
 	clientConnection, err := grpc.Dial(host, creds, grpc.WithUnaryInterceptor(clientInterceptor))
 	if err != nil {
 		return nil, nil, err

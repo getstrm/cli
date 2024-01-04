@@ -16,7 +16,7 @@ func InvokeCmd() *cobra.Command {
 		Long:              invokeLongDocs,
 		Example:           invokeExample,
 		DisableAutoGenTag: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			var err error
 			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
 			return err
@@ -42,7 +42,7 @@ func ListCmd() *cobra.Command {
 		Long:              listLongDocs,
 		Example:           listExample,
 		DisableAutoGenTag: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			var err error
 			printer, err = common.ConfigurePrinter(cmd, listPrinters())
 			return err
@@ -52,7 +52,7 @@ func ListCmd() *cobra.Command {
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
-	common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
+	_ = common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
 	return cmd
 }
 

@@ -31,8 +31,6 @@ func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra
 		return common.CobraCompletionError(err)
 	}
 
-	emptyResult := make([]string, 0)
-
 	if len(args) == 1 && cmd.Name() == pluginCommand {
 		plugin := lo.Filter(response.Plugins, func(p *Plugin, _ int) bool {
 			return p.Id == args[0]
@@ -42,38 +40,27 @@ func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra
 			actions := lo.Map(response.Plugins[0].Actions, func(action *Action, _ int) string {
 				return action.Type.String()
 			})
-
 			return actions, cobra.ShellCompDirectiveNoFileComp
 		} else {
-			return emptyResult, cobra.ShellCompDirectiveNoFileComp
+			return nil, cobra.ShellCompDirectiveNoFileComp
 		}
 	} else if len(args) == 0 && cmd.Name() == pluginCommand {
 		names := lo.Map(response.Plugins, func(p *Plugin, _ int) string {
 			return p.Id
 		})
-
 		return names, cobra.ShellCompDirectiveNoFileComp
 	} else {
-		return emptyResult, cobra.ShellCompDirectiveNoFileComp
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 }
 
 func listPlugins() error {
 	response, err := list()
-
-	if err != nil {
-		return err
-	}
-
 	return common.Print(printer, err, response)
-	return nil
 }
 
 func list() (*ListPluginsResponse, error) {
-	req := &ListPluginsRequest{}
-	response, err := client.ListPlugins(apiContext, req)
-
-	return response, err
+	return client.ListPlugins(apiContext, &ListPluginsRequest{})
 }
 
 func getPluginById(pluginId *string) (*Plugin, error) {
@@ -86,7 +73,7 @@ func getPluginById(pluginId *string) (*Plugin, error) {
 		return p.Id == *pluginId
 	})
 	if !found {
-		return nil, errors.New(fmt.Sprintf("plugin with id %s not found", *pluginId))
+		return nil, fmt.Errorf("plugin with id %s not found", *pluginId)
 	}
 	return plugin, nil
 }
@@ -106,17 +93,12 @@ func invokePlugin(cmd *cobra.Command, args []string) error {
 		},
 		Parameters: nil,
 	}
-	addPluginRequestParameters(cmd, plugin, actionType, request)
-
+	_ = addPluginRequestParameters(cmd, plugin, actionType, request)
 	response, err := client.InvokePlugin(apiContext, request)
-
 	if err != nil {
 		return err
 	}
-
-	printResult(response)
-
-	return nil
+	return printResult(response)
 }
 
 // addPluginRequestParameters adds the correct parameters to the request based on the plugin type
@@ -125,28 +107,32 @@ func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, actionType A
 	switch actionType {
 	case Action_GENERATE_SAMPLE_DATA:
 		payload, err := readPayload(cmd, &plugin.Id, actionType)
+		if err != nil {
+			return err
+		}
 		request.Parameters = &InvokePluginRequest_SampleDataGeneratorParameters{
 			SampleDataGeneratorParameters: &SampleDataGenerator_Parameters{
 				Payload: *payload,
 			},
 		}
-		return err
 	case Action_GENERATE_DATA_POLICY:
 		payload, err := readPayload(cmd, &plugin.Id, actionType)
+		if err != nil {
+			return err
+		}
 		request.Parameters = &InvokePluginRequest_DataPolicyGeneratorParameters{
 			DataPolicyGeneratorParameters: &DataPolicyGenerator_Parameters{
 				Payload: *payload,
 			},
 		}
-		return err
 	default:
-		return errors.New(fmt.Sprintf("plugin type %s not supported", actionType))
+		return fmt.Errorf("plugin type %s not supported", actionType)
 	}
+	return nil
 }
 
 func readPayload(cmd *cobra.Command, pluginId *string, actionType Action_Type) (*string, error) {
-	v, _ := cmd.Flags().GetString(common.PluginPayloadFlag)
-	fileName := v
+	fileName, _ := cmd.Flags().GetString(common.PluginPayloadFlag)
 	file, err := os.ReadFile(fileName)
 	if err != nil {
 		return nil, err
@@ -158,7 +144,10 @@ func readPayload(cmd *cobra.Command, pluginId *string, actionType Action_Type) (
 		}
 	}
 
-	validatePayload(pluginId, actionType, file)
+	err = validatePayload(pluginId, actionType, file)
+	if err != nil {
+		return nil, err
+	}
 	byte64EncodedJson := base64.StdEncoding.EncodeToString(file)
 	return &byte64EncodedJson, nil
 }
@@ -188,7 +177,6 @@ func validatePayload(pluginId *string, actionType Action_Type, payload []byte) e
 		}
 		return errors.New(errMsg.String())
 	}
-
 	return nil
 }
 
@@ -203,6 +191,5 @@ func printResult(response *InvokePluginResponse) error {
 		fmt.Println(csv)
 		return nil
 	}
-
 	return nil
 }
