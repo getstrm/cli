@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/lithammer/dedent"
 	log "github.com/sirupsen/logrus"
@@ -21,6 +22,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -31,7 +33,12 @@ const (
 var commandPath string
 var commandError error
 
+var telemetryUploaded chan bool
+
 func main() {
+	// There's buffering in the channel because otherwise sending to the channel from the
+	// main thread will block the whole application
+	telemetryUploaded = make(chan bool, 1)
 	cobra.OnFinalize(func() {
 
 	})
@@ -57,10 +64,16 @@ func main() {
 	cliExit(setup(rootCmd))
 	commandError = rootCmd.Execute()
 	metrics.CollectTelemetry(commandPath, commandError)
+	// wait for the telemetry to have been sent but no more than 2 seconds
+	select {
+	case <-time.After(2 * time.Second):
+	case <-telemetryUploaded:
+	}
 	cliExit(commandError)
 }
 
 func rootCmdPreRun(cmd *cobra.Command, _ []string) error {
+	flags := cmd.Flags()
 	commandPath = cmd.CommandPath()
 	err := createConfigDirAndFileIfNotExists()
 	if err != nil {
@@ -77,8 +90,11 @@ func rootCmdPreRun(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
+	statsInterval, _ := flags.GetInt64(metrics.StatsUploadInterval)
+	metrics.UploadTelemetry(statsInterval, telemetryUploaded)
+
 	log.Infoln(fmt.Sprintf("Executing command: %v", cmd.CommandPath()))
-	cmd.Flags().Visit(func(flag *pflag.Flag) {
+	flags.Visit(func(flag *pflag.Flag) {
 		log.Infoln(fmt.Sprintf("flag %v=%v", flag.Name, flag.Value))
 	})
 	v, _ := cmd.Flags().GetString(apiHostFlag)
@@ -99,6 +115,7 @@ func setup(rootCmd *cobra.Command) error {
 	persistentFlags.StringP(common.OutputFormatFlag, common.OutputFormatFlagShort,
 		common.StandardPrinters.Keys()[0],
 		fmt.Sprintf("output format [%v]", strings.Join(common.StandardPrinters.Keys(), ", ")))
+	persistentFlags.Int64(metrics.StatsUploadInterval, 3600, "Upload usage statistics every so often. Use -1 to disable")
 
 	err = rootCmd.RegisterFlagCompletionFunc(common.OutputFormatFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return common.StandardPrinters.Keys(), cobra.ShellCompDirectiveNoFileComp
@@ -121,18 +138,15 @@ func createConfigDirAndFileIfNotExists() error {
 		return err
 	}
 	configFilepath := path.Join(configPath, common.DefaultConfigFilename+common.DefaultConfigFileSuffix)
-	if _, _ = os.Stat(configFilepath); os.IsNotExist(os.MkdirAll(filepath.Dir(configPath), 0700)) {
-		err := os.WriteFile(
+	_, err = os.Stat(configFilepath)
+	if errors.Is(err, syscall.ENOENT) {
+		err = os.WriteFile(
 			configFilepath,
 			common.DefaultConfigFileContents,
 			0644,
 		)
-		if err != nil {
-			return err
-		}
 	}
-
-	return nil
+	return err
 }
 
 func setLastSeenTimestamp(cmd *cobra.Command) error {
