@@ -40,15 +40,17 @@ Each verb sits in its own package, and will have subcommands for all the entity 
 in PACE.
 */
 func SetupVerbs(rootCmd *cobra.Command) {
-	rootCmd.AddCommand(cmd.ListCmd)
-	rootCmd.AddCommand(cmd.GetCmd)
-	rootCmd.AddCommand(cmd.UpsertCmd)
-	rootCmd.AddCommand(cmd.ApplyCmd)
-	rootCmd.AddCommand(cmd.DeleteCmd)
-	rootCmd.AddCommand(cmd.VersionCmd)
-	rootCmd.AddCommand(cmd.EvaluateCmd)
-	rootCmd.AddCommand(cmd.InvokeCmd)
-	rootCmd.AddCommand(cmd.DisableCmd)
+	rootCmd.AddCommand(
+		cmd.ListCmd,
+		cmd.GetCmd,
+		cmd.UpsertCmd,
+		cmd.ApplyCmd,
+		cmd.DeleteCmd,
+		cmd.VersionCmd,
+		cmd.EvaluateCmd,
+		cmd.InvokeCmd,
+		cmd.DisableCmd,
+	)
 }
 
 func SetupServiceClients() error {
