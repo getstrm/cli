@@ -75,8 +75,8 @@ func UploadTelemetry(telemetryUploadIntervalSeconds int64, ch chan bool) {
 /*
 sendTelemetry uploads a Telemetry instance to the public cloud function.
 */
-func sendTelemetry(telemetry Telemetry) {
-	marshalled, _ := json.Marshal(telemetry)
+func sendTelemetry(telemetry *Telemetry) {
+	marshalled, _ := json.Marshal(*telemetry)
 	req, err := http.NewRequest("POST", "https://cli.getstrm.com/telemetry", bytes.NewReader(marshalled))
 	if err != nil {
 		log.Errorf("Error creating telemetry request: %v", err)
@@ -102,7 +102,7 @@ func sendTelemetry(telemetry Telemetry) {
 /*
 updateTelemetry updates the telemetry argument based on the command path
 */
-func updateTelemetry(commandPath string, err error, telemetry Telemetry) {
+func updateTelemetry(commandPath string, err error, telemetry *Telemetry) {
 	telemetry.CliVersion = common.Version
 
 	exitCode := determineExitCode(err)
@@ -162,7 +162,7 @@ func updateFilestampContents(ts int64) {
 	)
 }
 
-func storeTelemetry(telemetry Telemetry) error {
+func storeTelemetry(telemetry *Telemetry) error {
 	configPath, err := common.ConfigPath()
 	if err != nil {
 		return err
@@ -177,9 +177,9 @@ func storeTelemetry(telemetry Telemetry) error {
 	return os.WriteFile(telemetryFile, telemetryYaml, 0644)
 }
 
-func readTelemetryFileContents() Telemetry {
+func readTelemetryFileContents() *Telemetry {
 	configPath, err := common.ConfigPath()
-	defaultTelemetry := Telemetry{
+	defaultTelemetry := &Telemetry{
 		CliVersion:   common.Version,
 		OsVersion:    runtime.GOOS,
 		Id:           uuid.New().String(),
@@ -200,5 +200,5 @@ func readTelemetryFileContents() Telemetry {
 	if err != nil {
 		return defaultTelemetry
 	}
-	return telemetry
+	return &telemetry
 }
