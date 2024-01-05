@@ -14,26 +14,26 @@ import (
 
 var ApiHost string
 
-func Abort(format string, args ...interface{}) {
+func AbortError(format string, args ...interface{}) error {
 	if len(args) == 0 {
-		CliExit(errors.New(format))
+		return errors.New(format)
 	} else {
-		CliExit(errors.New(fmt.Sprintf(format, args...)))
+		return fmt.Errorf(format, args...)
 	}
 }
 
-func GrpcRequestCompletionError(err error) ([]string, cobra.ShellCompDirective) {
+func CobraCompletionError(err error) ([]string, cobra.ShellCompDirective) {
 	errorMessage := fmt.Sprintf("%v", err)
 	log.Errorln(errorMessage)
 	cobra.CompErrorln(errorMessage)
 	return nil, cobra.ShellCompDirectiveNoFileComp
 }
 
-func NoFilesEmptyCompletion(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+func NoFilesEmptyCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	return nil, cobra.ShellCompDirectiveNoFileComp
 }
 
-func ConfigPath() string {
+func ConfigPath() (string, error) {
 	if configPath == "" {
 		// if we set this environment variable, we work in a completely different configuration directory
 		// Here you will define your flags and configuration settings.
@@ -54,34 +54,42 @@ func ConfigPath() string {
 			configPath, err = ExpandTilde(defaultConfigPath)
 		}
 
-		CliExit(err)
+		if err != nil {
+			return "", err
+		}
 	}
 
-	return configPath
+	return configPath, nil
 }
 
-func LogFileName() string {
+func LogFileName() (string, error) {
 	if logFileName == "" {
-		logFileName = ConfigPath() + "/" + RootCommandName + ".log"
+		configPath, err := ConfigPath()
+
+		if err != nil {
+			return "", err
+		}
+
+		logFileName = configPath + "/" + RootCommandName + ".log"
 		log.SetLevel(log.TraceLevel)
 		log.SetOutput(&lumberjack.Logger{
-			Filename:   LogFileName(),
+			Filename:   logFileName,
 			MaxSize:    1, // MB
 			MaxBackups: 0,
 		})
-		log.Info(fmt.Sprintf("Config path is set to: %v", ConfigPath()))
+		log.Info(fmt.Sprintf("Config path is set to: %v", configPath))
 	}
 
-	return logFileName
+	return logFileName, nil
 }
 
-func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string) {
-	catalogId, err := flags.GetString(CatalogFlag)
-	databaseId, err := flags.GetString(DatabaseFlag)
-	schemaId, err := flags.GetString(SchemaFlag)
-	CliExit(err)
-	return catalogId, databaseId, schemaId
+func GetCatalogCoordinates(flags *pflag.FlagSet) (string, string, string, error) {
+	catalogId, _ := flags.GetString(CatalogFlag)
+	databaseId, _ := flags.GetString(DatabaseFlag)
+	schemaId, _ := flags.GetString(SchemaFlag)
+	return catalogId, databaseId, schemaId, nil
 }
+
 func PageParameters(cmd *cobra.Command) *pagingv1alpha.PageParameters {
 	flags := cmd.Flags()
 	skip, _ := flags.GetUint32(PageSkipFlag)

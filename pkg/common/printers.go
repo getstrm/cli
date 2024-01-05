@@ -38,6 +38,7 @@ func init() {
 }
 
 type Printer interface {
+	// TODO this should be a private func
 	Print(data interface{})
 }
 
@@ -51,46 +52,54 @@ ConfigurePrinter
 this function is called just before the command execution
 the output format has already been set.
 */
-func ConfigurePrinter(command *cobra.Command, printers orderedmap.OrderedMap[string, Printer]) Printer {
+func ConfigurePrinter(command *cobra.Command, printers orderedmap.OrderedMap[string, Printer]) (Printer, error) {
 	outputFormat, _ := command.Flags().GetString(OutputFormatFlag)
 	printer, ok := printers.Get(outputFormat)
 	if !ok {
-		Abort("Output format '%v' is not supported. Allowed values: %v", outputFormat, strings.Join(printers.Keys(), ", "))
+		return nil, AbortError("Output format '%v' is not supported. Allowed values: %v", outputFormat, strings.Join(printers.Keys(), ", "))
 	}
-	return printer
+	return printer, nil
 }
 
 // ConfigureExtraPrinters
 // this function is called after construction of the Cobra command in case a method wants to provide more than the StandardPrinters
 // entities that only need the standard universal printers don't need to call this.
-func ConfigureExtraPrinters(cmd *cobra.Command, flags *pflag.FlagSet, printers orderedmap.OrderedMap[string, Printer]) {
+func ConfigureExtraPrinters(cmd *cobra.Command, flags *pflag.FlagSet, printers orderedmap.OrderedMap[string, Printer]) error {
 	formats := printers.Keys()
 	flags.StringP(OutputFormatFlag, OutputFormatFlagShort, formats[0],
 		fmt.Sprintf("output formats [%v]", strings.Join(formats, ", ")))
 	err := cmd.RegisterFlagCompletionFunc(OutputFormatFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return formats, cobra.ShellCompDirectiveNoFileComp
 	})
-	util.CliExit(err)
+	return err
+}
+
+func Print(printer Printer, err error, data interface{}) error {
+	if err != nil {
+		return err
+	}
+	printer.Print(data)
+	return nil
 }
 
 func (p ProtoMessageJsonRawPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
 	rawJson := util.ProtoMessageToRawJson(protoContent)
-	fmt.Println(string(rawJson.Bytes()))
+	fmt.Println(rawJson.String())
 	printIfProtoMessageIsEmpty(protoContent)
 }
 
 func (p ProtoMessageJsonPrettyPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
 	prettyJson := util.ProtoMessageToPrettyJson(protoContent)
-	fmt.Println(string(prettyJson.Bytes()))
+	fmt.Println(prettyJson.String())
 	printIfProtoMessageIsEmpty(protoContent)
 }
 
 func (p ProtoMessageYamlPrinter) Print(content interface{}) {
 	protoContent, _ := (content).(proto.Message)
 	yaml := util.ProtoMessageToYaml(protoContent)
-	fmt.Println(string(yaml.Bytes()))
+	fmt.Println(yaml.String())
 	printIfProtoMessageIsEmpty(protoContent)
 }
 

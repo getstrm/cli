@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
-	. "pace/pace/pkg/util"
 )
 
 var apiContext context.Context
@@ -20,25 +19,22 @@ func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx contex
 	client = clientConnection
 }
 
-func list() {
+func list() error {
 	response, err := client.ListCatalogs(apiContext, &ListCatalogsRequest{})
-	CliExit(err)
-	printer.Print(response)
+	return common.Print(printer, err, response)
 }
 
 func IdsCompletion(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	if len(args) != 0 {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
-
 	response, err := client.ListCatalogs(apiContext, &ListCatalogsRequest{})
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
-	names := lo.Map(response.Catalogs, func(catalog *DataCatalog, _ int) string {
+	return lo.Map(response.Catalogs, func(catalog *DataCatalog, _ int) string {
 		return catalog.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -55,12 +51,11 @@ func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]strin
 		CatalogId: catalogId,
 	})
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
-	names := lo.Map(response.Databases, func(catalog *DataCatalog_Database, _ int) string {
+	return lo.Map(response.Databases, func(catalog *DataCatalog_Database, _ int) string {
 		return catalog.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -82,12 +77,11 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 		DatabaseId: &databaseId,
 	})
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
-	names := lo.Map(response.Schemas, func(catalog *DataCatalog_Schema, _ int) string {
+	return lo.Map(response.Schemas, func(catalog *DataCatalog_Schema, _ int) string {
 		return catalog.Id
-	})
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func AddCatalogFlag(cmd *cobra.Command, flags *pflag.FlagSet) {

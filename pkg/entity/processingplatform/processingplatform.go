@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
-	. "pace/pace/pkg/util"
 )
 
 // strings used in the cli
@@ -23,27 +22,26 @@ func SetupClient(clientConnection processingplatforms.ProcessingPlatformsService
 	client = clientConnection
 }
 
-func list(_ *cobra.Command) {
+func list(_ *cobra.Command) error {
 	response, err := client.ListProcessingPlatforms(apiContext, &ListProcessingPlatformsRequest{})
-	CliExit(err)
-	printer.Print(response)
+	if err != nil {
+		return err
+	}
+	return common.Print(printer, err, response)
 }
 
 func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	req := &ListProcessingPlatformsRequest{}
 	response, err := client.ListProcessingPlatforms(apiContext, req)
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
-
-	names := lo.Map(response.ProcessingPlatforms, func(p *DataPolicy_ProcessingPlatform, _ int) string {
+	return lo.Map(response.ProcessingPlatforms, func(p *DataPolicy_ProcessingPlatform, _ int) string {
 		return p.Id
-	})
-
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
-func AddProcessingPlatformFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
+func AddProcessingPlatformFlag(cmd *cobra.Command, flags *pflag.FlagSet) error {
 	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", common.ProcessingPlatformFlagUsage)
-	CliExit(cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, IdsCompletion))
+	return cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, IdsCompletion)
 }

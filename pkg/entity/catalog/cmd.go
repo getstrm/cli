@@ -12,15 +12,17 @@ func ListCmd() *cobra.Command {
 		Long:              listCatalogsDocs,
 		Example:           listCatalogsExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, listPrinters())
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, listPrinters())
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			list()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return list()
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	common.ConfigureExtraPrinters(cmd, flags, listPrinters())
+	_ = common.ConfigureExtraPrinters(cmd, flags, listPrinters())
 	return cmd
 }

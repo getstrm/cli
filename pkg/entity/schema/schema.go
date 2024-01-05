@@ -6,7 +6,6 @@ import (
 	"context"
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
-	. "pace/pace/pkg/util"
 )
 
 // strings used in the cli
@@ -19,16 +18,18 @@ func SetupClient(clientConnection catalogs.DataCatalogsServiceClient, ctx contex
 	client = clientConnection
 }
 
-func list(cmd *cobra.Command) {
+func list(cmd *cobra.Command) error {
 	flags := cmd.Flags()
-	catalogId := GetStringAndErr(flags, common.CatalogFlag)
-	databaseId := GetStringAndErr(flags, common.DatabaseFlag)
+	catalogId, _ := flags.GetString(common.CatalogFlag)
+	databaseId, _ := flags.GetString(common.DatabaseFlag)
 	req := &ListSchemasRequest{
 		CatalogId:      catalogId,
 		DatabaseId:     &databaseId,
 		PageParameters: common.PageParameters(cmd),
 	}
 	response, err := client.ListSchemas(apiContext, req)
-	CliExit(err)
-	printer.Print(response)
+	if err != nil {
+		return err
+	}
+	return common.Print(printer, err, response)
 }

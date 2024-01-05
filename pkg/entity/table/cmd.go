@@ -14,17 +14,19 @@ func ListCmd() *cobra.Command {
 		Long:              listTablesLongDocs,
 		Example:           listExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, listPrinters())
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, listPrinters())
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			list(cmd)
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			return list(cmd)
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	common.ConfigureExtraPrinters(cmd, flags, listPrinters())
-	processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	_ = common.ConfigureExtraPrinters(cmd, flags, listPrinters())
+	_ = processingplatform.AddProcessingPlatformFlag(cmd, flags)
 	catalog.AddCatalogFlag(cmd, flags)
 	catalog.AddDatabaseFlag(cmd, flags)
 	catalog.AddSchemaFlag(cmd, flags)

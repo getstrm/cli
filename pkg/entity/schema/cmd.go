@@ -13,21 +13,22 @@ func ListCmd() *cobra.Command {
 		Long:              listSchemasLongDocs,
 		Example:           listExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, listPrinters())
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, listPrinters())
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			list(cmd)
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			return list(cmd)
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
 	flags := cmd.Flags()
-	common.ConfigureExtraPrinters(cmd, flags, listPrinters())
+	_ = common.ConfigureExtraPrinters(cmd, flags, listPrinters())
 	catalog.AddCatalogFlag(cmd, flags)
 	catalog.AddDatabaseFlag(cmd, flags)
 
-	cmd.MarkFlagRequired(common.CatalogFlag)
-	cmd.MarkFlagRequired(common.DatabaseFlag)
-
+	_ = cmd.MarkFlagRequired(common.CatalogFlag)
+	_ = cmd.MarkFlagRequired(common.DatabaseFlag)
 	return cmd
 }

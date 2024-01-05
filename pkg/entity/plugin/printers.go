@@ -47,6 +47,6 @@ func (p listPlainPrinter) Print(data interface{}) {
 		actions := lo.Map(plugin.Actions, func(action *Action, _ int) string {
 			return action.Type.String()
 		})
-		fmt.Println(fmt.Sprintf("%s (%s)", plugin.Id, strings.Join(actions, ", ")))
+		fmt.Printf("%s (%s)\n", plugin.Id, strings.Join(actions, ", "))
 	}
 }
