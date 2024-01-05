@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 	"io"
 	"net/http"
@@ -18,7 +19,7 @@ import (
 )
 
 const (
-	StatsUploadInterval = "stats-interval"
+	TelemetryUploadIntervalSeconds = "telemetry-upload-interval-seconds"
 )
 
 // Telemetry represents all metrics that are collected about the getSTRM CLI.
@@ -53,14 +54,14 @@ any data to the cloud function.
 `ch` is a channel that wait for true in the main thread to indicate the function
 call has succeeded (or at most 2 seconds).
 */
-func UploadTelemetry(statsInterval int64, ch chan bool) {
-	if statsInterval < 0 {
+func UploadTelemetry(telemetryUploadIntervalSeconds int64, ch chan bool) {
+	if telemetryUploadIntervalSeconds < 0 { // opt out
 		ch <- true
 		return
 	}
 	telemetry := readTelemetryFileContents()
 	now := time.Now().Unix()
-	if (now - getTimestampFileContents()) < statsInterval {
+	if (now - getTimestampFileContents()) < telemetryUploadIntervalSeconds {
 		ch <- true
 		return
 	}
@@ -78,21 +79,22 @@ func sendTelemetry(telemetry Telemetry) {
 	marshalled, _ := json.Marshal(telemetry)
 	req, err := http.NewRequest("POST", "https://cli.getstrm.com/telemetry", bytes.NewReader(marshalled))
 	if err != nil {
-		fmt.Println("Error creating telemetry request")
+		log.Errorf("Error creating telemetry request: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil || response.StatusCode != 200 {
-		fmt.Println("Error sending telemetry", response.Status)
+		log.Errorf("Error sending telemetry: %v", response.Status)
 		if response.Body != nil {
 			responseBody, _ := io.ReadAll(response.Body)
-			fmt.Printf("Cloud function response:%s\n", responseBody)
+
+			log.Errorf("Cloud function response:%s\n", responseBody)
 		}
 	} else {
 		responseBody, _ := io.ReadAll(response.Body)
 		if strings.TrimSpace(string(responseBody)) != "OK" {
-			fmt.Printf("Telemetry sent, received unexpected '%s'\n", responseBody)
+			log.Errorf("Telemetry sent, received unexpected '%s'\n", responseBody)
 		}
 	}
 }
@@ -166,7 +168,7 @@ func storeTelemetry(telemetry Telemetry) error {
 	telemetryFile := path.Join(configPath, common.DefaultTelemetryFilename)
 	telemetryYaml, err := yaml.Marshal(telemetry)
 	if err != nil {
-		fmt.Println("Error marshalling telemetry")
+		log.Errorf("Error marshalling telemetry: %v", err)
 		return err
 	}
 

@@ -86,8 +86,8 @@ func rootCmdPreRun(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	statsInterval, _ := flags.GetInt64(metrics.StatsUploadInterval)
-	metrics.UploadTelemetry(statsInterval, telemetryUploaded)
+	telemetryUploadIntervalSeconds, _ := flags.GetInt64(metrics.TelemetryUploadIntervalSeconds)
+	metrics.UploadTelemetry(telemetryUploadIntervalSeconds, telemetryUploaded)
 
 	log.Infoln(fmt.Sprintf("Executing command: %v", cmd.CommandPath()))
 	flags.Visit(func(flag *pflag.Flag) {
@@ -108,7 +108,7 @@ func setup(rootCmd *cobra.Command) error {
 	persistentFlags.StringP(common.OutputFormatFlag, common.OutputFormatFlagShort,
 		common.StandardPrinters.Keys()[0],
 		fmt.Sprintf("output format [%v]", strings.Join(common.StandardPrinters.Keys(), ", ")))
-	persistentFlags.Int64(metrics.StatsUploadInterval, 3600, "Upload usage statistics every so often. Use -1 to disable")
+	persistentFlags.Int64(metrics.TelemetryUploadIntervalSeconds, 3600, "Upload usage statistics every so often. Use -1 to disable")
 
 	err = rootCmd.RegisterFlagCompletionFunc(common.OutputFormatFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return common.StandardPrinters.Keys(), cobra.ShellCompDirectiveNoFileComp
