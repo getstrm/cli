@@ -7,7 +7,6 @@ import (
 	"context"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
 )
 
@@ -53,8 +52,8 @@ func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]strin
 	if err != nil {
 		return common.CobraCompletionError(err)
 	}
-	return lo.Map(response.Databases, func(catalog *DataCatalog_Database, _ int) string {
-		return catalog.Id
+	return lo.Map(response.Databases, func(database *Database, _ int) string {
+		return database.Id
 	}), cobra.ShellCompDirectiveNoFileComp
 }
 
@@ -79,22 +78,7 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 	if err != nil {
 		return common.CobraCompletionError(err)
 	}
-	return lo.Map(response.Schemas, func(catalog *DataCatalog_Schema, _ int) string {
-		return catalog.Id
+	return lo.Map(response.Schemas, func(schema *Schema, _ int) string {
+		return schema.Id
 	}), cobra.ShellCompDirectiveNoFileComp
-}
-
-func AddCatalogFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
-	flags.StringP(common.CatalogFlag, common.CatalogFlagShort, "", common.CatalogFlagUsage)
-	_ = cmd.RegisterFlagCompletionFunc(common.CatalogFlag, IdsCompletion)
-}
-
-func AddDatabaseFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
-	flags.StringP(common.DatabaseFlag, common.DatabaseFlagShort, "", common.DatabaseFlagUsage)
-	_ = cmd.RegisterFlagCompletionFunc(common.DatabaseFlag, DatabaseIdsCompletion)
-}
-
-func AddSchemaFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
-	flags.StringP(common.SchemaFlag, common.SchemaFlagShort, "", common.SchemaFlagUsage)
-	_ = cmd.RegisterFlagCompletionFunc(common.SchemaFlag, SchemaIdsCompletion)
 }

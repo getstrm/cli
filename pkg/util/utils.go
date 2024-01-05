@@ -20,8 +20,15 @@ The trick with the ° command is to avoid painful string concatenations that col
 the backticks used in Go raw strings.
 */
 func LongDocs(s string) string {
-	return strings.TrimSpace(dedent.Dedent(strings.Replace(
-		strings.Replace(s, "!pace", RootCommandName, -1), "°", "`", -1)))
+	return strings.TrimSpace(dedent.Dedent(replaceContent(s)))
+}
+
+func replaceContent(s string) string {
+	return strings.Replace(
+		strings.Replace(s, "!pace", RootCommandName, -1), "°", "`", -1)
+}
+func PlainExample(s string) string {
+	return "\n" + replaceContent(s)
 }
 
 /*
@@ -29,7 +36,7 @@ Example
 example first lines should start with a tab to make a nice help layout.
 */
 func Example(s string) string {
-	return "    " + LongDocs(s)
+	return "\n    " + LongDocs(s)
 }
 
 func IsoFormat(tz gostradamus.Timezone, t *timestamppb.Timestamp) string {

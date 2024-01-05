@@ -13,7 +13,7 @@ When updating an existing policy, the latest existing version should be set
 in the metadata. When creating a new policy, no version needs to be specified.
 `)
 
-var upsertExample = LongDocs(`
+var upsertExample = PlainExample(`
 !pace upsert data-policy examples/sample_data/bigquery-cdc.json
 data_policy:
   id: fb76958d-63a9-4b5e-bf36-fdc4d7ab807f
@@ -38,7 +38,7 @@ var applyLongDocs = LongDocs(`
 Applies an existing data policy to the target platform.
 `)
 
-var applyExample = LongDocs(`
+var applyExample = PlainExample(`
 !pace apply data-policy public.demo --processing-platform bigquery-dev
 data_policy:
   id: public.demo
@@ -67,7 +67,7 @@ A comma should be used as the delimiter.
 Currently, only standard SQL data types are supported. For platform-specific transforms, test on the platform itself.
 `)
 
-var evaluateExample = LongDocs(`
+var evaluateExample = PlainExample(`
 !pace evaluate data-policy public.demo --processing-platform example-platform --sample-data sample.csv
 Results for rule set with target: public.demo_view
 group: administrator
@@ -109,12 +109,13 @@ build the °source° part of a data policy. We must either provide a platform or
 id to make the call succeed.
 
 Without a °--processing-platform° or a °--catalog° it just means we interact with the PACE
-database and retrieve succesfully applied data policies.
+database and retrieve successfully applied data policies.
 `)
 
-var getExample = LongDocs(`
-# get a blueprint policy without rulesets from Catalog Collibra
+var getExample = PlainExample(`
+# get a blueprint policy without rule sets from Catalog Collibra
 !pace get data-policy --catalog COLLIBRA-testdrive \
+	--blueprint \
 	--database 99379294-6e87-4e26-9f09-21c6bf86d415 \
 	--schema 342f676c-341e-4229-b3c2-3e71f9ed0fcd \
 	6e978083-bb8f-459d-a48b-c9a50289b327
@@ -132,10 +133,13 @@ data_policy:
         type: varchar
 	...
 
-# get a blueprint policy without rulesets from Processing Platform BigQuery
+# get a blueprint policy without rule sets from Processing Platform BigQuery
 !pace get data-policy \
+	--blueprint \
 	--processing-platform bigquery-dev \
-	stream-machine-development.dynamic_view_poc.gddemo
+	--database stream-machine-development \
+	--schema dynamic_view_poc \ 
+	gddemo
 dataPolicy:
   metadata:
     createTime: '2023-10-04T09:04:56.246Z'
@@ -155,7 +159,7 @@ dataPolicy:
       type: INTEGER
 
 
-# get a complete datapolicy from the PACE database
+# get a complete datapolicy (with rulesets) from the PACE database
 !pace get data-policy --processing-platform bigquery-dev \
 	stream-machine-development.dynamic_views.cdc_diabetes
 
@@ -177,11 +181,11 @@ rule_sets:
       type: integer
     transforms:
     - fixed:
-        value: blabla
+        value: redacted
   target:
 `)
 
-var listExample = LongDocs(`
+var listExample = PlainExample(`
 !pace list data-policies --output table
  PLATFORM       SOURCE                                                  TAGS
 

@@ -3,7 +3,7 @@ package group
 import (
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/entity/processingplatform"
+	"pace/pace/pkg/completion"
 )
 
 func ListCmd() *cobra.Command {
@@ -25,7 +25,7 @@ func ListCmd() *cobra.Command {
 	}
 	flags := cmd.Flags()
 	_ = common.ConfigureExtraPrinters(cmd, flags, listPrinters())
-	_ = processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	completion.AddProcessingPlatformFlag(cmd, flags)
 	_ = cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
 	return cmd
 }

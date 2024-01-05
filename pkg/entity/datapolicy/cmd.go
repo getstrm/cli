@@ -4,8 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/entity/catalog"
-	"pace/pace/pkg/entity/processingplatform"
+	"pace/pace/pkg/completion"
 )
 
 func UpsertCmd() *cobra.Command {
@@ -50,11 +49,11 @@ func ApplyCmd() *cobra.Command {
 			return apply(cmd, &args[0])
 		},
 		Args:              cobra.ExactArgs(1), // the policy id
-		ValidArgsFunction: IdsCompletion,
+		ValidArgsFunction: idsCompletion,
 	}
 
 	flags := cmd.Flags()
-	_ = processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	completion.AddProcessingPlatformFlag(cmd, flags)
 	_ = cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
 	return cmd
 }
@@ -75,11 +74,11 @@ func EvaluateCmd() *cobra.Command {
 			return evaluate(cmd, &args[0])
 		},
 		Args:              cobra.ExactArgs(1), // the policy id
-		ValidArgsFunction: IdsCompletion,
+		ValidArgsFunction: idsCompletion,
 	}
 
 	flags := cmd.Flags()
-	_ = processingplatform.AddProcessingPlatformFlag(cmd, flags)
+	completion.AddProcessingPlatformFlag(cmd, flags)
 	_ = cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
 	_ = addSampleDataFlag(cmd, flags)
 	_ = cmd.MarkFlagRequired(common.SampleDataFlag)
@@ -89,7 +88,7 @@ func EvaluateCmd() *cobra.Command {
 
 func GetCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "data-policy (table-id|policy-id)",
+		Use:               "data-policy (table-name|policy-id)",
 		Short:             "Get a data policy",
 		Long:              getLongDoc,
 		Example:           getExample,
@@ -106,10 +105,10 @@ func GetCmd() *cobra.Command {
 		ValidArgsFunction: TableOrDataPolicyIdsCompletion,
 	}
 	flags := cmd.Flags()
-	_ = processingplatform.AddProcessingPlatformFlag(cmd, flags)
-	catalog.AddCatalogFlag(cmd, flags)
-	catalog.AddDatabaseFlag(cmd, flags)
-	catalog.AddSchemaFlag(cmd, flags)
+	completion.AddProcessingPlatformFlag(cmd, flags)
+	completion.AddCatalogFlag(cmd, flags)
+	completion.AddDatabaseFlag(cmd, flags)
+	completion.AddSchemaFlag(cmd, flags)
 	flags.BoolP(common.BlueprintFlag, common.BlueprintFlagShort, false, common.BlueprintFlagUsage)
 	cmd.MarkFlagsMutuallyExclusive(common.CatalogFlag, common.ProcessingPlatformFlag)
 	cmd.MarkFlagsOneRequired(common.CatalogFlag, common.ProcessingPlatformFlag)

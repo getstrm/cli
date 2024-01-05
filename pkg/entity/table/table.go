@@ -1,8 +1,8 @@
 package table
 
 import (
-	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_catalogs/v1alpha/data_catalogsv1alphagrpc"
-	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/processing_platforms/v1alpha/processing_platformsv1alphagrpc"
+	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/data_catalogs/v1alpha/data_catalogsv1alphagrpc"
+	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/processing_platforms/v1alpha/processing_platformsv1alphagrpc"
 	"buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
 	"buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"context"
@@ -12,10 +12,10 @@ import (
 
 var apiContext context.Context
 
-var ppclient ProcessingPlatformsServiceClient
-var catclient DataCatalogsServiceClient
+var ppclient processing_platformsv1alphagrpc.ProcessingPlatformsServiceClient
+var catclient data_catalogsv1alphagrpc.DataCatalogsServiceClient
 
-func SetupClient(ppclient_ ProcessingPlatformsServiceClient, catclient_ DataCatalogsServiceClient, ctx context.Context) {
+func SetupClient(ppclient_ processing_platformsv1alphagrpc.ProcessingPlatformsServiceClient, catclient_ data_catalogsv1alphagrpc.DataCatalogsServiceClient, ctx context.Context) {
 	apiContext = ctx
 	ppclient = ppclient_
 	catclient = catclient_
@@ -23,22 +23,18 @@ func SetupClient(ppclient_ ProcessingPlatformsServiceClient, catclient_ DataCata
 
 func list(cmd *cobra.Command) error {
 	flags := cmd.Flags()
+	catalogId, databaseId, schemaId, _ := common.GetCatalogCoordinates(flags)
 	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
 	if platformId != "" {
 		req := &processing_platformsv1alpha.ListTablesRequest{
 			PlatformId:     platformId,
+			DatabaseId:     &databaseId,
+			SchemaId:       &schemaId,
 			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := ppclient.ListTables(apiContext, req)
-		if err != nil {
-			return err
-		}
 		return common.Print(printer, err, response)
 	} else {
-		catalogId, databaseId, schemaId, err := common.GetCatalogCoordinates(flags)
-		if err != nil {
-			return err
-		}
 		req := &data_catalogsv1alpha.ListTablesRequest{
 			CatalogId:      catalogId,
 			DatabaseId:     &databaseId,

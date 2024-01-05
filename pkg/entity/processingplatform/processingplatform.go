@@ -7,7 +7,6 @@ import (
 	"context"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
 )
 
@@ -36,12 +35,59 @@ func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.Shel
 	if err != nil {
 		return common.CobraCompletionError(err)
 	}
-	return lo.Map(response.ProcessingPlatforms, func(p *DataPolicy_ProcessingPlatform, _ int) string {
+	return lo.Map(response.ProcessingPlatforms, func(p *ProcessingPlatform, _ int) string {
 		return p.Id
 	}), cobra.ShellCompDirectiveNoFileComp
 }
 
-func AddProcessingPlatformFlag(cmd *cobra.Command, flags *pflag.FlagSet) error {
-	flags.StringP(common.ProcessingPlatformFlag, common.ProcessingPlatformFlagShort, "", common.ProcessingPlatformFlagUsage)
-	return cmd.RegisterFlagCompletionFunc(common.ProcessingPlatformFlag, IdsCompletion)
+func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	flags := cmd.Flags()
+	ppId, _ := flags.GetString(common.ProcessingPlatformFlag)
+	if ppId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	response, err := client.ListDatabases(apiContext, &ListDatabasesRequest{
+		PlatformId:     ppId,
+		PageParameters: common.PageParameters(cmd),
+	})
+	if err != nil {
+		return common.CobraCompletionError(err)
+	}
+	names := lo.Map(response.Databases, func(db *Database, _ int) string {
+		return db.Id
+	})
+	return names, cobra.ShellCompDirectiveNoFileComp
+}
+
+func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	flags := cmd.Flags()
+	ppId, _ := flags.GetString(common.ProcessingPlatformFlag)
+	if ppId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	databaseId, _ := flags.GetString(common.DatabaseFlag)
+	if databaseId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	response, err := client.ListSchemas(apiContext, &ListSchemasRequest{
+		PlatformId:     ppId,
+		DatabaseId:     &databaseId,
+		PageParameters: common.PageParameters(cmd),
+	})
+	if err != nil {
+		return common.CobraCompletionError(err)
+	}
+	names := lo.Map(response.Schemas, func(catalog *Schema, _ int) string {
+		return catalog.Id
+	})
+	return names, cobra.ShellCompDirectiveNoFileComp
 }

@@ -1,8 +1,9 @@
 package schema
 
 import (
-	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
-	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
+	catalogApi "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
+	entities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
+	platformApi "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
 	"fmt"
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -25,8 +26,7 @@ type listTablePrinter struct{}
 type listPlainPrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*ListSchemasResponse)
-	rows := lo.Map(listResponse.Schemas, func(schema *DataCatalog_Schema, _ int) table.Row {
+	rows := lo.Map(toSchemas(data), func(schema *entities.Schema, _ int) table.Row {
 		return table.Row{
 			schema.Id,
 			schema.Name,
@@ -39,8 +39,19 @@ func (p listTablePrinter) Print(data interface{}) {
 }
 
 func (p listPlainPrinter) Print(data interface{}) {
-	listResponse, _ := (data).(*ListSchemasResponse)
-	for _, schema := range listResponse.Schemas {
-		fmt.Println(schema)
+	for _, schema := range toSchemas(data) {
+		fmt.Println(schema.Id, schema.Name)
 	}
+}
+
+func toSchemas(data interface{}) []*entities.Schema {
+	var schemas []*entities.Schema
+	if listResponse, ok := (data).(*catalogApi.ListSchemasResponse); ok {
+		schemas = listResponse.Schemas
+	} else if listResponse, ok := (data).(*platformApi.ListSchemasResponse); ok {
+		schemas = listResponse.Schemas
+	} else {
+		schemas = nil
+	}
+	return schemas
 }

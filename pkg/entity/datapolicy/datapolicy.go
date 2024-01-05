@@ -60,7 +60,7 @@ func get(cmd *cobra.Command, dataPolicyOrTableId *string) error {
 	if blueprint {
 		// a blueprint policy only exists on processing platforms or catalogs
 		if platformId != "" {
-			return getBlueprintPolicyFromProcessingPlatform(platformId, dataPolicyOrTableId)
+			return getBlueprintPolicyFromProcessingPlatform(flags, platformId, dataPolicyOrTableId)
 		} else {
 			return getBlueprintPolicyFromCatalog(flags, dataPolicyOrTableId)
 		}
@@ -134,10 +134,19 @@ func getBlueprintPolicyFromCatalog(flags *pflag.FlagSet, tableId *string) error 
 	return common.Print(printer, err, response.DataPolicy)
 }
 
-func getBlueprintPolicyFromProcessingPlatform(platformId string, tableId *string) error {
+func getBlueprintPolicyFromProcessingPlatform(flags *pflag.FlagSet, platformId string, tableId *string) error {
+	_, databaseId, schemaId, _ := common.GetCatalogCoordinates(flags)
 	req := &ppentities.GetBlueprintPolicyRequest{
 		PlatformId: platformId,
-		TableId:    *tableId,
+		Table: &Table{
+			Id: *tableId,
+			Schema: &Schema{
+				Id: schemaId,
+				Database: &Database{
+					Id: databaseId,
+				},
+			},
+		},
 	}
 	response, err := pClient.GetBlueprintPolicy(apiContext, req)
 	if err != nil {
@@ -181,40 +190,35 @@ func readPolicy(filename string) (*DataPolicy, error) {
 }
 
 func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if len(args) > 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
 	flags := cmd.Flags()
 	blueprint, _ := flags.GetBool(common.BlueprintFlag)
 
 	// talking to the PACE database
 	if !blueprint {
-		return IdsCompletion(cmd, args, toComplete)
+		return idsCompletion(cmd, args, toComplete)
 	}
 
 	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
-	catalogId, _ := flags.GetString(common.CatalogFlag)
-
-	// talking to a processing platform
+	catalogId, databaseId, schemaId, _ := common.GetCatalogCoordinates(flags)
+	if databaseId == "" || schemaId == "" {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
 	if platformId != "" {
 		response, err := pClient.ListTables(apiContext, &ppentities.ListTablesRequest{
 			PlatformId: platformId,
+			DatabaseId: &databaseId,
+			SchemaId:   &schemaId,
 		})
 
 		if err != nil {
 			return common.CobraCompletionError(err)
 		}
-		return response.Tables, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	// talking to a catalog!
-	if catalogId == "" {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-	databaseId, _ := flags.GetString(common.DatabaseFlag)
-	if databaseId == "" {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-	schemaId, _ := flags.GetString(common.SchemaFlag)
-	if schemaId == "" {
-		return nil, cobra.ShellCompDirectiveNoFileComp
+		return lo.Map(response.Tables, func(table *Table, _ int) string {
+			return table.Id
+		}), cobra.ShellCompDirectiveNoFileComp
 	}
 
 	response, err := catClient.ListTables(apiContext, &catalogentities.ListTablesRequest{
@@ -225,12 +229,17 @@ func TableOrDataPolicyIdsCompletion(cmd *cobra.Command, args []string, toComplet
 	if err != nil {
 		return common.CobraCompletionError(err)
 	}
-	return lo.Map(response.Tables, func(table *DataCatalog_Table, _ int) string {
+	return lo.Map(response.Tables, func(table *Table, _ int) string {
 		return table.Id
 	}), cobra.ShellCompDirectiveNoFileComp
 }
 
-func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+/*
+idsCompletion.
+
+returns data policy ids optionally limited to a certain platform.
+*/
+func idsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	if len(args) != 0 {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
