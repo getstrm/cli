@@ -103,6 +103,8 @@ func sendTelemetry(telemetry Telemetry) {
 updateTelemetry updates the telemetry argument based on the command path
 */
 func updateTelemetry(commandPath string, err error, telemetry Telemetry) {
+	telemetry.CliVersion = common.Version
+
 	exitCode := determineExitCode(err)
 	metricsByExitCode, ok := telemetry.MetricPoints[commandPath]
 
