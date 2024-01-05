@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/getstrm/cli/compare/v1.17.2...v1.18.0) (2024-01-05)
+
+
+### Features
+
+* **pace-84:** hierarchical processing platforms ([a21a871](https://github.com/getstrm/cli/commit/a21a871e30e5efde2063e8c6dc1c7a07fa8a7292))
+
 ## [1.17.2](https://github.com/getstrm/cli/compare/v1.17.1...v1.17.2) (2024-01-05)
 
 
