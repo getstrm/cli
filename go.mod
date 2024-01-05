@@ -3,10 +3,11 @@ module pace/pace
 go 1.20
 
 require (
-	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20231220150945-dd18fea42c8e.2
-	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20231220150945-dd18fea42c8e.4
+	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20240105135731-2cd61d6f6e11.2
+	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.28.1-20240105135731-2cd61d6f6e11.4
 	github.com/bykof/gostradamus v1.0.4
 	github.com/elliotchance/orderedmap/v2 v2.2.0
+	github.com/google/uuid v1.5.0
 	github.com/jedib0t/go-pretty/v6 v6.4.0
 	github.com/lithammer/dedent v1.1.0
 	github.com/samber/lo v1.33.0
@@ -18,6 +19,7 @@ require (
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+	gopkg.in/yaml.v3 v3.0.1
 	sigs.k8s.io/yaml v1.4.0
 )
 
@@ -26,7 +28,6 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/uuid v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
@@ -50,5 +51,4 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
