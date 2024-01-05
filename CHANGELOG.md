@@ -1,3 +1,10 @@
+## [1.17.1](https://github.com/getstrm/cli/compare/v1.17.0...v1.17.1) (2024-01-05)
+
+
+### Bug Fixes
+
+* **main:** always update cli version in telemetry ([cf9f48f](https://github.com/getstrm/cli/commit/cf9f48f673ebd3fe3c0d3f0e1129c6c8a8363e38))
+
 # [1.17.0](https://github.com/getstrm/cli/compare/v1.16.0...v1.17.0) (2024-01-05)
 
 
