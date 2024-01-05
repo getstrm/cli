@@ -3,32 +3,15 @@ package util
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/bykof/gostradamus"
 	"github.com/lithammer/dedent"
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/pflag"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"os"
-	"runtime"
 	"sigs.k8s.io/yaml"
 	"strings"
 	"time"
 )
-
-func GetStringAndErr(f *pflag.FlagSet, k string) string {
-	v, err := f.GetString(k)
-	CliExit(err)
-	return v
-}
-func GetBoolAndErr(f *pflag.FlagSet, k string) bool {
-	v, err := f.GetBool(k)
-	CliExit(err)
-	return v
-}
 
 /*
 LongDocs
@@ -68,41 +51,6 @@ If you move or rename this variable, also fix the Makefile (targetVar). If you g
 completion won't work for dpace.
 */
 var RootCommandName = "pace"
-
-func CliExit(err error) {
-	if err != nil {
-		_, file, line, _ := runtime.Caller(1)
-		logrus.WithFields(logrus.Fields{"file": file, "line": line}).Error(err)
-
-		st, ok := status.FromError(err)
-
-		if ok {
-			var additionalDetails string
-			if len(st.Details()) > 0 {
-				details := st.Details()[0]
-				yamlBytes := ProtoMessageToYaml(details.(proto.Message))
-				additionalDetails = string(yamlBytes.Bytes())
-			} else {
-				additionalDetails = ""
-			}
-			formattedMessage := fmt.Sprintf(dedentAndTrimMultiline(`
-						Error code = %s
-						Details = %s
-
-						%s`), (*st).Code(), (*st).Message(), additionalDetails)
-
-			_, _ = fmt.Fprintln(os.Stderr, formattedMessage)
-		} else {
-			_, _ = fmt.Fprintln(os.Stderr, err)
-		}
-
-		os.Exit(1)
-	}
-}
-
-func dedentAndTrimMultiline(s string) string {
-	return strings.TrimLeft(dedent.Dedent(s), "\n")
-}
 
 func ProtoMessageToRawJson(proto proto.Message) bytes.Buffer {
 	// As protojson.Marshal adds random spaces, we use json.Compact to omit the random spaces in the output.

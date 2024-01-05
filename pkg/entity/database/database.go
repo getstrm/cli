@@ -8,7 +8,6 @@ import (
 	"context"
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/util"
 )
 
 var apiContext context.Context
@@ -22,25 +21,21 @@ func SetupClient(ppclient_ processing_platformsv1alphagrpc.ProcessingPlatformsSe
 	catclient = catclient_
 }
 
-func list(cmd *cobra.Command) {
+func list(cmd *cobra.Command) error {
 	flags := cmd.Flags()
-	platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
 	if platformId != "" {
 		response, err := ppclient.ListDatabases(apiContext, &processing_platformsv1alpha.ListDatabasesRequest{
 			PlatformId:     platformId,
 			PageParameters: common.PageParameters(cmd),
 		})
-		util.CliExit(err)
-		printer.Print(response)
-
+		return common.Print(printer, err, response)
 	} else {
-		catalogId := util.GetStringAndErr(flags, common.CatalogFlag)
+		catalogId, _ := flags.GetString(common.CatalogFlag)
 		response, err := catclient.ListDatabases(apiContext, &data_catalogsv1alpha.ListDatabasesRequest{
 			CatalogId:      catalogId,
 			PageParameters: common.PageParameters(cmd),
 		})
-		util.CliExit(err)
-		printer.Print(response)
-
+		return common.Print(printer, err, response)
 	}
 }

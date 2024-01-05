@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/getstrm/cli/compare/v1.16.0...v1.17.0) (2024-01-05)
+
+
+### Features
+
+* **pace-93:** fetch motd message from getstrm.com and add cli telemetry ([#26](https://github.com/getstrm/cli/issues/26)) ([525d152](https://github.com/getstrm/cli/commit/525d152d33faca77ee2868438adaaaadbf7fe8b7))
+
 # [1.16.0](https://github.com/getstrm/cli/compare/v1.15.1...v1.16.0) (2023-12-29)
 
 

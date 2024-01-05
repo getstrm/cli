@@ -26,7 +26,6 @@ import (
 	"pace/pace/pkg/entity/processingplatform"
 	"pace/pace/pkg/entity/schema"
 	"pace/pace/pkg/entity/table"
-	"pace/pace/pkg/util"
 	"strings"
 )
 
@@ -41,19 +40,24 @@ Each verb sits in its own package, and will have subcommands for all the entity 
 in PACE.
 */
 func SetupVerbs(rootCmd *cobra.Command) {
-	rootCmd.AddCommand(cmd.ListCmd)
-	rootCmd.AddCommand(cmd.GetCmd)
-	rootCmd.AddCommand(cmd.UpsertCmd)
-	rootCmd.AddCommand(cmd.ApplyCmd)
-	rootCmd.AddCommand(cmd.DeleteCmd)
-	rootCmd.AddCommand(cmd.VersionCmd)
-	rootCmd.AddCommand(cmd.EvaluateCmd)
-	rootCmd.AddCommand(cmd.InvokeCmd)
-	rootCmd.AddCommand(cmd.DisableCmd)
+	rootCmd.AddCommand(
+		cmd.ListCmd,
+		cmd.GetCmd,
+		cmd.UpsertCmd,
+		cmd.ApplyCmd,
+		cmd.DeleteCmd,
+		cmd.VersionCmd,
+		cmd.EvaluateCmd,
+		cmd.InvokeCmd,
+		cmd.DisableCmd,
+	)
 }
 
-func SetupServiceClients() {
-	connection, ctx := SetupGrpc(common.ApiHost)
+func SetupServiceClients() error {
+	connection, ctx, err := SetupGrpc(common.ApiHost)
+	if err != nil {
+		return err
+	}
 	dataPoliciesClient := NewDataPoliciesServiceClient(connection)
 	catalogsClient := NewDataCatalogsServiceClient(connection)
 	processingPlatformsClient := NewProcessingPlatformsServiceClient(connection)
@@ -68,6 +72,7 @@ func SetupServiceClients() {
 	datapolicy.SetupClient(dataPoliciesClient, catalogsClient, processingPlatformsClient, ctx)
 	globaltransform.SetupClient(globalTransformsClient, ctx)
 	plugin.SetupClient(pluginsClient, ctx)
+	return nil
 }
 
 func InitializeConfig(cmd *cobra.Command) error {
@@ -78,7 +83,11 @@ func InitializeConfig(cmd *cobra.Command) error {
 
 	// Set as many paths as you like where viper should look for the
 	// config file.
-	viperConfig.AddConfigPath(common.ConfigPath())
+	configPath, err := common.ConfigPath()
+	if err != nil {
+		return err
+	}
+	viperConfig.AddConfigPath(configPath)
 
 	// Attempt to read the config file, gracefully ignoring errors
 	// caused by a config file not being found. Return an error
@@ -116,27 +125,25 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper) {
 		// keys with underscores, e.g. --favorite-color to STRM_FAVORITE_COLOR
 		if strings.Contains(f.Name, "-") {
 			envVarSuffix := strings.ToUpper(strings.ReplaceAll(f.Name, "-", "_"))
-			err := v.BindEnv(f.Name, fmt.Sprintf("%s_%s", common.EnvPrefix, envVarSuffix))
-			util.CliExit(err)
+			_ = v.BindEnv(f.Name, fmt.Sprintf("%s_%s", common.EnvPrefix, envVarSuffix))
 		}
 
 		// Apply the viper config value to the flag when the flag is not set and viper has a value
 		if !f.Changed && v.IsSet(f.Name) {
 			val := v.Get(f.Name)
-			err := cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
-			util.CliExit(err)
+			_ = cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
 		}
 	})
 }
 
-func SetupGrpc(host string) (*grpc.ClientConn, context.Context) {
-
-	var creds grpc.DialOption
-	creds = grpc.WithTransportCredentials(insecure.NewCredentials())
+func SetupGrpc(host string) (*grpc.ClientConn, context.Context, error) {
+	creds := grpc.WithTransportCredentials(insecure.NewCredentials())
 	clientConnection, err := grpc.Dial(host, creds, grpc.WithUnaryInterceptor(clientInterceptor))
-	util.CliExit(err)
+	if err != nil {
+		return nil, nil, err
+	}
 	var mdMap = map[string]string{cliVersionHeader: common.Version}
-	return clientConnection, metadata.NewOutgoingContext(context.Background(), metadata.New(mdMap))
+	return clientConnection, metadata.NewOutgoingContext(context.Background(), metadata.New(mdMap)), nil
 }
 
 func clientInterceptor(

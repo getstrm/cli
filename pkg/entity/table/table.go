@@ -8,7 +8,6 @@ import (
 	"context"
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/util"
 )
 
 var apiContext context.Context
@@ -22,10 +21,10 @@ func SetupClient(ppclient_ processing_platformsv1alphagrpc.ProcessingPlatformsSe
 	catclient = catclient_
 }
 
-func list(cmd *cobra.Command) {
+func list(cmd *cobra.Command) error {
 	flags := cmd.Flags()
-	catalogId, databaseId, schemaId := common.GetCatalogCoordinates(flags)
-	platformId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	catalogId, databaseId, schemaId, _ := common.GetCatalogCoordinates(flags)
+	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
 	if platformId != "" {
 		req := &processing_platformsv1alpha.ListTablesRequest{
 			PlatformId:     platformId,
@@ -34,8 +33,7 @@ func list(cmd *cobra.Command) {
 			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := ppclient.ListTables(apiContext, req)
-		util.CliExit(err)
-		printer.Print(response)
+		return common.Print(printer, err, response)
 	} else {
 		req := &data_catalogsv1alpha.ListTablesRequest{
 			CatalogId:      catalogId,
@@ -44,8 +42,6 @@ func list(cmd *cobra.Command) {
 			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := catclient.ListTables(apiContext, req)
-		util.CliExit(err)
-		printer.Print(response)
-
+		return common.Print(printer, err, response)
 	}
 }

@@ -1,12 +1,12 @@
 package completion
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/entity/catalog"
 	"pace/pace/pkg/entity/processingplatform"
-	"pace/pace/pkg/util"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 func AddCatalogFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
@@ -36,7 +36,7 @@ Provides completions based on whether or not we're connecting to a processing pl
 */
 func schemaCompletion(cmd *cobra.Command, args []string, s string) ([]string, cobra.ShellCompDirective) {
 	flags := cmd.Flags()
-	ppId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	ppId, _ := flags.GetString(common.ProcessingPlatformFlag)
 	if ppId != "" {
 		return processingplatform.SchemaIdsCompletion(cmd, args, s)
 
@@ -52,7 +52,7 @@ Provides completions based on whether or not we're connecting to a processing pl
 */
 func databaseCompletion(cmd *cobra.Command, args []string, s string) ([]string, cobra.ShellCompDirective) {
 	flags := cmd.Flags()
-	ppId := util.GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	ppId, _ := flags.GetString(common.ProcessingPlatformFlag)
 	if ppId != "" {
 		return processingplatform.DatabaseIdsCompletion(cmd, args, s)
 

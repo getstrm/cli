@@ -12,7 +12,6 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 	"os"
 	"pace/pace/pkg/common"
-	. "pace/pace/pkg/util"
 	"sigs.k8s.io/yaml"
 	"strings"
 )
@@ -29,10 +28,8 @@ func SetupClient(clientConnection plugins.PluginsServiceClient, ctx context.Cont
 func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 	response, err := list()
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
-
-	emptyResult := make([]string, 0)
 
 	if len(args) == 1 && cmd.Name() == pluginCommand {
 		plugin := lo.Filter(response.Plugins, func(p *Plugin, _ int) bool {
@@ -43,50 +40,50 @@ func IdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra
 			actions := lo.Map(response.Plugins[0].Actions, func(action *Action, _ int) string {
 				return action.Type.String()
 			})
-
 			return actions, cobra.ShellCompDirectiveNoFileComp
 		} else {
-			return emptyResult, cobra.ShellCompDirectiveNoFileComp
+			return nil, cobra.ShellCompDirectiveNoFileComp
 		}
 	} else if len(args) == 0 && cmd.Name() == pluginCommand {
 		names := lo.Map(response.Plugins, func(p *Plugin, _ int) string {
 			return p.Id
 		})
-
 		return names, cobra.ShellCompDirectiveNoFileComp
 	} else {
-		return emptyResult, cobra.ShellCompDirectiveNoFileComp
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 }
 
-func listPlugins() {
+func listPlugins() error {
 	response, err := list()
-	CliExit(err)
-	printer.Print(response)
+	return common.Print(printer, err, response)
 }
 
 func list() (*ListPluginsResponse, error) {
-	req := &ListPluginsRequest{}
-	response, err := client.ListPlugins(apiContext, req)
-
-	return response, err
+	return client.ListPlugins(apiContext, &ListPluginsRequest{})
 }
 
-func getPluginById(pluginId *string) *Plugin {
+func getPluginById(pluginId *string) (*Plugin, error) {
 	req := &ListPluginsRequest{}
 	response, err := client.ListPlugins(apiContext, req)
-	CliExit(err)
+	if err != nil {
+		return nil, err
+	}
 	plugin, found := lo.Find(response.Plugins, func(p *Plugin) bool {
 		return p.Id == *pluginId
 	})
 	if !found {
-		CliExit(errors.New(fmt.Sprintf("plugin with id %s not found", *pluginId)))
+		return nil, fmt.Errorf("plugin with id %s not found", *pluginId)
 	}
-	return plugin
+	return plugin, nil
 }
 
-func invokePlugin(cmd *cobra.Command, args []string) {
-	plugin := getPluginById(&args[0])
+func invokePlugin(cmd *cobra.Command, args []string) error {
+	plugin, err := getPluginById(&args[0])
+	if err != nil {
+		return err
+	}
+
 	actionType := Action_Type(Action_Type_value[args[1]])
 
 	request := &InvokePluginRequest{
@@ -96,50 +93,66 @@ func invokePlugin(cmd *cobra.Command, args []string) {
 		},
 		Parameters: nil,
 	}
-	addPluginRequestParameters(cmd, plugin, actionType, request)
-
+	_ = addPluginRequestParameters(cmd, plugin, actionType, request)
 	response, err := client.InvokePlugin(apiContext, request)
-	CliExit(err)
-	printResult(response)
+	if err != nil {
+		return err
+	}
+	return printResult(response)
 }
 
 // addPluginRequestParameters adds the correct parameters to the request based on the plugin type
 // unfortunately, this is necessary, as the interface that the request Parameters implement, is not exported
-func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, actionType Action_Type, request *InvokePluginRequest) {
+func addPluginRequestParameters(cmd *cobra.Command, plugin *Plugin, actionType Action_Type, request *InvokePluginRequest) error {
 	switch actionType {
 	case Action_GENERATE_SAMPLE_DATA:
+		payload, err := readPayload(cmd, &plugin.Id, actionType)
+		if err != nil {
+			return err
+		}
 		request.Parameters = &InvokePluginRequest_SampleDataGeneratorParameters{
 			SampleDataGeneratorParameters: &SampleDataGenerator_Parameters{
-				Payload: *readPayload(cmd, &plugin.Id, actionType),
+				Payload: *payload,
 			},
 		}
-
 	case Action_GENERATE_DATA_POLICY:
+		payload, err := readPayload(cmd, &plugin.Id, actionType)
+		if err != nil {
+			return err
+		}
 		request.Parameters = &InvokePluginRequest_DataPolicyGeneratorParameters{
 			DataPolicyGeneratorParameters: &DataPolicyGenerator_Parameters{
-				Payload: *readPayload(cmd, &plugin.Id, actionType),
+				Payload: *payload,
 			},
 		}
 	default:
-		CliExit(errors.New(fmt.Sprintf("plugin type %s not supported", actionType)))
+		return fmt.Errorf("plugin type %s not supported", actionType)
 	}
+	return nil
 }
 
-func readPayload(cmd *cobra.Command, pluginId *string, actionType Action_Type) *string {
-	fileName := GetStringAndErr(cmd.Flags(), common.PluginPayloadFlag)
+func readPayload(cmd *cobra.Command, pluginId *string, actionType Action_Type) (*string, error) {
+	fileName, _ := cmd.Flags().GetString(common.PluginPayloadFlag)
 	file, err := os.ReadFile(fileName)
-	CliExit(err)
+	if err != nil {
+		return nil, err
+	}
 	if strings.HasSuffix(fileName, ".yaml") || strings.HasSuffix(fileName, ".yml") {
 		file, err = yaml.YAMLToJSON(file)
-		CliExit(err)
+		if err != nil {
+			return nil, err
+		}
 	}
-	CliExit(err)
-	validatePayload(pluginId, actionType, file)
+
+	err = validatePayload(pluginId, actionType, file)
+	if err != nil {
+		return nil, err
+	}
 	byte64EncodedJson := base64.StdEncoding.EncodeToString(file)
-	return &byte64EncodedJson
+	return &byte64EncodedJson, nil
 }
 
-func validatePayload(pluginId *string, actionType Action_Type, payload []byte) {
+func validatePayload(pluginId *string, actionType Action_Type, payload []byte) error {
 	req := &GetPayloadJSONSchemaRequest{
 		PluginId: *pluginId,
 		Action: &Action{
@@ -147,29 +160,36 @@ func validatePayload(pluginId *string, actionType Action_Type, payload []byte) {
 		},
 	}
 	jsonSchema, err := client.GetPayloadJSONSchema(apiContext, req)
-	CliExit(err)
+	if err != nil {
+		return err
+	}
 	schemaLoader := gojsonschema.NewStringLoader(jsonSchema.Schema)
 	documentLoader := gojsonschema.NewBytesLoader(payload)
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	CliExit(err)
+	if err != nil {
+		return err
+	}
 	if !result.Valid() {
 		var errMsg = strings.Builder{}
 		errMsg.WriteString(fmt.Sprintf("payload validation failed for plugin %s:\n", *pluginId))
 		for _, err := range result.Errors() {
 			errMsg.WriteString(fmt.Sprintf("- %s\n", err))
 		}
-		CliExit(errors.New(errMsg.String()))
+		return errors.New(errMsg.String())
 	}
+	return nil
 }
 
 // printResult ensures that the correct element of the result is extracted and then printed
-func printResult(response *InvokePluginResponse) {
+func printResult(response *InvokePluginResponse) error {
 	switch response.Result.(type) {
 	case *InvokePluginResponse_DataPolicyGeneratorResult:
 		dataPolicy := response.GetResult().(*InvokePluginResponse_DataPolicyGeneratorResult).DataPolicyGeneratorResult.DataPolicy
-		printer.Print(dataPolicy)
+		return common.Print(printer, nil, dataPolicy)
 	case *InvokePluginResponse_SampleDataGeneratorResult:
 		csv := response.GetResult().(*InvokePluginResponse_SampleDataGeneratorResult).SampleDataGeneratorResult.Data
 		fmt.Println(csv)
+		return nil
 	}
+	return nil
 }

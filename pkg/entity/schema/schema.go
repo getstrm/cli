@@ -8,7 +8,6 @@ import (
 	"context"
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
-	. "pace/pace/pkg/util"
 )
 
 // strings used in the cli
@@ -23,11 +22,11 @@ func SetupClient(ppclient_ processing_platformsv1alphagrpc.ProcessingPlatformsSe
 	catclient = catclient_
 }
 
-func list(cmd *cobra.Command) {
+func list(cmd *cobra.Command) error {
 	flags := cmd.Flags()
-	catalogId := GetStringAndErr(flags, common.CatalogFlag)
-	databaseId := GetStringAndErr(flags, common.DatabaseFlag)
-	platformId := GetStringAndErr(flags, common.ProcessingPlatformFlag)
+	catalogId, _ := flags.GetString(common.CatalogFlag)
+	databaseId, _ := flags.GetString(common.DatabaseFlag)
+	platformId, _ := flags.GetString(common.ProcessingPlatformFlag)
 	if platformId != "" {
 		req := &processing_platformsv1alpha.ListSchemasRequest{
 			PlatformId:     platformId,
@@ -35,8 +34,7 @@ func list(cmd *cobra.Command) {
 			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := ppclient.ListSchemas(apiContext, req)
-		CliExit(err)
-		printer.Print(response)
+		return common.Print(printer, err, response)
 	} else {
 		req := &data_catalogsv1alpha.ListSchemasRequest{
 			CatalogId:      catalogId,
@@ -44,7 +42,6 @@ func list(cmd *cobra.Command) {
 			PageParameters: common.PageParameters(cmd),
 		}
 		response, err := catclient.ListSchemas(apiContext, req)
-		CliExit(err)
-		printer.Print(response)
+		return common.Print(printer, err, response)
 	}
 }

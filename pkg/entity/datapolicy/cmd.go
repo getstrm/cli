@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/pflag"
 	"pace/pace/pkg/common"
 	"pace/pace/pkg/completion"
-	. "pace/pace/pkg/util"
 )
 
 func UpsertCmd() *cobra.Command {
@@ -15,11 +14,13 @@ func UpsertCmd() *cobra.Command {
 		Long:              upsertLongDocs,
 		Example:           upsertExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			upsert(cmd, &args[0])
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return upsert(cmd, &args[0])
 		},
 		Args: cobra.ExactArgs(1), // the policy file (yaml or json),
 		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -39,11 +40,13 @@ func ApplyCmd() *cobra.Command {
 		Long:              applyLongDocs,
 		Example:           applyExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			apply(cmd, &args[0])
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return apply(cmd, &args[0])
 		},
 		Args:              cobra.ExactArgs(1), // the policy id
 		ValidArgsFunction: idsCompletion,
@@ -51,8 +54,7 @@ func ApplyCmd() *cobra.Command {
 
 	flags := cmd.Flags()
 	completion.AddProcessingPlatformFlag(cmd, flags)
-	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
-
+	_ = cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
 	return cmd
 }
 
@@ -63,11 +65,13 @@ func EvaluateCmd() *cobra.Command {
 		Long:              evaluateLongDocs,
 		Example:           evaluateExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, evaluatePrinters())
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, evaluatePrinters())
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			evaluate(cmd, &args[0])
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return evaluate(cmd, &args[0])
 		},
 		Args:              cobra.ExactArgs(1), // the policy id
 		ValidArgsFunction: idsCompletion,
@@ -75,12 +79,10 @@ func EvaluateCmd() *cobra.Command {
 
 	flags := cmd.Flags()
 	completion.AddProcessingPlatformFlag(cmd, flags)
-	cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
-	addSampleDataFlag(cmd, flags)
-	cmd.MarkFlagRequired(common.SampleDataFlag)
-
-	common.ConfigureExtraPrinters(cmd, cmd.Flags(), evaluatePrinters())
-
+	_ = cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
+	_ = addSampleDataFlag(cmd, flags)
+	_ = cmd.MarkFlagRequired(common.SampleDataFlag)
+	_ = common.ConfigureExtraPrinters(cmd, cmd.Flags(), evaluatePrinters())
 	return cmd
 }
 
@@ -91,11 +93,13 @@ func GetCmd() *cobra.Command {
 		Long:              getLongDoc,
 		Example:           getExample,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, common.StandardPrinters)
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, common.StandardPrinters)
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			get(cmd, &args[0])
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return get(cmd, &args[0])
 		},
 		Args:              cobra.ExactArgs(1), // the policy or table id
 		ValidArgsFunction: TableOrDataPolicyIdsCompletion,
@@ -118,24 +122,24 @@ func ListCmd() *cobra.Command {
 		Example:           listExample,
 		Long:              listLongDoc,
 		DisableAutoGenTag: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			printer = common.ConfigurePrinter(cmd, listPrinters())
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, listPrinters())
+			return err
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			list(cmd)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return list(cmd)
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 	}
-	common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
+	_ = common.ConfigureExtraPrinters(cmd, cmd.Flags(), listPrinters())
 	return cmd
 }
 
-func addSampleDataFlag(cmd *cobra.Command, flags *pflag.FlagSet) {
+func addSampleDataFlag(cmd *cobra.Command, flags *pflag.FlagSet) error {
 	flags.String(common.SampleDataFlag, "", common.SampleDataUsage)
-	CliExit(
-		cmd.RegisterFlagCompletionFunc(common.SampleDataFlag,
-			func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-				return []string{"csv"}, cobra.ShellCompDirectiveFilterFileExt
-			}),
-	)
+	return cmd.RegisterFlagCompletionFunc(common.SampleDataFlag,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"csv"}, cobra.ShellCompDirectiveFilterFileExt
+		})
 }

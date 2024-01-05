@@ -15,10 +15,15 @@ const DefaultConfigFilename = "config"
 const DefaultConfigFileSuffix = ".yaml"
 
 const DefaultLastSeenFilename = "pace-cli-last-seen"
+const DefaultTelemetryFilename = "telemetry.yaml"
+const TelemetryTimestampFileName = "telemetry-last-upload-timestamp"
 
-var DefaultConfigFileContents = []byte(`# The following configuration options are reflected in the CLI's flags
+var DefaultConfigFileContents = []byte(`
+# The following configuration options are reflected in the CLI's flags
 # api-host: localhost:50051
 # output: yaml
+# change value below to -1 if you don't want cli usage statistics to be sent to getSTRM
+# telemetry-upload-interval-seconds: 3600
 `)
 
 var DefaultFileTypesCompletion = []string{"yml", "yaml", "json"}

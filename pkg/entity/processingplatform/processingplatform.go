@@ -8,7 +8,6 @@ import (
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"pace/pace/pkg/common"
-	. "pace/pace/pkg/util"
 )
 
 // strings used in the cli
@@ -22,24 +21,23 @@ func SetupClient(clientConnection processingplatforms.ProcessingPlatformsService
 	client = clientConnection
 }
 
-func list(_ *cobra.Command) {
+func list(_ *cobra.Command) error {
 	response, err := client.ListProcessingPlatforms(apiContext, &ListProcessingPlatformsRequest{})
-	CliExit(err)
-	printer.Print(response)
+	if err != nil {
+		return err
+	}
+	return common.Print(printer, err, response)
 }
 
 func IdsCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	req := &ListProcessingPlatformsRequest{}
 	response, err := client.ListProcessingPlatforms(apiContext, req)
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
-
-	names := lo.Map(response.ProcessingPlatforms, func(p *ProcessingPlatform, _ int) string {
+	return lo.Map(response.ProcessingPlatforms, func(p *ProcessingPlatform, _ int) string {
 		return p.Id
-	})
-
-	return names, cobra.ShellCompDirectiveNoFileComp
+	}), cobra.ShellCompDirectiveNoFileComp
 }
 
 func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
@@ -57,7 +55,7 @@ func DatabaseIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]strin
 		PageParameters: common.PageParameters(cmd),
 	})
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
 	names := lo.Map(response.Databases, func(db *Database, _ int) string {
 		return db.Id
@@ -86,7 +84,7 @@ func SchemaIdsCompletion(cmd *cobra.Command, args []string, _ string) ([]string,
 		PageParameters: common.PageParameters(cmd),
 	})
 	if err != nil {
-		return common.GrpcRequestCompletionError(err)
+		return common.CobraCompletionError(err)
 	}
 	names := lo.Map(response.Schemas, func(catalog *Schema, _ int) string {
 		return catalog.Id

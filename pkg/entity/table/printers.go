@@ -4,13 +4,11 @@ import (
 	catalogApi "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/data_catalogs/v1alpha"
 	entities "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	platformApi "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/processing_platforms/v1alpha"
-	"errors"
 	"fmt"
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/samber/lo"
 	"pace/pace/pkg/common"
-	"pace/pace/pkg/util"
 	"strings"
 )
 
@@ -55,7 +53,7 @@ func toTables(data interface{}) []*entities.Table {
 	} else if listResponse, ok := (data).(*platformApi.ListTablesResponse); ok {
 		tables = listResponse.Tables
 	} else {
-		util.CliExit(errors.New("could not handle server response"))
+		tables = nil
 	}
 	return tables
 }
