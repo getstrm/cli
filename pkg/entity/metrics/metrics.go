@@ -28,7 +28,7 @@ const (
 type Telemetry struct {
 	MetricPoints map[string]map[uint32]Metric `json:"metric_points" yaml:"metric_points"`
 	CliVersion   string                       `json:"cli_version" yaml:"cli_version"`
-	OsVersion    string                       `json:"operation_version" yaml:"operation_version"`
+	OsVersion    string                       `json:"operating_system" yaml:"operating_system"`
 	Id           string                       `json:"id" yaml:"id"`
 }
 
