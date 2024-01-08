@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/getstrm/cli/compare/v1.18.0...v1.18.1) (2024-01-08)
+
+
+### Bug Fixes
+
+* **main:** typo in os ([94a8988](https://github.com/getstrm/cli/commit/94a898883f6c2db4f3884eb06c821cec7fda9245))
+
 # [1.18.0](https://github.com/getstrm/cli/compare/v1.17.2...v1.18.0) (2024-01-05)
 
 
