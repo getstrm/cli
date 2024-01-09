@@ -39,9 +39,6 @@ func main() {
 	// There's buffering in the channel because otherwise sending to the channel from the
 	// main thread will block the whole application
 	telemetryUploaded = make(chan bool, 1)
-	cobra.OnFinalize(func() {
-
-	})
 	var rootCmd = &cobra.Command{
 		Use:               RootCommandName,
 		Short:             fmt.Sprintf("PACE CLI %s", common.Version),
