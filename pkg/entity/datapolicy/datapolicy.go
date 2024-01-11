@@ -21,6 +21,8 @@ import (
 	"strings"
 )
 
+const FqnFlag = "fqn"
+
 // strings used in the cli
 
 var apiContext context.Context
@@ -136,6 +138,11 @@ func getBlueprintPolicyFromCatalog(flags *pflag.FlagSet, tableId *string) error 
 
 func getBlueprintPolicyFromProcessingPlatform(flags *pflag.FlagSet, platformId string, tableId *string) error {
 	_, databaseId, schemaId, _ := common.GetCatalogCoordinates(flags)
+	fqn, _ := flags.GetBool(FqnFlag)
+	fqnValue := ""
+	if fqn {
+		fqnValue = *tableId
+	}
 	req := &ppentities.GetBlueprintPolicyRequest{
 		PlatformId: platformId,
 		Table: &Table{
@@ -147,6 +154,7 @@ func getBlueprintPolicyFromProcessingPlatform(flags *pflag.FlagSet, platformId s
 				},
 			},
 		},
+		Fqn: fqnValue,
 	}
 	response, err := pClient.GetBlueprintPolicy(apiContext, req)
 	if err != nil {

@@ -158,6 +158,15 @@ dataPolicy:
       - userId
       type: INTEGER
 
+# get a datapolicy from a processing platform via its fully qualified name
+
+!pace get data-policy \	
+	--processing-platform bigquery-dev    \
+	--blueprint \
+	--fqn=true  \
+	stream-machine-development.data_lineage_demo.total_green_trips_22_21
+
+...	
 
 # get a complete datapolicy (with rulesets) from the PACE database
 !pace get data-policy --processing-platform bigquery-dev \

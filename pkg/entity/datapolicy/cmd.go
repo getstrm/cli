@@ -110,6 +110,7 @@ func GetCmd() *cobra.Command {
 	completion.AddDatabaseFlag(cmd, flags)
 	completion.AddSchemaFlag(cmd, flags)
 	flags.BoolP(common.BlueprintFlag, common.BlueprintFlagShort, false, common.BlueprintFlagUsage)
+	flags.Bool(FqnFlag, false, "use argument as fqn")
 	cmd.MarkFlagsMutuallyExclusive(common.CatalogFlag, common.ProcessingPlatformFlag)
 	cmd.MarkFlagsOneRequired(common.CatalogFlag, common.ProcessingPlatformFlag)
 	return cmd
