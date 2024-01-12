@@ -16,5 +16,6 @@ var UpsertCmd = &cobra.Command{
 
 func init() {
 	UpsertCmd.AddCommand(datapolicy.UpsertCmd())
+
 	UpsertCmd.AddCommand(globaltransform.UpsertCmd())
 }

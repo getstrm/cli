@@ -22,6 +22,7 @@ import (
 	"pace/pace/pkg/entity/datapolicy"
 	"pace/pace/pkg/entity/globaltransform"
 	"pace/pace/pkg/entity/group"
+	"pace/pace/pkg/entity/lineage"
 	"pace/pace/pkg/entity/plugin"
 	"pace/pace/pkg/entity/processingplatform"
 	"pace/pace/pkg/entity/schema"
@@ -72,6 +73,7 @@ func SetupServiceClients() error {
 	datapolicy.SetupClient(dataPoliciesClient, catalogsClient, processingPlatformsClient, ctx)
 	globaltransform.SetupClient(globalTransformsClient, ctx)
 	plugin.SetupClient(pluginsClient, ctx)
+	lineage.SetupClient(processingPlatformsClient, ctx)
 	return nil
 }
 
