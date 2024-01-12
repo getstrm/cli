@@ -172,9 +172,14 @@ func list(cmd *cobra.Command) error {
 		PageParameters: common.PageParameters(cmd),
 	}
 	response, err := polClient.ListDataPolicies(apiContext, req)
-	if err != nil {
-		return err
+	return common.Print(printer, err, response)
+}
+
+func scanLineage(cmd *cobra.Command) error {
+	req := &ScanLineageRequest{
+		PageParameters: common.PageParameters(cmd),
 	}
+	response, err := polClient.ScanLineage(apiContext, req)
 	return common.Print(printer, err, response)
 }
 

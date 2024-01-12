@@ -137,6 +137,23 @@ func ListCmd() *cobra.Command {
 	return cmd
 }
 
+func ScanLineage() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "lineage",
+		Short:             "List lineage for all stored data-policies",
+		Example:           "",
+		Long:              "",
+		DisableAutoGenTag: true,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return scanLineage(cmd)
+		},
+		ValidArgsFunction: common.NoFilesEmptyCompletion,
+		Args:              cobra.NoArgs,
+	}
+	_ = common.ConfigureExtraPrinters(cmd, cmd.Flags(), common.StandardPrinters)
+	return cmd
+}
+
 func addSampleDataFlag(cmd *cobra.Command, flags *pflag.FlagSet) error {
 	flags.String(common.SampleDataFlag, "", common.SampleDataUsage)
 	return cmd.RegisterFlagCompletionFunc(common.SampleDataFlag,
