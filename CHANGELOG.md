@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/getstrm/cli/compare/v1.18.1...v1.19.0) (2024-01-16)
+
+
+### Features
+
+* **pace-115:** allow using a data policy file for evaluate + any principal ([#28](https://github.com/getstrm/cli/issues/28)) ([27cd5b1](https://github.com/getstrm/cli/commit/27cd5b18e7ac05c1f2a8fe54e940b6db6a66016e))
+
 ## [1.18.1](https://github.com/getstrm/cli/compare/v1.18.0...v1.18.1) (2024-01-08)
 
 
