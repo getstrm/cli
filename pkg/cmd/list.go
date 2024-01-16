@@ -22,15 +22,18 @@ var ListCmd = &cobra.Command{
 }
 
 func init() {
-	ListCmd.AddCommand(processingplatform.ListCmd())
-	ListCmd.AddCommand(catalog.ListCmd())
-	ListCmd.AddCommand(table.ListCmd())
-	ListCmd.AddCommand(group.ListCmd())
-	ListCmd.AddCommand(schema.ListCmd())
-	ListCmd.AddCommand(database.ListCmd())
-	ListCmd.AddCommand(datapolicy.ListCmd())
-	ListCmd.AddCommand(globaltransform.ListCmd())
-	ListCmd.AddCommand(plugin.ListCmd())
+	ListCmd.AddCommand(
+		processingplatform.ListCmd(),
+		catalog.ListCmd(),
+		table.ListCmd(),
+		group.ListCmd(),
+		schema.ListCmd(),
+		database.ListCmd(),
+		datapolicy.ListCmd(),
+		datapolicy.ScanLineage(),
+		globaltransform.ListCmd(),
+		plugin.ListCmd(),
+	)
 
 	flags := ListCmd.PersistentFlags()
 	flags.Uint32P(common.PageSizeFlag, "P", 10, "the maximum number of records per page")
