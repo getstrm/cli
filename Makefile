@@ -41,10 +41,11 @@ docs: dist/pace
 	dist/pace generate-docs
 
 update-pace-protos-to-latest-tag:
-	buf beta registry tag list buf.build/getstrm/pace --reverse --page-size 1 --format json | jq -r '.results[0].name' \
-	| xargs -I% buf alpha sdk go-version --module=buf.build/getstrm/pace:% --plugin=buf.build/grpc/go:v1.3.0 \
+	@ latest_tag=$$(BUF_BETA_SUPPRESS_WARNINGS=1 buf beta registry tag list buf.build/getstrm/pace --reverse --page-size 1 --format json | jq -r '.results[0].name') && \
+	echo "The latest tag for the PACE protos is: $$latest_tag" && \
+	BUF_ALPHA_SUPPRESS_WARNINGS=1 buf alpha sdk go-version --module=buf.build/getstrm/pace:$$latest_tag --plugin=buf.build/grpc/go:v1.3.0 \
 	| xargs -I% go get buf.build/gen/go/getstrm/pace/grpc/go@% && go mod tidy
 
 update-pace-protos-to-current-git-branch:
-	buf alpha sdk go-version --module=buf.build/getstrm/pace:${git_branch} --plugin=buf.build/grpc/go:v1.3.0 \
+	BUF_ALPHA_SUPPRESS_WARNINGS=1 buf alpha sdk go-version --module=buf.build/getstrm/pace:${git_branch} --plugin=buf.build/grpc/go:v1.3.0 \
 	| xargs -I% go get buf.build/gen/go/getstrm/pace/grpc/go@% && go mod tidy
