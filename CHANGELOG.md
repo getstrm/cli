@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/getstrm/cli/compare/v1.19.0...v1.20.0) (2024-01-16)
+
+
+### Features
+
+* **pace-113:** build pace-113 lineage command ([34b07b3](https://github.com/getstrm/cli/commit/34b07b3c01727b9125ac6ec92df6d4ee3559fd25))
+
 # [1.19.0](https://github.com/getstrm/cli/compare/v1.18.1...v1.19.0) (2024-01-16)
 
 
