@@ -86,26 +86,63 @@ func apply(cmd *cobra.Command, dataPolicyId *string) error {
 	return common.Print(printer, err, response)
 }
 
-func evaluate(cmd *cobra.Command, dataPolicyId *string) error {
-	processingPlatform, _ := cmd.Flags().GetString(common.ProcessingPlatformFlag)
-	sampleDataFileName, _ := cmd.Flags().GetString(common.SampleDataFlag)
-	sampleDataFile, err := os.ReadFile(sampleDataFileName)
+func evaluate(cmd *cobra.Command) error {
+	dataPolicyId, err := cmd.Flags().GetString(common.DataPolicyIdFlag)
+	dataPolicyFileName, err := cmd.Flags().GetString(common.InlineDataPolicyFlag)
+	principalValues, err := cmd.Flags().GetString(common.PrincipalsToEvaluateFlag)
+	sampleDataFileName, err := cmd.Flags().GetString(common.SampleDataFlag)
+	platformId, err := cmd.Flags().GetString(common.ProcessingPlatformFlag)
 	if err != nil {
 		return err
 	}
 
+	sampleDataFile, err := os.ReadFile(sampleDataFileName)
 	sampleData := string(sampleDataFile)
 
-	req := &EvaluateDataPolicyRequest{
-		DataPolicyId: *dataPolicyId,
-		PlatformId:   processingPlatform,
-		Evaluation: &EvaluateDataPolicyRequest_FullEvaluation_{
-			FullEvaluation: &EvaluateDataPolicyRequest_FullEvaluation{
-				SampleCsv: sampleData,
+	request := &EvaluateDataPolicyRequest{
+		SampleData: &EvaluateDataPolicyRequest_CsvSample_{
+			CsvSample: &EvaluateDataPolicyRequest_CsvSample{
+				Csv: sampleData,
 			},
 		},
 	}
-	response, err := polClient.EvaluateDataPolicy(apiContext, req)
+
+	if principalValues != "" {
+		request.Principals = lo.Map(strings.Split(principalValues, ","), func(principal string, index int) *DataPolicy_Principal {
+			trimmed := strings.Trim(principal, " ")
+
+			if trimmed == "" || trimmed == "null" || trimmed == "other" || trimmed == "fallback" {
+				return &DataPolicy_Principal{
+					Principal: nil,
+				}
+			}
+
+			return &DataPolicy_Principal{
+				Principal: &DataPolicy_Principal_Group{
+					Group: trimmed,
+				},
+			}
+		})
+	}
+
+	if dataPolicyId != "" && platformId != "" {
+		request.DataPolicy = &EvaluateDataPolicyRequest_DataPolicyRef{
+			DataPolicyRef: &DataPolicyRef{
+				PlatformId:   platformId,
+				DataPolicyId: dataPolicyId,
+			},
+		}
+	} else {
+		dataPolicy, err := readPolicy(dataPolicyFileName)
+		if err != nil {
+			return err
+		}
+		request.DataPolicy = &EvaluateDataPolicyRequest_InlineDataPolicy{
+			InlineDataPolicy: dataPolicy,
+		}
+	}
+
+	response, err := polClient.EvaluateDataPolicy(apiContext, request)
 	if err != nil {
 		return err
 	}

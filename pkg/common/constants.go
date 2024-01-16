@@ -66,5 +66,13 @@ const PluginPayloadFlagUsage = "path to a json or yaml file containing the paylo
 const SampleDataFlag = "sample-data"
 const SampleDataUsage = "path to a csv file containing sample data to evaluate a data policy"
 
-const PageSizeFlag = "page_size"
+const PageSizeFlag = "page-size"
 const PageSkipFlag = "skip"
+
+const InlineDataPolicyFlag = "data-policy-file"
+const InlineDataPolicyUsage = "path to a data policy file to evaluate on sample data, must be a yaml or json representation of a data policy"
+const DataPolicyIdFlag = "data-policy-id"
+const DataPolicyIdUsage = "an id of an existing data policy to evaluate on sample data"
+
+const PrincipalsToEvaluateFlag = "principals"
+const PrincipalsToEvaluateUsage = "comma separated list of principals to evaluate the data policy for, if unspecified, all principals will be evaluated. For example, --principals user1,user2. If you want to evaluate the `other` / `fallback` principal, use value `null` / `other` or `fallback`, for example --principals null"
