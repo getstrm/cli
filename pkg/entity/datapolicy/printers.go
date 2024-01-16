@@ -41,7 +41,8 @@ func lineagePrinters() orderedmap.OrderedMap[string, common.Printer] {
 	// We want to use the plain printer by default for the evaluate command,
 	// so put it first in the map, then add the standard printers.
 	printers := orderedmap.NewOrderedMap[string, common.Printer]()
-	printers.Set(common.OutputFormatPlain, listLineagePlainPrinter{})
+	printers.Set(common.OutputFormatSimpleYaml, listLineageSimpleYamlPrinter{})
+	printers.Set(common.OutputFormatTable, listLineageTablePrinter{})
 	lo.ForEach(common.StandardPrinters.Keys(), func(key string, _ int) {
 		printer, _ := common.StandardPrinters.Get(key)
 		printers.Set(key, printer)
@@ -52,7 +53,8 @@ func lineagePrinters() orderedmap.OrderedMap[string, common.Printer] {
 type listTablePrinter struct{}
 type listPlainPrinter struct{}
 type evaluateTablePrinter struct{}
-type listLineagePlainPrinter struct{}
+type listLineageSimpleYamlPrinter struct{}
+type listLineageTablePrinter struct{}
 
 func (p listTablePrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*api.ListDataPoliciesResponse)
@@ -110,6 +112,42 @@ func printCsvAsTable(csvString string) {
 	}))
 }
 
+func (p listLineageTablePrinter) Print(data interface{}) {
+	listResponse, _ := (data).(*api.ScanLineageResponse)
+
+	fmt.Println("Lineage information for connected processing platforms (✗ = not managed by PACE, ✓ = managed by PACE)")
+
+	common.RenderTable(table.Row{
+		"Fully Qualified Name",
+		"Platform Id",
+		"Upstream Fqns",
+		"Downstream Fqns",
+	}, lo.Map(listResponse.LineageSummaries, func(s *entities.LineageSummary, _ int) table.Row {
+		return table.Row{
+			s.ResourceRef.Fqn,
+			s.ResourceRef.Platform.Id,
+			lineageAsString(s.Upstream),
+			lineageAsString(s.Downstream),
+		}
+	}))
+}
+
+func lineageAsString(lineage []*entities.Lineage) string {
+	return strings.Join(
+		lo.Map(lineage, func(l *entities.Lineage, _ int) string {
+			var checkmark string
+
+			if l.NotManagedByPace {
+				checkmark = "✗"
+			} else {
+				checkmark = "✓"
+			}
+			return fmt.Sprintf("%s (%s)", l.ResourceRef.Fqn, checkmark)
+		}),
+		"\n",
+	)
+}
+
 func yamlScalarMap(args ...any) []*yaml.Node {
 	return lo.Map(args, func(a any, _ int) *yaml.Node {
 		return &yaml.Node{
@@ -119,7 +157,7 @@ func yamlScalarMap(args ...any) []*yaml.Node {
 	})
 }
 
-func (p listLineagePlainPrinter) Print(data interface{}) {
+func (p listLineageSimpleYamlPrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*api.ScanLineageResponse)
 	deps := func(lineage []*entities.Lineage) []*yaml.Node {
 		return lo.Map(lineage, func(l *entities.Lineage, _ int) *yaml.Node {

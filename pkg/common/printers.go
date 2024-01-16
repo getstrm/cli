@@ -19,11 +19,12 @@ import (
 var StandardPrinters orderedmap.OrderedMap[string, Printer]
 
 const (
-	OutputFormatYaml    = "yaml"
-	OutputFormatJson    = "json"
-	OutputFormatJsonRaw = "json-raw"
-	OutputFormatTable   = "table"
-	OutputFormatPlain   = "plain"
+	OutputFormatYaml       = "yaml"
+	OutputFormatJson       = "json"
+	OutputFormatJsonRaw    = "json-raw"
+	OutputFormatTable      = "table"
+	OutputFormatPlain      = "plain"
+	OutputFormatSimpleYaml = "yaml-simple"
 
 	OutputFormatFlag      = "output"
 	OutputFormatFlagShort = "o"
