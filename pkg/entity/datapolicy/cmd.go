@@ -60,29 +60,38 @@ func ApplyCmd() *cobra.Command {
 
 func EvaluateCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "data-policy (policy-id)",
-		Short:             "Evaluate an existing data policy by applying it to sample data provided in a csv file",
+		Use:               "data-policy",
+		Short:             "Evaluate a data policy by applying it to sample data provided in a csv file",
 		Long:              evaluateLongDocs,
 		Example:           evaluateExample,
 		DisableAutoGenTag: true,
-		PreRunE: func(cmd *cobra.Command, _ []string) error {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			var err error
 			printer, err = common.ConfigurePrinter(cmd, evaluatePrinters())
 			return err
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return evaluate(cmd, &args[0])
+			return evaluate(cmd)
 		},
-		Args:              cobra.ExactArgs(1), // the policy id
-		ValidArgsFunction: idsCompletion,
+		Args: cobra.ExactArgs(0),
 	}
 
 	flags := cmd.Flags()
+	flags.String(common.InlineDataPolicyFlag, "", common.InlineDataPolicyUsage)
+
+	flags.String(common.DataPolicyIdFlag, "", common.DataPolicyIdUsage)
+	_ = cmd.RegisterFlagCompletionFunc(common.DataPolicyIdFlag, idsCompletion)
 	completion.AddProcessingPlatformFlag(cmd, flags)
-	_ = cmd.MarkFlagRequired(common.ProcessingPlatformFlag)
+	cmd.MarkFlagsRequiredTogether(common.DataPolicyIdFlag, common.ProcessingPlatformFlag)
+
 	_ = addSampleDataFlag(cmd, flags)
 	_ = cmd.MarkFlagRequired(common.SampleDataFlag)
+	cmd.MarkFlagsOneRequired(common.InlineDataPolicyFlag, common.DataPolicyIdFlag)
+
+	flags.String(common.PrincipalsToEvaluateFlag, "", common.PrincipalsToEvaluateUsage)
+
 	_ = common.ConfigureExtraPrinters(cmd, cmd.Flags(), evaluatePrinters())
+
 	return cmd
 }
 

@@ -82,21 +82,21 @@ func (p listPlainPrinter) Print(data interface{}) {
 
 func (p evaluateTablePrinter) Print(data interface{}) {
 	evaluateResponse, _ := (data).(*api.EvaluateDataPolicyResponse)
-	lo.ForEach(evaluateResponse.GetFullEvaluationResult().RuleSetResults, func(result *api.EvaluateDataPolicyResponse_FullEvaluationResult_RuleSetResult, _ int) {
+	lo.ForEach(evaluateResponse.GetRuleSetResults(), func(result *api.EvaluateDataPolicyResponse_RuleSetResult, _ int) {
 		printRuleSetResult(result)
 	})
 }
 
-func printRuleSetResult(ruleSetResult *api.EvaluateDataPolicyResponse_FullEvaluationResult_RuleSetResult) {
+func printRuleSetResult(ruleSetResult *api.EvaluateDataPolicyResponse_RuleSetResult) {
 	fmt.Printf("Results for rule set with target: %s\n", ruleSetResult.Target.Fullname)
-	lo.ForEach(ruleSetResult.PrincipalEvaluationResults, func(result *api.EvaluateDataPolicyResponse_FullEvaluationResult_RuleSetResult_PrincipalEvaluationResult, _ int) {
+	lo.ForEach(ruleSetResult.EvaluationResults, func(result *api.EvaluateDataPolicyResponse_RuleSetResult_EvaluationResult, _ int) {
 		principal := result.Principal
 		if principal == nil {
 			fmt.Print("All other principals\n\n")
 		} else {
 			common.ProtoMessageYamlPrinter{}.Print(principal)
 		}
-		printCsvAsTable(result.Csv)
+		printCsvAsTable(result.GetCsvEvaluation().Csv)
 		fmt.Println()
 	})
 	fmt.Println()
