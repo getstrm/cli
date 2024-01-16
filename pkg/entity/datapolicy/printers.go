@@ -41,8 +41,8 @@ func lineagePrinters() orderedmap.OrderedMap[string, common.Printer] {
 	// We want to use the plain printer by default for the evaluate command,
 	// so put it first in the map, then add the standard printers.
 	printers := orderedmap.NewOrderedMap[string, common.Printer]()
-	printers.Set(common.OutputFormatSimpleYaml, listLineageSimpleYamlPrinter{})
 	printers.Set(common.OutputFormatTable, listLineageTablePrinter{})
+	printers.Set(common.OutputFormatSimpleYaml, listLineageSimpleYamlPrinter{})
 	lo.ForEach(common.StandardPrinters.Keys(), func(key string, _ int) {
 		printer, _ := common.StandardPrinters.Get(key)
 		printers.Set(key, printer)
