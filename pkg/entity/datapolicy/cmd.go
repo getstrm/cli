@@ -144,13 +144,18 @@ func ScanLineage() *cobra.Command {
 		Example:           "",
 		Long:              "",
 		DisableAutoGenTag: true,
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, lineagePrinters())
+			return err
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return scanLineage(cmd)
 		},
 		ValidArgsFunction: common.NoFilesEmptyCompletion,
 		Args:              cobra.NoArgs,
 	}
-	_ = common.ConfigureExtraPrinters(cmd, cmd.Flags(), common.StandardPrinters)
+	_ = common.ConfigureExtraPrinters(cmd, cmd.Flags(), lineagePrinters())
 	return cmd
 }
 
