@@ -137,10 +137,10 @@ func lineageAsString(lineage []*entities.Lineage) string {
 		lo.Map(lineage, func(l *entities.Lineage, _ int) string {
 			var checkmark string
 
-			if l.NotManagedByPace {
-				checkmark = "✗"
-			} else {
+			if l.ManagedByPace {
 				checkmark = "✓"
+			} else {
+				checkmark = "✗"
 			}
 			return fmt.Sprintf("%s (%s)", l.ResourceRef.Fqn, checkmark)
 		}),
@@ -163,7 +163,7 @@ func (p listLineageSimpleYamlPrinter) Print(data interface{}) {
 		return lo.Map(lineage, func(l *entities.Lineage, _ int) *yaml.Node {
 			return &yaml.Node{
 				Kind:    yaml.MappingNode,
-				Content: yamlScalarMap("fqn", l.ResourceRef.Fqn, "not_managed_by_pace", l.NotManagedByPace),
+				Content: yamlScalarMap("fqn", l.ResourceRef.Fqn, "managed_by_pace", l.ManagedByPace),
 			}
 		})
 	}
