@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/getstrm/cli/compare/v1.20.0...v1.21.0) (2024-01-17)
+
+
+### Features
+
+* **pace-117:** lineage boolean inverted ([#30](https://github.com/getstrm/cli/issues/30)) ([5980f09](https://github.com/getstrm/cli/commit/5980f09d6f901efb9d94772e2c276221c774ee02))
+
 # [1.20.0](https://github.com/getstrm/cli/compare/v1.19.0...v1.20.0) (2024-01-16)
 
 
