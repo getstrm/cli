@@ -6,6 +6,7 @@ import (
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/global_transforms/v1alpha/global_transformsv1alphagrpc"
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/plugins/v1alpha/pluginsv1alphagrpc"
 	. "buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/processing_platforms/v1alpha/processing_platformsv1alphagrpc"
+	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/resources/v1alpha/resourcesv1alphagrpc"
 	"context"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -25,6 +26,7 @@ import (
 	"pace/pace/pkg/entity/lineage"
 	"pace/pace/pkg/entity/plugin"
 	"pace/pace/pkg/entity/processingplatform"
+	"pace/pace/pkg/entity/resources"
 	"pace/pace/pkg/entity/schema"
 	"pace/pace/pkg/entity/table"
 	"strings"
@@ -64,6 +66,7 @@ func SetupServiceClients() error {
 	processingPlatformsClient := NewProcessingPlatformsServiceClient(connection)
 	globalTransformsClient := NewGlobalTransformsServiceClient(connection)
 	pluginsClient := NewPluginsServiceClient(connection)
+	resourcesClient := resourcesv1alphagrpc.NewResourcesServiceClient(connection)
 	processingplatform.SetupClient(processingPlatformsClient, ctx)
 	catalog.SetupClient(catalogsClient, ctx)
 	table.SetupClient(processingPlatformsClient, catalogsClient, ctx)
@@ -74,6 +77,7 @@ func SetupServiceClients() error {
 	globaltransform.SetupClient(globalTransformsClient, ctx)
 	plugin.SetupClient(pluginsClient, ctx)
 	lineage.SetupClient(processingPlatformsClient, ctx)
+	resources.SetupClient(resourcesClient, ctx)
 	return nil
 }
 

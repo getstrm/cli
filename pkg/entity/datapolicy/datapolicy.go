@@ -306,11 +306,11 @@ func idsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra
 	// If the platform id is provided, make sure we only suggest policies for that platform
 	if platformId != "" {
 		policies = lo.Filter(policies, func(policy *DataPolicy, _ int) bool {
-			return policy.Platform.Id == platformId
+			return policy.Source.Ref.Platform.Id == platformId
 		})
 	}
 
 	return lo.Map(policies, func(dataPolicy *DataPolicy, _ int) string {
-		return dataPolicy.Id
+		return dataPolicy.Source.Ref.PlatformFqn
 	}), cobra.ShellCompDirectiveNoFileComp
 }

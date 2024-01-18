@@ -64,8 +64,8 @@ func (p listTablePrinter) Print(data interface{}) {
 		"Tags",
 	}, lo.Map(listResponse.DataPolicies, func(policy *entities.DataPolicy, _ int) table.Row {
 		return table.Row{
-			policy.Platform.Id,
-			policy.Source.Ref,
+			policy.Source.Ref.Platform.Id,
+			policy.Source.Ref.PlatformFqn,
 			strings.Join(policy.Metadata.Tags, ","),
 		}
 	}))
@@ -75,7 +75,7 @@ func (p listPlainPrinter) Print(data interface{}) {
 	listResponse, _ := (data).(*api.ListDataPoliciesResponse)
 	for _, policy := range listResponse.DataPolicies {
 		fmt.Println(
-			policy.Platform.Id,
+			policy.Source.Ref.Platform.Id,
 			policy.Source.Ref,
 			strings.Join(policy.Metadata.Tags, ","),
 		)
@@ -90,7 +90,7 @@ func (p evaluateTablePrinter) Print(data interface{}) {
 }
 
 func printRuleSetResult(ruleSetResult *api.EvaluateDataPolicyResponse_RuleSetResult) {
-	fmt.Printf("Results for rule set with target: %s\n", ruleSetResult.Target.Fullname)
+	fmt.Printf("Results for rule set with target: %s\n", ruleSetResult.Target.Ref.PlatformFqn)
 	lo.ForEach(ruleSetResult.EvaluationResults, func(result *api.EvaluateDataPolicyResponse_RuleSetResult_EvaluationResult, _ int) {
 		principal := result.Principal
 		if principal == nil {
@@ -124,7 +124,7 @@ func (p listLineageTablePrinter) Print(data interface{}) {
 		"Downstream Fqns",
 	}, lo.Map(listResponse.LineageSummaries, func(s *entities.LineageSummary, _ int) table.Row {
 		return table.Row{
-			s.ResourceRef.Fqn,
+			s.ResourceRef.PlatformFqn,
 			s.ResourceRef.Platform.Id,
 			lineageAsString(s.Upstream),
 			lineageAsString(s.Downstream),
@@ -142,7 +142,7 @@ func lineageAsString(lineage []*entities.Lineage) string {
 			} else {
 				checkmark = "✗"
 			}
-			return fmt.Sprintf("%s (%s)", l.ResourceRef.Fqn, checkmark)
+			return fmt.Sprintf("%s (%s)", l.ResourceRef.PlatformFqn, checkmark)
 		}),
 		"\n",
 	)
@@ -163,7 +163,7 @@ func (p listLineageSimpleYamlPrinter) Print(data interface{}) {
 		return lo.Map(lineage, func(l *entities.Lineage, _ int) *yaml.Node {
 			return &yaml.Node{
 				Kind:    yaml.MappingNode,
-				Content: yamlScalarMap("fqn", l.ResourceRef.Fqn, "managed_by_pace", l.ManagedByPace),
+				Content: yamlScalarMap("fqn", l.ResourceRef.PlatformFqn, "managed_by_pace", l.ManagedByPace),
 			}
 		})
 	}
@@ -179,7 +179,7 @@ func (p listLineageSimpleYamlPrinter) Print(data interface{}) {
 				},
 				{
 					Kind:  yaml.ScalarNode,
-					Value: s.ResourceRef.Fqn,
+					Value: s.ResourceRef.PlatformFqn,
 				},
 				{
 					Kind:  yaml.ScalarNode,
