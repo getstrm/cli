@@ -191,7 +191,7 @@ func getBlueprintPolicyFromProcessingPlatform(flags *pflag.FlagSet, platformId s
 				},
 			},
 		},
-		Fqn: fqnValue,
+		Fqn: &fqnValue,
 	}
 	response, err := pClient.GetBlueprintPolicy(apiContext, req)
 	if err != nil {
