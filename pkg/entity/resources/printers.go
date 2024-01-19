@@ -54,11 +54,13 @@ func (p listTablePrinter) Print(data interface{}) {
 	} else {
 		common.RenderTable(table.Row{
 			row1.PlatformName,
+			"DisplayName",
 			"Fqn",
 		}, lo.Map(listResponse.Resources, func(urn *entities.ResourceUrn, _ int) table.Row {
 			name, _ := lo.Last(urn.ResourcePath)
 			return table.Row{
 				name.Name,
+				name.DisplayName,
 				urn.PlatformFqn,
 			}
 		}))
