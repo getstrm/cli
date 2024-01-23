@@ -71,7 +71,7 @@ func (p listTablePrinter) Print(data interface{}) {
 
 		return table.Row{
 			platform.Id,
-			policy.Source.Ref.IntegrationFqn,
+			*policy.Source.Ref.IntegrationFqn,
 			strings.Join(policy.Metadata.Tags, ","),
 		}
 	}))
@@ -103,7 +103,7 @@ func (p evaluateTablePrinter) Print(data interface{}) {
 }
 
 func printRuleSetResult(ruleSetResult *api.EvaluateDataPolicyResponse_RuleSetResult) {
-	fmt.Printf("Results for rule set with target: %s\n", ruleSetResult.Target.Ref.IntegrationFqn)
+	fmt.Printf("Results for rule set with target: %s\n", *ruleSetResult.Target.Ref.IntegrationFqn)
 	lo.ForEach(ruleSetResult.EvaluationResults, func(result *api.EvaluateDataPolicyResponse_RuleSetResult_EvaluationResult, _ int) {
 		principal := result.Principal
 		if principal == nil {
@@ -143,7 +143,7 @@ func (p listLineageTablePrinter) Print(data interface{}) {
 		}
 
 		return table.Row{
-			s.ResourceRef.IntegrationFqn,
+			*s.ResourceRef.IntegrationFqn,
 			platform.Id,
 			lineageAsString(s.Upstream),
 			lineageAsString(s.Downstream),
@@ -161,7 +161,7 @@ func lineageAsString(lineage []*entities.Lineage) string {
 			} else {
 				checkmark = "✗"
 			}
-			return fmt.Sprintf("%s (%s)", l.ResourceRef.IntegrationFqn, checkmark)
+			return fmt.Sprintf("%s (%s)", *l.ResourceRef.IntegrationFqn, checkmark)
 		}),
 		"\n",
 	)
@@ -182,7 +182,7 @@ func (p listLineageSimpleYamlPrinter) Print(data interface{}) {
 		return lo.Map(lineage, func(l *entities.Lineage, _ int) *yaml.Node {
 			return &yaml.Node{
 				Kind:    yaml.MappingNode,
-				Content: yamlScalarMap("fqn", l.ResourceRef.IntegrationFqn, "managed_by_pace", l.ManagedByPace),
+				Content: yamlScalarMap("fqn", *l.ResourceRef.IntegrationFqn, "managed_by_pace", l.ManagedByPace),
 			}
 		})
 	}

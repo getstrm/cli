@@ -21,7 +21,8 @@ func ListCmd() *cobra.Command {
 			return list(cmd, args)
 		},
 		// fqn of table
-		Args: cobra.MaximumNArgs(1),
+		Args:              cobra.MaximumNArgs(1),
+		ValidArgsFunction: resourcesCompletion,
 	}
 	flags := cmd.Flags()
 	_ = common.ConfigureExtraPrinters(cmd, flags, listPrinters())
