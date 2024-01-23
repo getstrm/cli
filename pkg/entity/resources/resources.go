@@ -2,7 +2,6 @@ package resources
 
 import (
 	"buf.build/gen/go/getstrm/pace/grpc/go/getstrm/pace/api/resources/v1alpha/resourcesv1alphagrpc"
-	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/entities/v1alpha"
 	. "buf.build/gen/go/getstrm/pace/protocolbuffers/go/getstrm/pace/api/resources/v1alpha"
 	"context"
 	"github.com/samber/lo"
@@ -13,11 +12,11 @@ import (
 
 var apiContext context.Context
 
-var resources_client resourcesv1alphagrpc.ResourcesServiceClient
+var resourcesClient resourcesv1alphagrpc.ResourcesServiceClient
 
 func SetupClient(resources_client_ resourcesv1alphagrpc.ResourcesServiceClient, ctx context.Context) {
 	apiContext = ctx
-	resources_client = resources_client_
+	resourcesClient = resources_client_
 }
 
 func list(cmd *cobra.Command, s []string) error {
@@ -26,12 +25,12 @@ func list(cmd *cobra.Command, s []string) error {
 	}
 
 	if len(s) > 0 {
-		resourcePath := lo.Map(strings.Split(s[0], "/"), func(pp string, _ int) *ResourceNode {
-			return &ResourceNode{Name: pp}
-		})
-		req.Urn = &ResourceUrn{ResourcePath: resourcePath}
+		resourcePathElements := strings.Split(s[0], "/")
+		req.IntegrationId = resourcePathElements[0]
+		req.ResourcePath = lo.Drop(resourcePathElements, 1)
 	}
-	response, err := resources_client.ListResources(apiContext, req)
+
+	response, err := resourcesClient.ListResources(apiContext, req)
 	return common.Print(printer, err, response)
 
 }
