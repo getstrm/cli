@@ -61,7 +61,7 @@ func (p listTablePrinter) Print(data interface{}) {
 			return table.Row{
 				name.Name,
 				name.DisplayName,
-				urn.PlatformFqn,
+				urn.IntegrationFqn,
 			}
 		}))
 	}
