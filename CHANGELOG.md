@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/getstrm/cli/compare/v1.22.0...v1.23.0) (2024-01-26)
+
+
+### Features
+
+* **main:** api 53 ([d1b108d](https://github.com/getstrm/cli/commit/d1b108df9ea5e0b7cb5db659166636bb29fd93d1))
+
 # [1.22.0](https://github.com/getstrm/cli/compare/v1.21.0...v1.22.0) (2024-01-26)
 
 
