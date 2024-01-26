@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/getstrm/cli/compare/v1.23.0...v1.24.0) (2024-01-26)
+
+
+### Features
+
+* **pace-85:** page-tokens for bigquery ([#32](https://github.com/getstrm/cli/issues/32)) ([0264b7a](https://github.com/getstrm/cli/commit/0264b7a5a5afa0e828524bc87c409fe74bb34bb6))
+
 # [1.23.0](https://github.com/getstrm/cli/compare/v1.22.0...v1.23.0) (2024-01-26)
 
 
