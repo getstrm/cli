@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/getstrm/cli/compare/v1.21.0...v1.22.0) (2024-01-26)
+
+
+### Features
+
+* **pace-100:** handles generic hierarchy ([#31](https://github.com/getstrm/cli/issues/31)) ([d591169](https://github.com/getstrm/cli/commit/d5911690c8a3201b1fa84866c5ffbdf8f7f29336))
+
 # [1.21.0](https://github.com/getstrm/cli/compare/v1.20.0...v1.21.0) (2024-01-17)
 
 
