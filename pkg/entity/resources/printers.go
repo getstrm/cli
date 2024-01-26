@@ -64,6 +64,9 @@ func (p listTablePrinter) Print(data interface{}) {
 				*urn.IntegrationFqn,
 			}
 		}))
+		if listResponse.PageInfo.NextPageToken != "" {
+			fmt.Printf("nextPageToken: %s\n", listResponse.PageInfo.NextPageToken)
+		}
 	}
 }
 

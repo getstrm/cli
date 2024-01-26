@@ -94,8 +94,10 @@ func PageParameters(cmd *cobra.Command) *pagingv1alpha.PageParameters {
 	flags := cmd.Flags()
 	skip, _ := flags.GetUint32(PageSkipFlag)
 	size, _ := flags.GetUint32(PageSizeFlag)
+	token, _ := flags.GetString(PageTokenFlag)
 	return &pagingv1alpha.PageParameters{
-		Skip:     skip,
-		PageSize: size,
+		Skip:      skip,
+		PageSize:  size,
+		PageToken: token,
 	}
 }

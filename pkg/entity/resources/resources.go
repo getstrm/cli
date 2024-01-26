@@ -30,16 +30,8 @@ func list(cmd *cobra.Command, s []string) error {
 
 	if len(s) > 0 {
 		resourcePathElements := strings.Split(s[0], "/")
-
-		if last, _ := lo.Last(resourcePathElements); last == "" {
-			resourcePathElements = lo.DropRight(resourcePathElements, 1)
-		}
-
 		req.IntegrationId = resourcePathElements[0]
-
-		if len(resourcePathElements) > 1 {
-			req.ResourcePath = lo.Drop(resourcePathElements, 1)
-		}
+		req.ResourcePath = lo.Drop(resourcePathElements, 1)
 	}
 
 	response, err := resourcesClient.ListResources(apiContext, req)

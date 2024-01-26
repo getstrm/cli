@@ -68,6 +68,7 @@ const SampleDataUsage = "path to a csv file containing sample data to evaluate a
 
 const PageSizeFlag = "page-size"
 const PageSkipFlag = "skip"
+const PageTokenFlag = "page-token"
 
 const InlineDataPolicyFlag = "data-policy-file"
 const InlineDataPolicyUsage = "path to a data policy file to evaluate on sample data, must be a yaml or json representation of a data policy"
