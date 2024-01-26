@@ -10,6 +10,7 @@ import (
 	"pace/pace/pkg/entity/group"
 	"pace/pace/pkg/entity/plugin"
 	"pace/pace/pkg/entity/processingplatform"
+	"pace/pace/pkg/entity/resources"
 	"pace/pace/pkg/entity/schema"
 	"pace/pace/pkg/entity/table"
 )
@@ -33,6 +34,7 @@ func init() {
 		datapolicy.ScanLineage(),
 		globaltransform.ListCmd(),
 		plugin.ListCmd(),
+		resources.ListCmd(),
 	)
 
 	flags := ListCmd.PersistentFlags()

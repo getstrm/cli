@@ -166,6 +166,7 @@ func getBlueprintPolicyFromCatalog(flags *pflag.FlagSet, tableId *string) error 
 		SchemaId:   &schemaId,
 		TableId:    *tableId,
 	}
+
 	response, err := catClient.GetBlueprintPolicy(apiContext, req)
 	if err != nil {
 		return err
@@ -176,13 +177,15 @@ func getBlueprintPolicyFromCatalog(flags *pflag.FlagSet, tableId *string) error 
 func getBlueprintPolicyFromProcessingPlatform(flags *pflag.FlagSet, platformId string, tableId *string) error {
 	_, databaseId, schemaId, _ := common.GetCatalogCoordinates(flags)
 	fqn, _ := flags.GetBool(FqnFlag)
-	fqnValue := ""
-	if fqn {
-		fqnValue = *tableId
-	}
+
 	req := &ppentities.GetBlueprintPolicyRequest{
 		PlatformId: platformId,
-		Table: &Table{
+	}
+
+	if fqn {
+		req.Fqn = tableId
+	} else {
+		req.Table = &Table{
 			Id: *tableId,
 			Schema: &Schema{
 				Id: schemaId,
@@ -190,9 +193,9 @@ func getBlueprintPolicyFromProcessingPlatform(flags *pflag.FlagSet, platformId s
 					Id: databaseId,
 				},
 			},
-		},
-		Fqn: fqnValue,
+		}
 	}
+
 	response, err := pClient.GetBlueprintPolicy(apiContext, req)
 	if err != nil {
 		return err
@@ -306,11 +309,17 @@ func idsCompletion(cmd *cobra.Command, args []string, _ string) ([]string, cobra
 	// If the platform id is provided, make sure we only suggest policies for that platform
 	if platformId != "" {
 		policies = lo.Filter(policies, func(policy *DataPolicy, _ int) bool {
-			return policy.Platform.Id == platformId
+			platform := policy.Source.Ref.GetPlatform()
+
+			if platform == nil {
+				return false
+			}
+
+			return platform.Id == platformId
 		})
 	}
 
 	return lo.Map(policies, func(dataPolicy *DataPolicy, _ int) string {
-		return dataPolicy.Id
+		return *dataPolicy.Source.Ref.IntegrationFqn
 	}), cobra.ShellCompDirectiveNoFileComp
 }
