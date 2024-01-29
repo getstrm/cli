@@ -216,7 +216,6 @@ Takes a Data Policy as input with one or more rule sets and transpiles it to the
 For example, this can be used to view the SQL DDL that would be generated for a BigQuery platform.
 `)
 
-// TODO update example for transpile
 var transpileExample = PlainExample(`
 !pace transpile data-policy --data-policy-file data-policy.yaml --output plain
 
