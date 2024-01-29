@@ -50,9 +50,16 @@ func lineagePrinters() orderedmap.OrderedMap[string, common.Printer] {
 	return *printers
 }
 
+func transpilePrinters() orderedmap.OrderedMap[string, common.Printer] {
+	printers := orderedmap.NewOrderedMap[string, common.Printer]()
+	printers.Set(common.OutputFormatPlain, transpilePlainPrinter{})
+	return *printers
+}
+
 type listTablePrinter struct{}
 type listPlainPrinter struct{}
 type evaluateTablePrinter struct{}
+type transpilePlainPrinter struct{}
 type listLineageSimpleYamlPrinter struct{}
 type listLineageTablePrinter struct{}
 
@@ -247,4 +254,9 @@ func (p listLineageSimpleYamlPrinter) Print(data interface{}) {
 	}
 	yamlBytes, _ := yaml.Marshal(tree)
 	fmt.Println(string(yamlBytes))
+}
+
+func (p transpilePlainPrinter) Print(data interface{}) {
+	transpileResponse, _ := (data).(*api.TranspileDataPolicyResponse)
+	fmt.Println(transpileResponse.GetSql())
 }

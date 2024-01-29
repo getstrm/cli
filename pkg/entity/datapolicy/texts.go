@@ -210,3 +210,11 @@ lists all the active policies defined and applied by PACE.
 
 These will always include at least one rule set.
 `)
+
+var transpileLongDocs = LongDocs(`
+Takes a Data Policy as input with one or more rule sets and transpiles it to the respective target platform.
+For example, this can be used to view the SQL DDL that would be generated for a BigQuery platform.
+`)
+
+// TODO update example for transpile
+var transpileExample = PlainExample(``)
