@@ -217,4 +217,50 @@ For example, this can be used to view the SQL DDL that would be generated for a 
 `)
 
 // TODO update example for transpile
-var transpileExample = PlainExample(``)
+var transpileExample = PlainExample(`
+!pace transpile data-policy --data-policy-file data-policy.yaml --output plain
+
+create or replace view "public"."demo_view"
+as
+with
+  "user_groups" as (
+    select "rolname"
+    from "pg_roles"
+    where (
+      "rolcanlogin" = false
+      and pg_has_role(session_user, oid, 'member')
+    )
+  )
+select
+  "transactionid",
+  case
+    when (
+      ('fraud_and_risk' IN ( SELECT rolname FROM user_groups ))
+      or ('administrator' IN ( SELECT rolname FROM user_groups ))
+    ) then "userid"
+    else 0
+  end as userid,
+  case
+    when ('administrator' IN ( SELECT rolname FROM user_groups )) then "email"
+    when ('marketing' IN ( SELECT rolname FROM user_groups )) then regexp_replace(email, '^.*(@.*)$', '****\1', 'g')
+    when ('fraud_and_risk' IN ( SELECT rolname FROM user_groups )) then "email"
+    else '****'
+  end as email,
+  "age",
+  case
+    when ('administrator' IN ( SELECT rolname FROM user_groups )) then "brand"
+    else CASE WHEN brand = 'MacBook' THEN 'Apple' ELSE 'Other' END
+  end as brand,
+  "transactionamount"
+from "public"."demo"
+where case
+  when (
+    ('administrator' IN ( SELECT rolname FROM user_groups ))
+    or ('fraud_and_risk' IN ( SELECT rolname FROM user_groups ))
+  ) then true
+  else age > 8
+end;
+grant SELECT on public.demo_view to "fraud_and_risk";
+grant SELECT on public.demo_view to "administrator";
+grant SELECT on public.demo_view to "marketing";
+`)
