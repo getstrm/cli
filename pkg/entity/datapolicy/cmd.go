@@ -95,6 +95,36 @@ func EvaluateCmd() *cobra.Command {
 	return cmd
 }
 
+func TranspileCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:               "data-policy",
+		Short:             "Transpile a data policy to view the result for the target platform (e.g. SQL DDL)",
+		Long:              transpileLongDocs,
+		Example:           transpileExample,
+		DisableAutoGenTag: true,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			printer, err = common.ConfigurePrinter(cmd, transpilePrinters())
+			return err
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return transpile(cmd)
+		},
+		Args: cobra.ExactArgs(0),
+	}
+
+	flags := cmd.Flags()
+	flags.String(common.InlineDataPolicyFlag, "", common.InlineDataPolicyUsage)
+
+	flags.String(common.DataPolicyIdFlag, "", common.DataPolicyIdUsage)
+	_ = cmd.RegisterFlagCompletionFunc(common.DataPolicyIdFlag, idsCompletion)
+	completion.AddProcessingPlatformFlag(cmd, flags)
+	cmd.MarkFlagsRequiredTogether(common.DataPolicyIdFlag, common.ProcessingPlatformFlag)
+	cmd.MarkFlagsOneRequired(common.InlineDataPolicyFlag, common.DataPolicyIdFlag)
+
+	return cmd
+}
+
 func GetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "data-policy (table-name|policy-id)",

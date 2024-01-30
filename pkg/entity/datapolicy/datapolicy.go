@@ -149,6 +149,40 @@ func evaluate(cmd *cobra.Command) error {
 	return common.Print(printer, err, response)
 }
 
+func transpile(cmd *cobra.Command) error {
+	dataPolicyId, err := cmd.Flags().GetString(common.DataPolicyIdFlag)
+	platformId, err := cmd.Flags().GetString(common.ProcessingPlatformFlag)
+	dataPolicyFileName, err := cmd.Flags().GetString(common.InlineDataPolicyFlag)
+	if err != nil {
+		return err
+	}
+
+	request := &TranspileDataPolicyRequest{}
+
+	if dataPolicyId != "" && platformId != "" {
+		request.DataPolicy = &TranspileDataPolicyRequest_DataPolicyRef{
+			DataPolicyRef: &DataPolicyRef{
+				PlatformId:   platformId,
+				DataPolicyId: dataPolicyId,
+			},
+		}
+	} else {
+		dataPolicy, err := readPolicy(dataPolicyFileName)
+		if err != nil {
+			return err
+		}
+		request.DataPolicy = &TranspileDataPolicyRequest_InlineDataPolicy{
+			InlineDataPolicy: dataPolicy,
+		}
+	}
+
+	response, err := polClient.TranspileDataPolicy(apiContext, request)
+	if err != nil {
+		return err
+	}
+	return common.Print(printer, err, response)
+}
+
 func getDataPolicy(dataPolicyOrTableId *string, platformId string) (*GetDataPolicyResponse, error) {
 	// return a data policy from the PACE database.
 	req := &GetDataPolicyRequest{

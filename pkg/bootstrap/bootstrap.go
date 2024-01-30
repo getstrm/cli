@@ -51,6 +51,7 @@ func SetupVerbs(rootCmd *cobra.Command) {
 		cmd.DeleteCmd,
 		cmd.VersionCmd,
 		cmd.EvaluateCmd,
+		cmd.TranspileCmd,
 		cmd.InvokeCmd,
 		cmd.DisableCmd,
 	)
