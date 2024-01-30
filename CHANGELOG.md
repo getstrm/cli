@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/getstrm/cli/compare/v1.24.0...v1.25.0) (2024-01-30)
+
+
+### Features
+
+* **pace-154:** add transpile command ([#33](https://github.com/getstrm/cli/issues/33)) ([57abaa0](https://github.com/getstrm/cli/commit/57abaa035619eb4de7078ff5d09df1e956586f62))
+
 # [1.24.0](https://github.com/getstrm/cli/compare/v1.23.0...v1.24.0) (2024-01-26)
 
 
