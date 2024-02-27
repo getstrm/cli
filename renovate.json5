@@ -23,7 +23,7 @@
     }
   ],
   "baseBranches": [
-    "renovate"
+    "renovate-buf"
   ],
   enabledManagers: [
     "regex"
