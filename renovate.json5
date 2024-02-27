@@ -1,73 +1,19 @@
 {
-//  "extends": [
-//    "github>getstrm/renovate-config//base-renovate-config.json5"
-//  ],
-  "customManagers": [
-    {
-      // Renovate cannot update build.buf.gen dependencies through the regular Go datasource manager,
-      // therefore, a custom regex manager is needed.
-      "customType": "regex",
-      "fileMatch": [
-        "go.mod$"
-      ],
-      // Via named capturing groups, we extract the buf.build generated dependency name and the current version
-      "matchStrings": [
-        // e.g. currentValue = v1.3.0-20231121141154-e945a7aece2d.2
-        "^\\t+?(?<depName>buf.build/gen/go/getstrm/pace/grpc/go) v(?<currentValue>.*?)$"
-      ],
-      "datasourceTemplate": "go",
-      // Version extracted from Go Module Registry
-//      "extractVersionTemplate": "(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*\\.)(?<build>\\d+)$",
-      // Version extracted from go.mod
-//      "versioningTemplate": "regex:(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*\\.)(?<build>\\d+)$"
-    }
-  ],
-  "baseBranches": [
-    "renovate-buf"
-  ],
-  enabledManagers: [
-    "regex"
+  "extends": [
+    "github>getstrm/renovate-config//base-renovate-config.json5"
   ],
   packageRules: [
     {
       matchManagers: [
-        "regex"
+        "gomod"
       ],
-//      matchPackagePrefixes: [
-//        "build.buf"
-//      ],
-      matchUpdateTypes: [
-        "major"
+      matchPackagePrefixes: [
+        "buf.build/gen/go/getstrm/pace"
       ],
-      groupName: "grpc-protobuf major dependencies",
-      groupSlug: "grpc-protobuf",
-      automerge: false,
-      addLabels: [
-        "major",
-        "grpc-protobuf",
-        "go"
-      ]
-    },
-    {
-      matchManagers: [
-        "regex"
-      ],
-//      matchPackagePrefixes: [
-//        "build.buf"
-//      ],
-      matchUpdateTypes: [
-        "minor",
-        "patch"
-      ],
-      groupName: "grpc-protobuf non-major dependencies",
-      groupSlug: "non-major-grpc-protobuf",
-      automerge: true,
-      platformAutomerge: true,
-      addLabels: [
-        "minor-patch",
-        "grpc-protobuf",
-        "go"
-      ]
+      // Ensure that the Protos version is treated as a compatibility version part. For example:
+      // 20240129161937-d5ced9c85c25 in the dependency version v1.3.0-20240129161937-d5ced9c85c25.2
+      // should not be updated
+      versioning: "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*\\.)(?<build>\\d+)$"
     }
   ]
 }
