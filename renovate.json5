@@ -1,7 +1,7 @@
 {
-  "extends": [
-    "github>getstrm/renovate-config//base-renovate-config.json5"
-  ],
+//  "extends": [
+//    "github>getstrm/renovate-config//base-renovate-config.json5"
+//  ],
   "customManagers": [
     {
       // Renovate cannot update build.buf.gen dependencies through the regular Go datasource manager,
@@ -13,23 +13,29 @@
       // Via named capturing groups, we extract the buf.build generated dependency name and the current version
       "matchStrings": [
         // e.g. currentValue = v1.3.0-20231121141154-e945a7aece2d.2
-        "^(?<depName>buf\\.build\\/gen\\/go\\/getstrm\\/pace.*?)\\sv(?<currentValue>.*?)$"
+        "^\\t+?(?<depName>buf.build/gen/go/getstrm/pace/grpc/go) v(?<currentValue>.*?)$"
       ],
       "datasourceTemplate": "go",
       // Version extracted from Go Module Registry
-      "extractVersionTemplate": "(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*\\.)(?<build>\\d+)$",
+//      "extractVersionTemplate": "(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*\\.)(?<build>\\d+)$",
       // Version extracted from go.mod
-      "versioningTemplate": "regex:(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*\\.)(?<build>\\d+)$"
+//      "versioningTemplate": "regex:(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>.*\\.)(?<build>\\d+)$"
     }
+  ],
+  "baseBranches": [
+    "renovate"
+  ],
+  enabledManagers: [
+    "regex"
   ],
   packageRules: [
     {
       matchManagers: [
         "regex"
       ],
-      matchPackagePrefixes: [
-        "build.buf.gen"
-      ],
+//      matchPackagePrefixes: [
+//        "build.buf"
+//      ],
       matchUpdateTypes: [
         "major"
       ],
@@ -46,9 +52,9 @@
       matchManagers: [
         "regex"
       ],
-      matchPackagePrefixes: [
-        "build.buf.gen"
-      ],
+//      matchPackagePrefixes: [
+//        "build.buf"
+//      ],
       matchUpdateTypes: [
         "minor",
         "patch"
