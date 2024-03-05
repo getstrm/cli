@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20240129161937-d5ced9c85c25.2
-	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.32.0-20240129161937-d5ced9c85c25.1
+	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.33.0-20240129161937-d5ced9c85c25.1
 	github.com/bykof/gostradamus v1.1.1
 	github.com/elliotchance/orderedmap/v2 v2.2.0
 	github.com/google/uuid v1.6.0
@@ -16,15 +16,15 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2
 	github.com/xeipuuv/gojsonschema v1.2.0
-	google.golang.org/grpc v1.62.0
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/grpc v1.62.1
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
 	sigs.k8s.io/yaml v1.4.0
 )
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.32.0-20231115204500-e097f827e652.1 // indirect
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.33.0-20231115204500-e097f827e652.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
