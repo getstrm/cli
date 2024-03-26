@@ -8,7 +8,7 @@ require (
 	github.com/bykof/gostradamus v1.1.1
 	github.com/elliotchance/orderedmap/v2 v2.2.0
 	github.com/google/uuid v1.6.0
-	github.com/jedib0t/go-pretty/v6 v6.5.5
+	github.com/jedib0t/go-pretty/v6 v6.5.6
 	github.com/lithammer/dedent v1.1.0
 	github.com/samber/lo v1.39.0
 	github.com/sirupsen/logrus v1.9.3
