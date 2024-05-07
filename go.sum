@@ -1,10 +1,12 @@
 buf.build/gen/go/bufbuild/protovalidate/grpc/go v1.3.0-20231115204500-e097f827e652.3/go.mod h1:RPvcngUb+92NDwi1t8v5rVtIa3cjt0JDPfR8Rq9tV1Y=
-buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.34.0-20231115204500-e097f827e652.1 h1:mEDHeHl2n9rfi6N2hSFuo8RVt/1vCJnt1DZmYtcEHmc=
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.34.0-20231115204500-e097f827e652.1/go.mod h1:bA3yUO1NvxekGLbOgvUaCBCATnJHy4UDBAygCPD7z/w=
+buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.34.1-20231115204500-e097f827e652.1 h1:gp028EFtxUwK5lEFG8aSrZJqxChoWkttWIb/lka3WWI=
+buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.34.1-20231115204500-e097f827e652.1/go.mod h1:XF+P8+RmfdufmIYpGUC+6bF7S+IlmHDEnCrO3OXaUAQ=
 buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20240129161937-d5ced9c85c25.3 h1:UO6TuQtzOeYasFrDlAjWz99XD0rwE4VgzsjH7qWMUeg=
 buf.build/gen/go/getstrm/pace/grpc/go v1.3.0-20240129161937-d5ced9c85c25.3/go.mod h1:n+g7ZnHnaRtSC/eVAhtvqg/agdOEp5d0oK55eaRzqQI=
-buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.34.0-20240129161937-d5ced9c85c25.1 h1:/UfBTDMxzX8zf+oVqsRFhJXLTNN6fof3QdUTub2/ttM=
 buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.34.0-20240129161937-d5ced9c85c25.1/go.mod h1:EEXGyacSMNt3IUOtv+9zRbMTN65N13iZjToZc7op6Og=
+buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.34.1-20240129161937-d5ced9c85c25.1 h1:2ZfPkTJ2RgYtAOl9XwWr/mGXtq0LiR/4hRarn5v6dK4=
+buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.34.1-20240129161937-d5ced9c85c25.1/go.mod h1:BK6CodcoBbsAt99hSGQxWbnbUw7STkp/35FTIunTzNg=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.38.0/go.mod h1:990N+gfupTy94rShfmMCWGDn0LpTmnzTp2qbd1dvSRU=
