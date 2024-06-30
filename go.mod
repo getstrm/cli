@@ -3,14 +3,14 @@ module pace/pace
 go 1.20
 
 require (
-	buf.build/gen/go/getstrm/pace/grpc/go v1.4.0-20240129161937-d5ced9c85c25.1
+	buf.build/gen/go/getstrm/pace/grpc/go v1.4.0-20240129161937-d5ced9c85c25.2
 	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.34.2-20240129161937-d5ced9c85c25.2
 	github.com/bykof/gostradamus v1.1.1
 	github.com/elliotchance/orderedmap/v2 v2.2.0
 	github.com/google/uuid v1.6.0
 	github.com/jedib0t/go-pretty/v6 v6.5.9
 	github.com/lithammer/dedent v1.1.0
-	github.com/samber/lo v1.41.0
+	github.com/samber/lo v1.44.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
