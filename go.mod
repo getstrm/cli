@@ -1,22 +1,24 @@
 module pace/pace
 
-go 1.20
+go 1.21
+
+toolchain go1.22.6
 
 require (
-	buf.build/gen/go/getstrm/pace/grpc/go v1.4.0-20240129161937-d5ced9c85c25.1
+	buf.build/gen/go/getstrm/pace/grpc/go v1.5.1-20240129161937-d5ced9c85c25.1
 	buf.build/gen/go/getstrm/pace/protocolbuffers/go v1.34.2-20240129161937-d5ced9c85c25.2
 	github.com/bykof/gostradamus v1.1.1
 	github.com/elliotchance/orderedmap/v2 v2.2.0
 	github.com/google/uuid v1.6.0
 	github.com/jedib0t/go-pretty/v6 v6.5.9
 	github.com/lithammer/dedent v1.1.0
-	github.com/samber/lo v1.41.0
+	github.com/samber/lo v1.46.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
 	github.com/xeipuuv/gojsonschema v1.2.0
-	google.golang.org/grpc v1.64.1
+	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
@@ -50,7 +52,7 @@ require (
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240318140521-94a12d6c2237 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
